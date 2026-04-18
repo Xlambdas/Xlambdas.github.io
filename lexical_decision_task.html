@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <body style="font-size: 48px; text-align: center; margin-top: 100px;">
+    <div id="stimulus">
+      <h1>Lexical Decision Task - Démo</h1>
+      <p><em>Basé sur l'article de Lize Van der Linden et al. (2018)</em></p><br>
+      <p>Lorsque vous connaissez le mot, appuyez sur la touche <strong>"T"</strong>. Sinon, appuyez sur <strong>"F"</strong>.</p>
+
+      <p>Appuyez sur la barre ESPACE pour commencer.</p>
+    </div>
+    <div id="results"></div>
+
+    <script>
+      const fixationDuration = 500;
+      let waitingStart = true;
+      let index = 0;
+      let startTime = 0;
+      let experimentFinished = false;
+      let results = [];
+
+      const stimulusDiv = document.getElementById("stimulus");
+      const resultsDiv = document.getElementById("results");
+
+      const trials = [
+        { word: "SURMODE", isWord: false },
+        { word: "CITRON", isWord: true },
+        { word: "GNUT", isWord: false },
+        { word: "GEGALOP", isWord: false },
+        { word: "FOREGO", isWord: true },
+        { word: "HORAIRE", isWord: true },
+        { word: "PREVÔTAL", isWord: true },
+        { word: "BIERRA", isWord: false },
+        { word: "BOUGNOUL", isWord: true },
+        { word: "JARDAFEU", isWord: false },
+        { word: "BLISS", isWord: true },
+        { word: "OLDE", isWord: false },
+        { word: "AQUARIUM", isWord: true },
+        { word: "FRAPTURE", isWord: false },
+        { word: "FANFARE", isWord: true }
+      ];
+
+      function runTrial() {
+        if (index >= trials.length) {
+          experimentFinished = true;
+          stimulusDiv.innerHTML = "Fin de la démo";
+          return;
+        }
+
+        // Step 1 : show fixation cross
+        stimulusDiv.innerHTML = "+";
+        // Step 2 : after 500 ms, show stimulus
+        setTimeout(() => {
+            stimulusDiv.innerHTML = trials[index].word;
+            startTime = performance.now();
+        }, fixationDuration);
+      }
+
+      function showResults() {
+        if (results.length === 0) {
+          resultsDiv.innerHTML = "<div style='color:#fff'>Aucun résultat enregistré.</div>";
+          return;
+        }
+
+        let html = `
+          <table border="1" style="margin: 40px auto; font-size: 24px; border-collapse: collapse;">
+            <tr>
+              <th> Stimulus </th>
+              <th> Réponse </th>
+              <th> Correct ? </th>
+              <th> Temps (ms) </th>
+            </tr>
+        `;
+
+        for (let r of results) {
+          html += `
+            <tr>
+              <td>${r.stimulus}</td>
+              <td>${r.response}</td>
+              <td>${r.correct ? "true" : "false"}</td>
+              <td>${r.rt}</td>
+            </tr>
+          `;
+        }
+
+        html += "</table>";
+        resultsDiv.innerHTML = html;
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+          e.preventDefault();
+        }
+        if (waitingStart && e.code === "Space") {
+          waitingStart = false;
+          runTrial();
+          return;
+        }
+
+        if (experimentFinished && e.code === "Space") {
+          showResults();
+          return;
+        }
+
+        if (waitingStart  || experimentFinished) return;
+
+
+        if (e.key !== "f" && e.key !== "t") return;
+
+        const rt = Math.round(performance.now() - startTime);
+        const response = (e.key === "t") ? "mot" : "non-mot";
+        const correct = ((response === "mot") === trials[index].isWord);
+
+        results.push({
+          stimulus: trials[index].word,
+          response: response,
+          correct: correct,
+          rt: rt
+        });
+
+        index++;
+        runTrial();
+      });
+      console.log("Démo prête. Variable 'trials' et 'results' disponibles.");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of Life - Developer Portfolio</title>
+    <script src="scripts.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="index.html" class="logo">Home</a>
+            <ul class="nav-links">
+                <li><a href="#idea">The idea</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#bibliography">Bibliography</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Cognitive Science</h1>
+                <p>
+                    Cognitive science explores the nature of thought, learning, and mental organization, drawing from psychology, neuroscience, artificial intelligence, philosophy, linguistics, and anthropology. <br>
+                    It seeks to understand how information is processed and represented in the mind and brain, aiming to unravel the complexities of human cognition and behavior.
+                </p>
+                <a href="#features" class="cta-button">Discover More</a><br>
+                <p class="in-progress">Currently in progress...</p><br>
+            </div>
+        </section>
+        <div class="container">
+            <section id="projects" class="section">
+                <h2>Cognitive tasks</h2>
+                <div class="project-card">
+                    <h3>Lexical decision task</h3>
+                    <p class="in-progress">Based on the article by Lize Van der Linden et al. (2018)</p>
+                    <p>A demo lexical decision task implemented in JavaScript.</p>
+                    <a href="lexical_decision_task.html" class="project-link">Do the demo →</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        fetch('footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.body.insertAdjacentHTML('beforeend', data);
+            })
+            .catch(error => console.error('Error loading footer:', error));
+    </script>
+</body>
+</html>
