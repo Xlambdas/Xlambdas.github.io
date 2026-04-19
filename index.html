@@ -1,93 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/brain_light.svg" media="(prefers-color-scheme: light)" />
+    <link rel="icon" type="image/svg+xml" href="/brain_dark.svg" media="(prefers-color-scheme: dark)" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>xls-studio</title>
 
-    <title>XLS - Developer Portfolio</title>
-    <script src="scripts.js"></script>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <nav class="container">
-            <a href="index_test.php" class="logo">XLS</a>
-            <ul class="nav-links">
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h1>Welcome to my world</h1>
-                    <p>Full-stack developer and <strong>ruthless problem-solver</strong>. I design powerful, modular tools that turn complex ideas into clean, efficient code.<br>
-                    From crafting dynamic web apps to building Obsidian plugins, I engineer experiences that are as functional as they are elegant.</p>
-                    <a href="#projects" class="cta-button">View My Work</a>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;1,300&family=Inter:ital,wght@0,300;1,300&family=JetBrains+Mono:ital,wght@0,300;1,300&display=swap"
+      rel="stylesheet">
+  </head>
 
-            </div>
-        </section>
-
-        <div class="container">
-            <section id="projects" class="section">
-                <h2>Current Projects</h2>
-                <div class="projects-grid">
-                    <div class="project-card">
-                        <h3>Game Of life</h3>
-                        <p class="in-progress">Currently in progress...</p>
-                        <p>A modern web extension built with React and Node.js. Plugin for the application '&copy; Obsidian'.</p>
-                        <a href="GOL.html" class="project-link">View more →</a>
-                    </div>
-                    <div class="project-card">
-                        <h3>Cognitive Science</h3>
-                        <p class="in-progress">Currently in progress...</p>
-                        <p>Knowledge exploration in cognitive science.</p>
-                        <a href="cognitive_science.html" class="project-link">View more →</a>
-                    </div>
-                    <div class="project-card">
-                        <h3>Upcomming</h3> <p class="in-progress">Currently in progress, please be patient...</p>
-
-                        <p>A full project on Unity. But no spoil, you'll find out soon!</p>
-                        <a href="unity_project.html" class="project-link">Please wait...</a>
-                    </div>
-                    <div class="project-card">
-                        <h3>Upcomming</h3>
-                        <p class="in-progress">Currently in progress, please be patient...</p>
-                    
-                        <p>To the sandbox!</p>
-                        <a href="sandbox.html" class="project-link">Please wait...</a>
-                    </div>
-                </div>
-            </section>
-
-            <section id="skills" class="section">
-                <h2>Skills & Technologies</h2>
-                <div class="skills">
-                    <div class="skill-tag">JavaScript</div>
-                    <div class="skill-tag">React</div>
-                    <div class="skill-tag">Node.js</div>
-                    <div class="skill-tag">Python</div>
-                    <div class="skill-tag">HTML/CSS</div>
-                    <div class="skill-tag">Git</div>
-                    <div class="skill-tag">MySQL/PHP</div>
-                    <div class="skill-tag">R</div>
-                    <div class="skill-tag">Linux</div>
-                    <div class="skill-tag">Windows</div>
-                </div>
-            </section>
-
-        </div>
-    </main>
-    <script>
-        fetch('footer.html')
-            .then(response => response.text())
-            .then(data => {
-                document.body.insertAdjacentHTML('beforeend', data);
-            })
-            .catch(error => console.error('Error loading footer:', error));
-    </script>
-</body>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

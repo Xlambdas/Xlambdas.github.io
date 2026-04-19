@@ -1,0 +1,214 @@
+/* src/styles/globals.css */
+:root {
+    /* Colors */
+    --color-primary: #9C88D9;
+    --color-secondary: #18112D;
+    --color-background: #0B0E16;
+    --color-dark-button: #0B0E16;
+    --color-primary-transparent: rgba(156, 136, 217, 0.2);
+    --color-primary-glow: rgba(156, 136, 217, 0.4);
+    --color-dark-button-transparent: rgba(24, 17, 45, 0.8);
+
+    /* Typography */
+    --font-primary: 'Montserrat', sans-serif;
+    --font-secondary: 'JetBrains Mono', monospace;
+
+    /* Scales */
+    --font-scale: 1;
+    --button-scale: 1;
+}
+
+@import "tailwindcss";
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+
+@media (max-height: 700px) {
+    .hide-on-small-height {
+        display: none;
+    }
+}
+
+/* Improve text contrast on light backgrounds */
+@media (prefers-color-scheme: light) {
+
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    span {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* --------------- */
+/* Loading Spinner */
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    animation: spin 0.9s linear infinite;
+}
+
+[data-reduced-motion="true"] .loading-spinner {
+    animation: none;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* -------------- */
+/* Primary Button */
+.primary-button {
+    border-radius: 40px;
+    border: 2px solid var(--color-primary);
+    padding: 5px 15px;
+    background: var(--color-dark);
+    color: var(--color-primary);
+    font-family: var(--font-secondary);
+    font-size: clamp(16px, 2vw, 24px);
+    font-weight: 200;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.primary-button:not(:disabled):hover {
+    box-shadow: 0 0 20px var(--color-primary-glow);
+}
+
+.primary-button:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+.primary-button--default {
+    width: auto;
+}
+
+.primary-button--small {
+    width: clamp(200px, 30vw, 321px);
+}
+
+.primary-button--large {
+    width: clamp(260px, 40vw, 453px);
+}
+
+.primary-button--cta {
+    width: clamp(260px, 40vw, 450px);
+    height: clamp(44px, 7vh, 64px);
+}
+
+.primary-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+
+/* -------------------------- */
+/* Header buttons - shared styles */
+.header-button,
+.header-toggle {
+    height: 30px;
+    padding: 0 clamp(16px, 4vw, 48px);
+    border-radius: 30px;
+    border: 1px solid;
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.header-button:hover,
+.header-toggle:hover {
+    box-shadow: 0 0 15px rgba(156, 136, 217, 0.3);
+}
+
+.header-toggle.active {
+    box-shadow: 0 0 15px rgba(156, 136, 217, 0.3);
+}
+
+.header-color-toggle {
+    width: clamp(40px, 5vw, 50px);
+    height: clamp(28px, 4vw, 30px);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.header-color-toggle:hover {
+    filter: brightness(1.1);
+}
+
+@media (max-width: 600px) {
+    .hide-below-600 {
+        display: none;
+    }
+}
+
+
+/* Menu Icon Button */
+.menu-icon {
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.menu-icon:hover {
+    transform: scale(0.9);
+}
+
+.menu-hamburger,
+.menu-close {
+    position: absolute;
+    transition: opacity 0.3s ease;
+    width: 44px;
+    height: 40px;
+}
+
+.menu-hamburger {
+    opacity: 1;
+}
+
+.menu-close {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Active state via data attribute (we'll add this) */
+.menu-icon[data-open="true"] .menu-hamburger {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.menu-icon[data-open="true"] .menu-close {
+    opacity: 1;
+    pointer-events: auto;
+}

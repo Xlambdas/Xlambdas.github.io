@@ -1,0 +1,6 @@
+/* src/styles/components.css */
+
+/* Optional: Rare component layer for complex base styles */
+@layer components {
+    /* ... */
+}
