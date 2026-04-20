@@ -8,7 +8,7 @@
 
 > Personal portfolio and creative studio — built at the intersection of design, code, and cognitive science.
 
-**Live →** [xlambdas.github.io](https://xlambdas.github.io)
+**Live →** [xls-studio](http://xls-studio.com/)
 
 ---
 

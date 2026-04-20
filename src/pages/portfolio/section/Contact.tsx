@@ -7,7 +7,7 @@ interface ContactProps {
 
 export const Contact: React.FC<ContactProps> = ({ t }) => {
     const contactLinks = [
-        { label: 'Email', href: 'mailto:cogassien@hotmail.com' },
+        { label: 'Email', href: 'mailto:contact@xls-studio.com' },
         { label: 'LinkedIn', href: 'https://fr.linkedin.com/in/corentin-gassien-1b7289261' },
         { label: 'GitHub', href: 'https://github.com/Xlambdas' },
     ];
