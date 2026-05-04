@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { type NodeDef, GROUP_CONFIG, NODES, ADJACENCY, type Group } from "../data/graphData";
 import { Stat } from "./stat";
 import { EDGES } from "../data/graphData";
-import { Navigate } from "react-router-dom";
+// import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {

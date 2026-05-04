@@ -137,8 +137,8 @@ const DemoGraph: React.FC = () => {
         // 🔹 Draw
         function draw() {
             const isSelected = (n: NodeType) => selectedNode?.id === n.id;
-            const isNeighbor = (n: NodeType) =>
-                selectedNode?.links.includes(n.id) || false;
+            // const isNeighbor = (n: NodeType) =>
+            //     selectedNode?.links.includes(n.id) || false;
             ctx.save();
             ctx.clearRect(0, 0, width, height);
 
@@ -188,8 +188,8 @@ const DemoGraph: React.FC = () => {
 
             // nodes
             nodes.forEach((n) => {
-                const selected = isSelected(n);
-                const neighbor = isNeighbor(n);
+                // const selected = isSelected(n);
+                // const neighbor = isNeighbor(n);
 
                 let radius = 5;
                 const locked = !n.isUnlocked;
