@@ -123,12 +123,12 @@ const DemoGraph: React.FC = () => {
         d3.select(canvas).call(zoom as any);
 
         // 🔹 Hover detection
-        let hoveredNode: NodeType | null = null;
+        // let hoveredNode: NodeType | null = null;
 
-        canvas.addEventListener("mousemove", (event) => {
-            const [mx, my] = d3.pointer(event);
-            const [x, y] = transform.invert([mx, my]);
-            hoveredNode = simulation.find(x, y, 10) || null;
+        canvas.addEventListener("mousemove", () => { // (event) => {
+            // const [mx, my] = d3.pointer(event);
+            // const [x, y] = transform.invert([mx, my]);
+            // hoveredNode = simulation.find(x, y, 10) || null;
             draw();
         });
 
