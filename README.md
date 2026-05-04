@@ -53,11 +53,11 @@ The site is fully translated into **5 languages** (EN, FR, ES, DE, IT) via a typ
 
 ## Project Structure
 
-To regenerate this tree from the real `src/` folder at any time:
+<!-- To regenerate this tree from the real `src/` folder at any time:
 
 ```bash
 npm run docs:structure
-```
+``` -->
 
 ```
 src/

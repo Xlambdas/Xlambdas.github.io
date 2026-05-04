@@ -3,8 +3,10 @@ import React from "react";
 import { PrimaryButton } from "../../common";
 import type { AppTheme } from "../../../theme";
 import { HOME_TRANSLATIONS } from "../../../locales";
+import { useNavigate } from "react-router-dom";
 
 export const WelcomeSection: React.FC<{ theme: AppTheme, t: typeof HOME_TRANSLATIONS['en'] }> = ({ t }) => {
+    const navigate = useNavigate();
 
     return (
         <div
@@ -60,7 +62,7 @@ export const WelcomeSection: React.FC<{ theme: AppTheme, t: typeof HOME_TRANSLAT
                     <div />
 
                     <div className="pointer-events-auto">
-                        <PrimaryButton variant="cta" disabled={true}>
+                        <PrimaryButton variant="cta" disabled={true} onClick={() => navigate("/demoHome")}>
                             {t.enterSystem}
                         </PrimaryButton>
                     </div>
