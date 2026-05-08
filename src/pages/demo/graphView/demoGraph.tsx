@@ -1,24 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-type NodeType = {
-    id: string;
-    title: string;
-    type: "main" | "folder" | "file";
-    links: string[];
-    isUnlocked: boolean;
-    x?: number;
-    y?: number;
-    vx?: number;
-    vy?: number;
-    fx?: number | null;
-    fy?: number | null;
-};
+import { type NodeType, type LinkType, initialLinks, initialNodes } from "../data/graphData";
 
-type LinkType = {
-    source: string | NodeType;
-    target: string | NodeType;
-};
+declare global {
+    interface Window {
+        __graphZoom?: (factor: number) => void;
+        __graphReset?: () => void;
+    }
+}
 
 const DemoGraph: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -33,7 +23,7 @@ const DemoGraph: React.FC = () => {
         let width = window.innerWidth;
         let height = window.innerHeight;
 
-        // 🔹 DPI scaling (fix blurry / oval nodes)
+        // DPI scaling
         function setCanvasSize() {
             const ratio = window.devicePixelRatio || 1;
             canvas.width = width * ratio;
@@ -45,24 +35,11 @@ const DemoGraph: React.FC = () => {
 
         setCanvasSize();
 
-        // 🔹 Data
-        const nodes: NodeType[] = [
-            { id: "A", title: "Home", type: "main", links: ["B", "C"], isUnlocked: true },
-            { id: "B", title: "Projects", type: "folder", links: ["D"], isUnlocked: true },
-            { id: "C", title: "Notes", type: "folder", links: ["E"], isUnlocked: false },
-            { id: "D", title: "Graph", type: "file", links: [], isUnlocked: true },
-            { id: "E", title: "Ideas", type: "file", links: ["F"], isUnlocked: false },
-            { id: "F", title: "Todo", type: "file", links: [], isUnlocked: false },
-        ];
+        // Data
+        const nodes: NodeType[] = initialNodes.map(n => ({ ...n }));
+        const links: LinkType[] = initialLinks.map(l => ({ ...l }));
 
-        const links: LinkType[] = nodes.flatMap(n =>
-            n.links.map(target => ({
-                source: n.id,
-                target
-            }))
-        );
-
-        // 🔹 Simulation
+        // Simulation
         const simulation = d3
             .forceSimulation(nodes)
             .force(
@@ -77,13 +54,8 @@ const DemoGraph: React.FC = () => {
             .force("center", d3.forceCenter(width / 2, height / 2))
             .alphaDecay(0.03);
 
-        // 🔹 Zoom state
+        // Zoom state
         let transform = d3.zoomIdentity;
-
-        // function isDraggingNode(event: any) {
-        //     const [mx, my] = transform.invert(d3.pointer(event));
-        //     return simulation.find(mx, my, 10);
-        // }
 
         let isPointerDownOnNode = false;
 
@@ -122,9 +94,7 @@ const DemoGraph: React.FC = () => {
 
         d3.select(canvas).call(zoom as any);
 
-        // 🔹 Hover detection
-        // let hoveredNode: NodeType | null = null;
-
+        // Hover detection
         canvas.addEventListener("mousemove", () => { // (event) => {
             // const [mx, my] = d3.pointer(event);
             // const [x, y] = transform.invert([mx, my]);
@@ -132,13 +102,9 @@ const DemoGraph: React.FC = () => {
             draw();
         });
 
-        // const isDimmed = selectedNode !== null;
-
-        // 🔹 Draw
+        // Draw
         function draw() {
             const isSelected = (n: NodeType) => selectedNode?.id === n.id;
-            // const isNeighbor = (n: NodeType) =>
-            //     selectedNode?.links.includes(n.id) || false;
             ctx.save();
             ctx.clearRect(0, 0, width, height);
 
@@ -188,9 +154,6 @@ const DemoGraph: React.FC = () => {
 
             // nodes
             nodes.forEach((n) => {
-                // const selected = isSelected(n);
-                // const neighbor = isNeighbor(n);
-
                 let radius = 5;
                 const locked = !n.isUnlocked;
 
@@ -224,13 +187,6 @@ const DemoGraph: React.FC = () => {
                 ctx.beginPath();
                 ctx.arc(n.x!, n.y!, radius, 0, Math.PI * 2);
 
-                // if (!selectedNode) {
-                //     // idle state
-                //     ctx.globalAlpha = locked ? 0.35 : 1;
-                // } else {
-                //     ctx.globalAlpha = selected || neighbor ? 1 : 0.25;
-                // }
-
                 ctx.fillStyle = color;
 
                 ctx.shadowBlur =
@@ -243,27 +199,6 @@ const DemoGraph: React.FC = () => {
                 ctx.shadowColor = ctx.fillStyle;
 
                 ctx.fill();
-
-                // if (locked) {
-                //     ctx.save();
-
-                //     ctx.beginPath();
-                //     ctx.arc(n.x!, n.y!, radius, 0, Math.PI * 2);
-                //     ctx.clip();
-
-                //     ctx.strokeStyle = "rgba(255,255,255,0.15)";
-                //     ctx.lineWidth = 2;
-
-                //     for (let i = -radius; i < radius; i += 4) {
-                //         ctx.beginPath();
-                //         ctx.moveTo(n.x! - radius, n.y! + i);
-                //         ctx.lineTo(n.x! + radius, n.y! + i + 6);
-                //         ctx.stroke();
-                //     }
-
-                //     ctx.restore();
-                // }
-                // ctx.shadowBlur = 0;
                 ctx.globalAlpha = 1;
             });
 
@@ -286,9 +221,8 @@ const DemoGraph: React.FC = () => {
         }
 
         simulation.on("tick", draw);
-        // let draggingNode = false;
 
-        // 🔹 Drag
+        // Drag
         const drag = d3
             .drag<HTMLCanvasElement, unknown>()
             .subject((event) => {
@@ -331,7 +265,7 @@ const DemoGraph: React.FC = () => {
 
         d3.select(canvas).call(drag as any);
 
-        // 🔹 Resize handling (THIS fixes your issue)
+        // Resize handling
         function handleResize() {
             width = window.innerWidth;
             height = window.innerHeight;
@@ -344,9 +278,27 @@ const DemoGraph: React.FC = () => {
 
         window.addEventListener("resize", handleResize);
 
+        window.__graphZoom = (factor: number) => {
+            // const newScale = transform.k * factor;
+            const cx = width / 2;
+            const cy = height / 2;
+            const newTransform = transform.translate(cx, cy).scale(factor).translate(-cx, -cy);
+            transform = newTransform;
+            draw();
+        };
+
+        window.__graphReset = () => {
+            transform = d3.zoomIdentity;
+            d3.select(canvas).call((zoom as any).transform, d3.zoomIdentity);
+            simulation.alpha(1).restart();
+            draw();
+        };
+
         return () => {
             simulation.stop();
             window.removeEventListener("resize", handleResize);
+            delete window.__graphZoom;
+            delete window.__graphReset;
         };
     }, []);
 

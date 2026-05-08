@@ -62,7 +62,7 @@ export const WelcomeSection: React.FC<{ theme: AppTheme, t: typeof HOME_TRANSLAT
                     <div />
 
                     <div className="pointer-events-auto">
-                        <PrimaryButton variant="cta" disabled={true} onClick={() => navigate("/demoHome")}>
+                        <PrimaryButton variant="cta" disabled={false} onClick={() => navigate("/demoHome")}>
                             {t.enterSystem}
                         </PrimaryButton>
                     </div>

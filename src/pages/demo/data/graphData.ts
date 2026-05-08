@@ -1,3 +1,38 @@
+export type NodeType = {
+    id: string;
+    title: string;
+    type: "main" | "folder" | "file";
+    links: string[];
+    isUnlocked: boolean;
+    x?: number;
+    y?: number;
+    vx?: number;
+    vy?: number;
+    fx?: number | null;
+    fy?: number | null;
+};
+
+export type LinkType = {
+    source: string | NodeType;
+    target: string | NodeType;
+};
+
+export const initialNodes: NodeType[] = [
+    { id: "A", title: "Home", type: "main", links: ["B", "C"], isUnlocked: true },
+    { id: "B", title: "Projects", type: "folder", links: ["D"], isUnlocked: true },
+    { id: "C", title: "Notes", type: "folder", links: ["E"], isUnlocked: false },
+    { id: "D", title: "Graph", type: "file", links: [], isUnlocked: true },
+    { id: "E", title: "Ideas", type: "file", links: ["F"], isUnlocked: false },
+    { id: "F", title: "Todo", type: "file", links: [], isUnlocked: false },
+];
+
+export const initialLinks: LinkType[] = initialNodes.flatMap(n =>
+    n.links.map(target => ({ source: n.id, target }))
+);
+
+// -----------------------------
+// old version of graph data, will be used for testing new graph component
+
 export type Group = "hub" | "folder" | "skill" | "note";
 
 export interface NodeDef {
