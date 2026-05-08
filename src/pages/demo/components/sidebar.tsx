@@ -3,6 +3,8 @@ import { type NodeDef, GROUP_CONFIG, NODES, ADJACENCY, type Group } from "../dat
 import { Stat } from "./stat";
 import { EDGES } from "../data/graphData";
 import { useNavigate } from "react-router-dom";
+import { SIZE_MAP } from "./nodePanel";
+
 
 interface SidebarProps_old {
     collapsed: boolean;
@@ -17,6 +19,7 @@ interface SidebarProps {
     collapsed: boolean;
     onCollapse: () => void;
     onSelectNode: (node: NodeType | null) => void;
+    textSize: "S" | "M" | "L";
 }
 
 const TYPE_COLOR: Record<NodeType["type"], string> = {
@@ -27,9 +30,10 @@ const TYPE_COLOR: Record<NodeType["type"], string> = {
 
 const visibleIds = getVisibleIds(initialNodes);
 
-export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, onSelectNode }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, onSelectNode, textSize }) => {
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
+    const fs = SIZE_MAP[textSize];
 
     const filtered = useMemo(() =>
         initialNodes.filter(n =>
@@ -45,15 +49,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, onSelec
 
     return (
         <div style={{
-            width: 252, background: "#161b22", borderRight: "1px solid #21262d",
+            width: 252, height: "100%", background: "#161b22", borderRight: "1px solid #21262d",
             display: "flex", flexDirection: "column", flexShrink: 0,
         }}>
             <div style={{ padding: "13px 14px 10px", borderBottom: "1px solid #21262d" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                    <span style={{ color: "#c9d1d9", fontSize: 12, fontWeight: 500 }}>Graph View</span>
+                    <span style={{ color: "#c9d1d9", fontSize: fs+1, fontWeight: 500 }}>Graph View</span>
                     <button onClick={onCollapse} style={{
                         background: "none", border: "none", color: "#484f58",
-                        cursor: "pointer", fontSize: 16, lineHeight: 1, padding: "2px 4px",
+                        cursor: "pointer", fontSize: 18, lineHeight: 1, padding: "2px 4px",
                     }}>‹</button>
                 </div>
                 <input
@@ -63,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, onSelec
                     style={{
                         width: "100%", background: "#0d1117", border: "1px solid #21262d",
                         borderRadius: 5, padding: "5px 9px", color: "#c9d1d9",
-                        fontSize: 11, outline: "none", boxSizing: "border-box",
+                        fontSize: fs, outline: "none", boxSizing: "border-box",
                     }}
                 />
             </div>
@@ -89,10 +93,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, onSelec
                             flexShrink: 0,
                             border: node.isUnlocked ? "none" : "1px solid #6b7280",
                         }} />
-                        <span style={{ color: node.isUnlocked ? "#8b949e" : "#4b5563", fontSize: 11, flex: 1 }}>
+                        <span style={{ color: node.isUnlocked ? "#8b949e" : "#4b5563", fontSize: fs, flex: 1 }}>
                             {node.title}
                         </span>
-                        {node.isUnlocked && <span style={{ color: "#30363d", fontSize: 10 }}>{node.links.length}</span>}
+                        {node.isUnlocked && <span style={{ color: "#30363d", fontSize: fs-1 }}>{node.links.length}</span>}
                     </div>
                 ))}
             </div>
@@ -106,8 +110,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, onSelec
             </div>
 
             <div style={{ padding: "8px 14px", borderTop: "1px solid #21262d", display: "flex", gap: 8, justifyContent: "space-between" }}>
-                <span style={{ color: "#30363d", fontSize: 10, cursor: "pointer" }} onClick={() => navigate("/")}>XLS.studio</span>
-                <span style={{ color: "#30363d", fontSize: 10 }}>05 · 2026</span>
+                <span style={{ color: "#30363d", fontSize: fs-1, cursor: "pointer" }} onClick={() => navigate("/")}>XLS.studio</span>
+                <span style={{ color: "#30363d", fontSize: fs-1 }}>05 · 2026</span>
             </div>
         </div>
     );
