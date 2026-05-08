@@ -1,16 +1,24 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-import { type NodeType, type LinkType, initialLinks, initialNodes } from "../data/graphData";
+import { type NodeType, type LinkType, initialLinks, initialNodes, getVisibleIds } from "../data/graphData";
 
 declare global {
     interface Window {
         __graphZoom?: (factor: number) => void;
         __graphReset?: () => void;
+        __graphFocus?: (nodeId: string) => void;
+        __graphSearch?: (query: string) => void;
     }
 }
 
-const DemoGraph: React.FC = () => {
+interface DemoGraphProps {
+    onSelectNode?: (node: NodeType | null) => void;
+}
+
+const DemoGraph: React.FC<DemoGraphProps> = ({ onSelectNode }) => {
+    const onSelectNodeRef = useRef(onSelectNode);
+    useEffect(() => { onSelectNodeRef.current = onSelectNode; }, [onSelectNode]);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     let selectedNode: NodeType | null = null;
     let draggingNode: NodeType | null = null;
@@ -39,13 +47,29 @@ const DemoGraph: React.FC = () => {
         const nodes: NodeType[] = initialNodes.map(n => ({ ...n }));
         const links: LinkType[] = initialLinks.map(l => ({ ...l }));
 
+        const visibleIds = getVisibleIds(nodes);
+
+        const visibleNodes = nodes.filter(n => visibleIds.has(n.id));
+        const visibleLinks = links.filter(l => {
+            const sId = typeof l.source === "string" ? l.source : l.source.id;
+            const tId = typeof l.target === "string" ? l.target : l.target.id;
+            return visibleIds.has(sId) && visibleIds.has(tId);
+        });
+
+        let searchFilter = "";
+
+        window.__graphSearch = (query: string) => {
+            searchFilter = query.toLowerCase();
+            draw();
+        };
+
         // Simulation
         const simulation = d3
-            .forceSimulation(nodes)
+            .forceSimulation(visibleNodes)
             .force(
                 "link",
                 d3
-                    .forceLink<NodeType, LinkType>(links)
+                    .forceLink<NodeType, LinkType>(visibleLinks)
                     .id((d) => d.id)
                     .distance(80)
                     .strength(1)
@@ -71,6 +95,7 @@ const DemoGraph: React.FC = () => {
             const node = simulation.find(x, y, 10);
 
             selectedNode = node || null;
+            onSelectNodeRef.current?.(selectedNode);
             draw();
         });
         canvas.addEventListener("mouseup", () => {
@@ -114,7 +139,7 @@ const DemoGraph: React.FC = () => {
             // links
             ctx.strokeStyle = "#555";
             ctx.globalAlpha = 0.6;
-            links.forEach((l) => {
+            visibleLinks.forEach((l) => {
                 const sNode = l.source as NodeType;
                 const tNode = l.target as NodeType;
 
@@ -124,8 +149,8 @@ const DemoGraph: React.FC = () => {
                 const lockedLink = sourceLocked || targetLocked;
 
                 const isActive =
-                    selectedNode &&
-                    (sNode.id === selectedNode.id || tNode.id === selectedNode.id);
+                    (selectedNode && (sNode.id === selectedNode.id || tNode.id === selectedNode.id)) ||
+                    (draggingNode && (sNode.id === draggingNode.id || tNode.id === draggingNode.id));
 
                 ctx.beginPath();
                 ctx.moveTo(sNode.x!, sNode.y!);
@@ -133,10 +158,12 @@ const DemoGraph: React.FC = () => {
 
                 // style
                 ctx.strokeStyle = lockedLink
-                    ? "rgba(148, 163, 184, 0.25)" // muted gray
-                    : isActive
-                        ? "rgba(255, 200, 120, 0.9)"
-                        : "rgba(120, 120, 120, 0.35)";
+                    ? "rgba(148, 163, 184, 0.25)"
+                    : draggingNode && (sNode.id === draggingNode.id || tNode.id === draggingNode.id)
+                        ? "rgba(251, 146, 60, 0.9)"
+                        : isActive
+                            ? "rgba(255, 200, 120, 0.9)"
+                            : "rgba(120, 120, 120, 0.35)";
 
                 if (lockedLink) {
                     ctx.setLineDash([2, 6]); // dotted effect
@@ -153,7 +180,7 @@ const DemoGraph: React.FC = () => {
             });
 
             // nodes
-            nodes.forEach((n) => {
+            visibleNodes.forEach((n) => {
                 let radius = 5;
                 const locked = !n.isUnlocked;
 
@@ -198,6 +225,12 @@ const DemoGraph: React.FC = () => {
 
                 ctx.shadowColor = ctx.fillStyle;
 
+                if (searchFilter && !n.title.toLowerCase().includes(searchFilter)) {
+                    ctx.globalAlpha = 0.15;
+                } else {
+                    ctx.globalAlpha = 1;
+                }
+
                 ctx.fill();
                 ctx.globalAlpha = 1;
             });
@@ -206,14 +239,23 @@ const DemoGraph: React.FC = () => {
             if (transform.k > 0.5) {
                 ctx.fillStyle = "#aaa";
                 ctx.font = "12px sans-serif";
-                nodes.forEach((n) => {
+                visibleNodes.forEach((n) => {  //if just show text for unlocked nodes: visibleNodes.filter(n => n.isUnlocked).forEach((n) => {
+                    const isMatch = searchFilter && n.title.toLowerCase().includes(searchFilter);
+                    const isDimmed = searchFilter && !isMatch;
+                    let radius = 5;
+                    if (n.type === "main") radius = 8;
+                    if (n.type === "folder") radius = 6;
+                    if (selectedNode?.id === n.id) radius = 9;
+                    if (draggingNode?.id === n.id) radius = 10;
+
                     ctx.globalAlpha =
-                        selectedNode && !isSelected(n) ? 0.3 : 0.8;
+                        isDimmed ? 0.15 : (selectedNode && !isSelected(n) ? 0.3 : 0.8);
 
                     ctx.fillStyle = "#cbd5e1";
                     ctx.font = "12px sans-serif";
 
-                    ctx.fillText(n.title, n.x! + 8, n.y! + 4);
+                    ctx.textAlign = "center";
+                    ctx.fillText(n.title, n.x!, n.y! + radius + 12);
                 });
             }
 
@@ -299,16 +341,14 @@ const DemoGraph: React.FC = () => {
             window.removeEventListener("resize", handleResize);
             delete window.__graphZoom;
             delete window.__graphReset;
+            delete window.__graphSearch;
         };
     }, []);
 
     return (
         <canvas
             ref={canvasRef}
-            style={{
-                display: "block",
-                background: "#0b0f14",
-            }}
+            className="block w-full h-full bg-[#0b0f14]"
         />
     );
 };

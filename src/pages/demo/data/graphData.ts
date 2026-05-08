@@ -18,17 +18,37 @@ export type LinkType = {
 };
 
 export const initialNodes: NodeType[] = [
-    { id: "A", title: "Home", type: "main", links: ["B", "C"], isUnlocked: true },
-    { id: "B", title: "Projects", type: "folder", links: ["D"], isUnlocked: true },
-    { id: "C", title: "Notes", type: "folder", links: ["E"], isUnlocked: false },
-    { id: "D", title: "Graph", type: "file", links: [], isUnlocked: true },
-    { id: "E", title: "Ideas", type: "file", links: ["F"], isUnlocked: false },
-    { id: "F", title: "Todo", type: "file", links: [], isUnlocked: false },
+    { id: "A", title: "Profil", type: "main", links: ["B", "C", "D", "E", "F", "G", "K"], isUnlocked: true },
+    { id: "B", title: "Philosophie", type: "folder", links: [], isUnlocked: false },
+    { id: "C", title: "Linguistique", type: "folder", links: [], isUnlocked: false },
+    { id: "D", title: "Anthropologie", type: "folder", links: [], isUnlocked: false },
+    { id: "E", title: "Neurosciences", type: "folder", links: [], isUnlocked: true },
+    { id: "F", title: "Psychologie", type: "folder", links: ["I"], isUnlocked: true },
+    { id: "G", title: "Informatique", type: "folder", links: ["H"], isUnlocked: false },
+    { id: "H", title: "Graph", type: "file", links: [], isUnlocked: false },
+    { id: "I", title: "Sociologie", type: "file", links: ["J"], isUnlocked: true },
+    { id: "J", title: "Histoire", type: "folder", links: ["M"], isUnlocked: false },
+    { id: "K", title: "Autres", type: "folder", links: ["L", "H", "M"], isUnlocked: true },
+    { id: "L", title: "Voyages", type: "folder", links: [], isUnlocked: false },
+    { id: "M", title: "Guerre", type: "file", links: [], isUnlocked: false },
 ];
 
 export const initialLinks: LinkType[] = initialNodes.flatMap(n =>
     n.links.map(target => ({ source: n.id, target }))
 );
+
+export const getVisibleIds = (nodes: NodeType[]): Set<string> => {
+    const unlockedIds = new Set(nodes.filter(n => n.isUnlocked).map(n => n.id));
+    const visibleIds = new Set<string>(unlockedIds);
+    nodes.forEach(n => {
+        if (n.isUnlocked) {
+            n.links.forEach(targetId => {
+                if (!unlockedIds.has(targetId)) visibleIds.add(targetId);
+            });
+        }
+    });
+    return visibleIds;
+};
 
 // -----------------------------
 // old version of graph data, will be used for testing new graph component
