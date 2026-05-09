@@ -5,8 +5,7 @@ import { ProjectsPage } from './pages/projects';
 import { PortfolioPage } from './pages/portfolio';
 import { DemoHome } from './pages/demo';
 import { Home } from './components';
-// import DemoGraph from './pages/demo/graphView/demoGraph';
-import { DemoHome_save } from './pages/demo/DemoHome';
+import DemoGraph from './pages/demo/graphView/demoGraph';
 
 
 function App() {
@@ -18,8 +17,7 @@ function App() {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
             <Route path="/demoHome" element={<DemoHome />} />
-            <Route path="/demoHome_save" element={<DemoHome_save />} />
-            {/* <Route path="/demoGraph" element={<DemoGraph />} /> */}
+            <Route path="/demoGraph" element={<DemoGraph />} />
           </Routes>
       </Router>
     )

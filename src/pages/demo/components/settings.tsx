@@ -1,13 +1,16 @@
 import { SIZE_MAP } from "./nodePanel";
-
+// import { TEACHER_PASSWORD } from "../data/teacherNotes";
 
 interface SettingsPanelProps {
     onClose: () => void;
     textSize: "S" | "M" | "L";
     onTextSizeChange: (size: "S" | "M" | "L") => void;
+    isTeacher: boolean;
+    onTeacherToggle: () => void;
+    teacherName: string;
 }
 
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, textSize, onTextSizeChange }) => {
+export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, textSize, onTextSizeChange, isTeacher, onTeacherToggle, teacherName }) => {
     const fs = SIZE_MAP[textSize];
 
     return (
@@ -53,6 +56,50 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, textSize,
                         }}>{lang}</button>
                     ))}
                 </div>
+            </div>
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #21262d" }}>
+                <span style={{ color: "#484f58", fontSize: fs, display: "block", marginBottom: 8 }}>
+                    Mode enseignant
+                </span>
+                {isTeacher ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <div style={{
+                            background: "rgba(124,106,247,0.08)",
+                            border: "1px solid rgba(124,106,247,0.2)",
+                            borderRadius: 7, padding: "8px 12px",
+                            color: "#a39af7", fontSize: fs - 1,
+                        }}>
+                            ✓ Connecté en tant que {teacherName}
+                        </div>
+                        <button
+                            onClick={() => {
+                                localStorage.removeItem("teacher_mode");
+                                localStorage.removeItem("teacher_name");
+                                onTeacherToggle();
+                            }}
+                            style={{
+                                padding: "6px 0", background: "transparent",
+                                border: "1px solid #30363d", color: "#6e7681",
+                                borderRadius: 7, fontSize: fs - 1, cursor: "pointer",
+                            }}
+                        >
+                            Se déconnecter
+                        </button>
+                    </div>
+                ) : (
+                    <button
+                        onClick={onTeacherToggle}
+                        style={{
+                            width: "100%", padding: "7px 0",
+                            background: "rgba(124,106,247,0.1)",
+                            border: "1px solid rgba(124,106,247,0.3)",
+                            color: "#a39af7", borderRadius: 7,
+                            fontSize: fs - 1, cursor: "pointer",
+                        }}
+                    >
+                        Accéder au mode enseignant
+                    </button>
+                )}
             </div>
         </div>
     );
