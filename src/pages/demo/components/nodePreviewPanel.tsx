@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { type NodeType } from "../data/graphData";
+import { useNavigate } from "react-router-dom";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -22,8 +23,9 @@ interface NodePreviewPanelProps {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const NodePreviewPanel: React.FC<NodePreviewPanelProps> = ({
-    node, onClose, onOpenPath,
+    node, onClose,
 }) => {
+    const navigate = useNavigate();
     const [phase, setPhase] = useState<Phase>("hidden");
     const [completed, setCompleted] = useState<string[]>([]);
 
@@ -74,7 +76,7 @@ export const NodePreviewPanel: React.FC<NodePreviewPanelProps> = ({
 
     const handleStart = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (node && canStart) onOpenPath(node);
+        if (node && canStart) navigate(`/demo/node/${node.id}`);
     };
 
     // ─────────────────────────────────────────────────────────────────────────

@@ -18,7 +18,6 @@ import { Sidebar } from "./components/sidebar";
 import { Legend } from "./components/legend";
 import { NodePanel } from "./components/nodePanel";
 import { SettingsPanel } from "./components/settings";
-import { NodePreviewPanel } from "./components/nodePreviewPanel";
 import { FunFactModal } from "./section/funFactModal";
 import { TeacherLoginModal } from "./section/teacherLoginModal";
 import { LessonPathView } from "./section/lessonPathView";
@@ -26,6 +25,8 @@ import { LessonPlayer } from "./components/lessonPlayer";
 import { StrengthenSession } from "./section/strengthenSession";
 import { ProfileView } from "./section/profileView";
 import { initialNodes } from "./data/graphData";
+
+import { NodeCard } from "./components/node/nodeCard";
 
 // ─── Feature flags ────────────────────────────────────────────────────────────
 const SHOW_FUN_FACT = true;
@@ -36,11 +37,11 @@ export function DemoHome() {
     const state = useDemoHomeState();
     const fs = SIZE_MAP[state.textSize];
 
-    const { openPath, openLesson, handleLessonComplete, handleLessonClose } = useLessonFlow({
+    const { openLesson, handleLessonComplete, handleLessonClose } = useLessonFlow({
         activeLesson: state.activeLesson,
         setActiveLesson: state.setActiveLesson,
         setPathNode: state.setPathNode,
-        setPreviewNode: state.setPreviewNode,
+        setActiveNode: state.setActiveNode, // setPreviewNode was renamed to setActiveNode
         setRefreshKey: state.setRefreshKey,
         setNewlyUnlockedIds: state.setNewlyUnlockedIds,
     });
@@ -52,10 +53,7 @@ export function DemoHome() {
 
     // ── Handlers ──────────────────────────────────────────────────────────────
     const handleNodeSelect = (node: NodeType | null) => {
-        state.setSelectedNode(node);
-        if (!node) return;
-        if ((node as any).kind === "profile") state.setProfileOpen(true);
-        else state.setPreviewNode(node);
+        state.setActiveNode(node);
     };
 
     const handleCollapse = (val: boolean) => {
@@ -72,7 +70,8 @@ export function DemoHome() {
         state.setSearchQuery(node.title);
         window.__graphSearch?.(node.title);
         window.__graphFocus?.(node.id);
-        state.setPreviewNode(node);
+        // state.setPreviewNode(node);
+        state.setActiveNode(node);
         state.setSuggestions([]);
         state.setMobileSearch(false);
     };
@@ -163,10 +162,22 @@ export function DemoHome() {
 
             {/* ── Fullscreen overlays ── */}
 
-            <NodePreviewPanel
+            {/* <NodePreviewPanel
                 node={state.previewNode}
                 onClose={() => state.setPreviewNode(null)}
                 onOpenPath={openPath}
+            /> */}
+
+            <NodeCard
+                node={state.activeNode}
+                onClose={() => state.setActiveNode(null)}
+                onOpenSettings={() => state.setSettingsOpen(true)}
+                onOpenProfile={() => { state.setActiveNode(null); state.setProfileOpen(true); }}
+                onOpenStrengthen={(nodeId) => {
+                    state.setActiveNode(null);
+                    state.setStrengthenNodeId(nodeId);
+                    state.setStrengthenOpen(true);
+                }}
             />
 
             {state.pathNode && (
@@ -197,7 +208,7 @@ export function DemoHome() {
                     onClose={() => state.setFunFactOpen(false)}
                     onNavigate={(node) => {
                         state.setFunFactOpen(false);
-                        state.setPreviewNode(node);
+                        state.setActiveNode(node);
                         window.__graphFocus?.(node.id);
                     }}
                 />
@@ -220,7 +231,7 @@ export function DemoHome() {
                         state.setProfileOpen(false);
                         const node = initialNodes.find(n => n.id === nodeId);
                         if (node) {
-                            state.setPreviewNode(node);
+                            state.setActiveNode(node);
                             window.__graphFocus?.(nodeId);
                         }
                     }}

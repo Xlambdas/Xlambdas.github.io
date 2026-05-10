@@ -5,7 +5,7 @@ interface UseLessonFlowParams {
     activeLesson: ActiveLesson | null;
     setActiveLesson: (lesson: ActiveLesson | null) => void;
     setPathNode: (node: NodeType | null) => void;
-    setPreviewNode: (node: NodeType | null) => void;
+    setActiveNode: (node: NodeType | null) => void;
     setRefreshKey: (updater: (k: number) => number) => void;
     setNewlyUnlockedIds: (ids: string[]) => void;
 }
@@ -14,13 +14,13 @@ export function useLessonFlow({
     activeLesson,
     setActiveLesson,
     setPathNode,
-    setPreviewNode,
+    setActiveNode,
     setRefreshKey,
     setNewlyUnlockedIds,
 }: UseLessonFlowParams) {
 
     const openPath = (node: NodeType) => {
-        setPreviewNode(null);
+        setActiveNode(null);
         setPathNode(node);
     };
 

@@ -32,7 +32,8 @@ export function useDemoHomeState() {
 
     // ── Graph state ───────────────────────────────────────────────────────────
     const [selectedNode, setSelectedNode] = useState<NodeType | null>(null);
-    const [previewNode, setPreviewNode] = useState<NodeType | null>(null);
+    // const [previewNode, setPreviewNode] = useState<NodeType | null>(null);
+    const [activeNode, setActiveNode] = useState<NodeType | null>(null);
     const [pathNode, setPathNode] = useState<NodeType | null>(null);
     const [activeLesson, setActiveLesson] = useState<ActiveLesson | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
@@ -74,7 +75,8 @@ export function useDemoHomeState() {
 
         // Graph
         selectedNode, setSelectedNode,
-        previewNode, setPreviewNode,
+        // previewNode, setPreviewNode,
+        activeNode, setActiveNode,
         pathNode, setPathNode,
         activeLesson, setActiveLesson,
         refreshKey, setRefreshKey,

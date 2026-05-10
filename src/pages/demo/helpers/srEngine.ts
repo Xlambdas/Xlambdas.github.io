@@ -9,7 +9,7 @@ const today = () => new Date().toISOString().split("T")[0];
 export const getAllCards = (): SRCard[] =>
     JSON.parse(localStorage.getItem(KEY) ?? "[]");
 
-const saveCards = (cards: SRCard[]): void =>
+export const saveCards = (cards: SRCard[]): void =>
     localStorage.setItem(KEY, JSON.stringify(cards));
 
 // ─── SM-2 algorithm ───────────────────────────────────────────────────────────
