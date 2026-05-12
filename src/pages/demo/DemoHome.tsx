@@ -3,7 +3,7 @@ import { type NodeType } from './data/graphData';
 // --- Hooks ---
 import {
     useDemoHomeState,
-    SIZE_MAP,
+    // SIZE_MAP,
     persist,
     useLessonFlow,
     useSearchSuggestions

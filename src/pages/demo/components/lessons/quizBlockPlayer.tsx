@@ -34,8 +34,8 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
         shouldShowSolution ? "solution" : "question"
     );
     const [userAnswer, setUserAnswer] = useState<any>(reviewData ?? null);
-    const [isCorrect, setIsCorrect] = useState(reviewCorrect ?? false);
-    const [usedIDK, setUsedIDK] = useState(false);
+    const [, setIsCorrect] = useState(reviewCorrect ?? false);
+    const [, setUsedIDK] = useState(false);
 
     // Sync phase with props whenever they change
     React.useEffect(() => {
@@ -207,151 +207,151 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
 
 // --- Solution Display ---
 
-interface SolutionDisplayProps {
-    question: QuizQuestion;
-    userAnswer: any;
-    isCorrect: boolean;
-    usedIDK: boolean;
-    color: string;
-    onContinue: (rating: SRRating) => void;
-    onExplain: () => void;
-    onPrevious?: () => void;
-}
+// interface SolutionDisplayProps {
+//     question: QuizQuestion;
+//     userAnswer: any;
+//     isCorrect: boolean;
+//     usedIDK: boolean;
+//     color: string;
+//     onContinue: (rating: SRRating) => void;
+//     onExplain: () => void;
+//     onPrevious?: () => void;
+// }
 
-const SolutionDisplay: React.FC<SolutionDisplayProps> = ({
-    question,
-    isCorrect,
-    usedIDK,
-    color,
-    onContinue,
-    onExplain,
-    onPrevious,
-}) => {
-    const [rating, ] = useState<SRRating | null>(null);
+// const SolutionDisplay: React.FC<SolutionDisplayProps> = ({
+//     question,
+//     isCorrect,
+//     usedIDK,
+//     color,
+//     onContinue,
+//     onExplain,
+//     onPrevious,
+// }) => {
+//     const [rating, ] = useState<SRRating | null>(null);
 
-    // const handleRate = (r: SRRating) => {
-    //     setRating(r);
-    //     onContinue(r);
-    // };
+//     // const handleRate = (r: SRRating) => {
+//     //     setRating(r);
+//     //     onContinue(r);
+//     // };
 
-    return (
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {/* Result indicator */}
-            <div style={{
-                background: isCorrect
-                    ? "rgba(34,197,94,0.1)"
-                    : "rgba(239,68,68,0.1)",
-                border: `1px solid ${isCorrect
-                    ? "rgba(34,197,94,0.3)"
-                    : "rgba(239,68,68,0.3)"}`,
-                borderRadius: 8,
-                padding: "12px 16px",
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-            }}>
-                <span style={{ fontSize: 18 }}>
-                    {isCorrect ? "✓" : "✗"}
-                </span>
-                <span style={{
-                    color: isCorrect ? "#22c55e" : "#ef4444",
-                    fontSize: 13,
-                    fontWeight: 500,
-                }}>
-                    {isCorrect
-                        ? "Bonne réponse !"
-                        : usedIDK
-                            ? "Voici la bonne réponse"
-                            : "Pas tout à fait"}
-                </span>
-            </div>
+//     return (
+//         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+//             {/* Result indicator */}
+//             <div style={{
+//                 background: isCorrect
+//                     ? "rgba(34,197,94,0.1)"
+//                     : "rgba(239,68,68,0.1)",
+//                 border: `1px solid ${isCorrect
+//                     ? "rgba(34,197,94,0.3)"
+//                     : "rgba(239,68,68,0.3)"}`,
+//                 borderRadius: 8,
+//                 padding: "12px 16px",
+//                 display: "flex",
+//                 alignItems: "center",
+//                 gap: 10,
+//             }}>
+//                 <span style={{ fontSize: 18 }}>
+//                     {isCorrect ? "✓" : "✗"}
+//                 </span>
+//                 <span style={{
+//                     color: isCorrect ? "#22c55e" : "#ef4444",
+//                     fontSize: 13,
+//                     fontWeight: 500,
+//                 }}>
+//                     {isCorrect
+//                         ? "Bonne réponse !"
+//                         : usedIDK
+//                             ? "Voici la bonne réponse"
+//                             : "Pas tout à fait"}
+//                 </span>
+//             </div>
 
-            {/* Correct answer display */}
-            <div style={{
-                background: "#161b22",
-                border: "1px solid #30363d",
-                borderRadius: 8,
-                padding: "14px 16px",
-            }}>
-                <div style={{
-                    color: "#484f58",
-                    fontSize: 10,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    marginBottom: 8,
-                }}>
-                    Réponse correcte
-                </div>
-                <div style={{ color: "#c9d1d9", fontSize: 14 }}>
-                    {getCorrectAnswerText(question)}
-                </div>
-            </div>
+//             {/* Correct answer display */}
+//             <div style={{
+//                 background: "#161b22",
+//                 border: "1px solid #30363d",
+//                 borderRadius: 8,
+//                 padding: "14px 16px",
+//             }}>
+//                 <div style={{
+//                     color: "#484f58",
+//                     fontSize: 10,
+//                     textTransform: "uppercase",
+//                     letterSpacing: "0.08em",
+//                     marginBottom: 8,
+//                 }}>
+//                     Réponse correcte
+//                 </div>
+//                 <div style={{ color: "#c9d1d9", fontSize: 14 }}>
+//                     {getCorrectAnswerText(question)}
+//                 </div>
+//             </div>
 
-            {/* Buttons */}
-            {!rating ? (
-                <div style={{ display: "flex", gap: 10 }}>
-                    {onPrevious && (
-                        <button
-                            onClick={onPrevious}
-                            style={{
-                                flex: 1,
-                                padding: "12px 0",
-                                background: "#21262d",
-                                border: "1px solid #30363d",
-                                color: "#8b949e",
-                                borderRadius: 8,
-                                fontSize: 13,
-                                fontWeight: 500,
-                                cursor: "pointer",
-                                transition: "all 0.15s ease",
-                            }}
-                        >
-                            ← Précédent
-                        </button>
-                    )}
-                    <button
-                        onClick={onExplain}
-                        style={{
-                            flex: 1,
-                            padding: "12px 0",
-                            background: "#21262d",
-                            border: "1px solid #30363d",
-                            color: "#8b949e",
-                            borderRadius: 8,
-                            fontSize: 13,
-                            fontWeight: 500,
-                            cursor: "pointer",
-                            transition: "all 0.15s ease",
-                        }}
-                    >
-                        Explication
-                    </button>
-                    <button
-                        onClick={() => {
-                            const r = isCorrect ? "perfect" : "forgot";
-                            // handleRate(r);
-                            onContinue(r);
-                        }}
-                        style={{
-                            flex: 1,
-                            padding: "12px 0",
-                            background: `${color}22`,
-                            border: `1px solid ${color}66`,
-                            color,
-                            borderRadius: 8,
-                            fontSize: 13,
-                            fontWeight: 500,
-                            cursor: "pointer",
-                            transition: "all 0.15s ease",
-                        }}
-                    >
-                        Continuer →
-                    </button>
-                </div>
-            ) : null}
-        </div>
-    );
-};
+//             {/* Buttons */}
+//             {!rating ? (
+//                 <div style={{ display: "flex", gap: 10 }}>
+//                     {onPrevious && (
+//                         <button
+//                             onClick={onPrevious}
+//                             style={{
+//                                 flex: 1,
+//                                 padding: "12px 0",
+//                                 background: "#21262d",
+//                                 border: "1px solid #30363d",
+//                                 color: "#8b949e",
+//                                 borderRadius: 8,
+//                                 fontSize: 13,
+//                                 fontWeight: 500,
+//                                 cursor: "pointer",
+//                                 transition: "all 0.15s ease",
+//                             }}
+//                         >
+//                             ← Précédent
+//                         </button>
+//                     )}
+//                     <button
+//                         onClick={onExplain}
+//                         style={{
+//                             flex: 1,
+//                             padding: "12px 0",
+//                             background: "#21262d",
+//                             border: "1px solid #30363d",
+//                             color: "#8b949e",
+//                             borderRadius: 8,
+//                             fontSize: 13,
+//                             fontWeight: 500,
+//                             cursor: "pointer",
+//                             transition: "all 0.15s ease",
+//                         }}
+//                     >
+//                         Explication
+//                     </button>
+//                     <button
+//                         onClick={() => {
+//                             const r = isCorrect ? "perfect" : "forgot";
+//                             // handleRate(r);
+//                             onContinue(r);
+//                         }}
+//                         style={{
+//                             flex: 1,
+//                             padding: "12px 0",
+//                             background: `${color}22`,
+//                             border: `1px solid ${color}66`,
+//                             color,
+//                             borderRadius: 8,
+//                             fontSize: 13,
+//                             fontWeight: 500,
+//                             cursor: "pointer",
+//                             transition: "all 0.15s ease",
+//                         }}
+//                     >
+//                         Continuer →
+//                     </button>
+//                 </div>
+//             ) : null}
+//         </div>
+//     );
+// };
 
 // --- Helpers ---
 
@@ -388,21 +388,21 @@ const checkAnswer = (question: QuizQuestion, answer: any): boolean => {
     }
 };
 
-const getCorrectAnswerText = (question: QuizQuestion): string => {
-    switch (question.type) {
-        case "multiple_choice":
-            return question.choices[question.correctIndex];
-        case "true_false":
-            return question.correct ? "Vrai" : "Faux";
-        case "ordering":
-            return question.correctOrder.map(i => question.items[i]).join(" → ");
-        case "match_pairs":
-            return question.pairs.map(p => `${p.left} → ${p.right}`).join(", ");
-        case "word_bank":
-            return question.correctWords.join(", ");
-        case "sentence":
-            return question.modelAnswer;
-        default:
-            return "";
-    }
-};
+// const getCorrectAnswerText = (question: QuizQuestion): string => {
+//     switch (question.type) {
+//         case "multiple_choice":
+//             return question.choices[question.correctIndex];
+//         case "true_false":
+//             return question.correct ? "Vrai" : "Faux";
+//         case "ordering":
+//             return question.correctOrder.map(i => question.items[i]).join(" → ");
+//         case "match_pairs":
+//             return question.pairs.map(p => `${p.left} → ${p.right}`).join(", ");
+//         case "word_bank":
+//             return question.correctWords.join(", ");
+//         case "sentence":
+//             return question.modelAnswer;
+//         default:
+//             return "";
+//     }
+// };
