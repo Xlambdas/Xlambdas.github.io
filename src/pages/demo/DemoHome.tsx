@@ -11,13 +11,13 @@ import {
 
 // --- Layout components ---
 import { TopBar } from "./components/ui/TopBar";
-import { BottomActions } from "./components/ui/BottomActions";
+// import { BottomActions } from "./components/ui/BottomActions";
 
 // --- Existing components ---
 import DemoGraph from "./graphView/demoGraph";
-import { Sidebar } from "./components/sidebar";
-import { Legend } from "./components/lessons/legend";
-import { NodePanel } from "./components/node/nodePanel";
+import { Sidebar } from "./components/ui/sidebar";
+import { Legend } from "./graphView/legend";
+// import { NodePanel } from "./components/node/nodePanel";
 import { SettingsPanel } from "./components/settings";
 import { FunFactModal } from "./sections/funFactModal";
 import { TeacherLoginModal } from "./sections/teacherLoginModal";
@@ -30,19 +30,19 @@ import { initialNodes } from "./data/graphData";
 import { NodeCard } from "./components/node/nodeCard";
 
 // --- Feature flags ---
-const SHOW_FUN_FACT = true;
-const SHOW_STRENGTHEN = true;
+// const SHOW_FUN_FACT = true;
+// const SHOW_STRENGTHEN = true;
 
 // --- --- ---
 export function DemoHome() {
     const state = useDemoHomeState();
-    const fs = SIZE_MAP[state.textSize];
+    // const fs = SIZE_MAP[state.textSize];
 
     const { openLesson, handleLessonComplete, handleLessonClose } = useLessonFlow({
         activeLesson: state.activeLesson,
         setActiveLesson: state.setActiveLesson,
         setPathNode: state.setPathNode,
-        setActiveNode: state.setActiveNode, // setPreviewNode was renamed to setActiveNode
+        setActiveNode: state.setActiveNode,
         setRefreshKey: state.setRefreshKey,
         setNewlyUnlockedIds: state.setNewlyUnlockedIds,
     });
@@ -120,11 +120,11 @@ export function DemoHome() {
                     />
 
                     {/* Overlays inside canvas */}
-                    <NodePanel
+                    {/* <NodePanel
                         node={state.selectedNode}
                         onClose={() => state.setSelectedNode(null)}
                         textSize={state.textSize}
-                    />
+                    /> */}
                     <Legend textSize={state.textSize} />
 
                     {state.settingsOpen && (
@@ -148,7 +148,7 @@ export function DemoHome() {
                         />
                     )}
 
-                    <BottomActions
+                    {/* <BottomActions
                         fontSize={fs}
                         showFunFact={SHOW_FUN_FACT}
                         showStrengthen={SHOW_STRENGTHEN}
@@ -157,7 +157,7 @@ export function DemoHome() {
                             state.setStrengthenNodeId(undefined);
                             state.setStrengthenOpen(true);
                         }}
-                    />
+                    /> */}
                 </div>
             </div>
 

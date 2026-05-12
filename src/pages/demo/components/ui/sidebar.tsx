@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { type NodeType, initialNodes, getVisibleIds } from '../data/graphData';
-import { getNotesForNode } from '../data/teacherNotes';
-import { getDueCount } from '../utils/srEngine';
-import { Stat } from './ui/stat';
-import { TeacherNoteEditor } from '../sections/teacherNoteEditor';
+import { type NodeType, initialNodes, getVisibleIds } from '../../data/graphData';
+import { getNotesForNode } from '../../data/teacherNotes';
+import { getDueCount } from '../../utils/srEngine';
+import { Stat } from './stat';
+import { TeacherNoteEditor } from '../../sections/teacherNoteEditor';
 
 // --- Types ---
 

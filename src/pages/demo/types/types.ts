@@ -1,3 +1,7 @@
+// --- general types ---
+
+export type TextSize = "S" | "M" | "L";
+
 // --- Quiz question types ---
 
 export type MultipleChoiceQuestion = {

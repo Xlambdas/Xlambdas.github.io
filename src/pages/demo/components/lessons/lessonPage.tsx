@@ -72,7 +72,7 @@ export const LessonPage: React.FC = () => {
 
     const [blocks, setBlocks] = useState<BlockWithMetadata[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [quizAnswers, setQuizAnswers] = useState<Map<number, { correct: boolean; rating?: SRRating }>>(new Map());
+    const [quizAnswers, setQuizAnswers] = useState<Map<number, { correct: boolean; rating?: SRRating; userAnswer?: any }>>(new Map());
     // const [wrongQuizIndices, setWrongQuizIndices] = useState<Set<number>>(new Set());
     const [showExplanation, setShowExplanation] = useState(false);
     const [currentExplanation, setCurrentExplanation] = useState<string>("");
@@ -113,14 +113,16 @@ export const LessonPage: React.FC = () => {
     const currentBlockMeta = blocks[currentIndex];
     const currentBlock = currentBlockMeta?.block;
     const isLastBlock = currentIndex === blocks.length - 1;
-    const color = "#a5b4fc"; // Use consistent color
+    const color = "#a5b4fc";
+
+    const isReviewMode = currentBlock?.type === "quiz" && quizAnswers.has(currentIndex);
 
     // Handle quiz completion
-    const handleQuizComplete = (correct: boolean, rating: SRRating) => {
+    const handleQuizComplete = (correct: boolean, rating: SRRating, userAnswer: any) => {
         const questionId = `${nodeId}::${lessonId}::${currentBlockMeta.originalIndex}`;
 
         // Update quiz answers
-        setQuizAnswers(prev => new Map(prev).set(currentIndex, { correct, rating }));
+        setQuizAnswers(prev => new Map(prev).set(currentIndex, { correct, rating, userAnswer }));
 
         // Store in spaced repetition
         if (nodeId) upsertCard(questionId, nodeId, rating);
@@ -157,6 +159,12 @@ export const LessonPage: React.FC = () => {
             }
         } else {
             setCurrentIndex(i => i + 1);
+        }
+    };
+
+    const handlePrevious = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(i => i - 1);
         }
     };
 
@@ -272,7 +280,11 @@ export const LessonPage: React.FC = () => {
                                 onExplain={handleExplain}
                                 isAnswered={quizAnswers.has(currentIndex)}
                                 isRetry={currentBlockMeta.isRetry}
+                                reviewMode={isReviewMode}
+                                reviewAnswer={quizAnswers.has(currentIndex) ? quizAnswers.get(currentIndex)?.userAnswer : null}
+                                reviewCorrect={quizAnswers.get(currentIndex)?.correct}
                                 onContinue={handleNext}
+                                onPrevious={currentIndex > 0 ? handlePrevious : undefined}
                                 canContinue={canContinue()}
                                 buttonLabel={
                                     currentBlock?.type === "quiz" && !quizAnswers.has(currentIndex)

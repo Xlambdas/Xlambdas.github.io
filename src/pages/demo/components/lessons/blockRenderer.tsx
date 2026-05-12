@@ -150,11 +150,15 @@ interface BlockRendererProps {
     block: ContentBlock;
     color: string;
     nodeId: string;
-    onQuizComplete: (correct: boolean, rating: SRRating, explanation: string) => void;
+    onQuizComplete: (correct: boolean, rating: SRRating, userAnswer: any) => void;
     onExplain: (explanation: string) => void;
     isAnswered: boolean;
     isRetry?: boolean;
+    reviewMode?: boolean;
+    reviewAnswer?: any;
+    reviewCorrect?: boolean;
     onContinue?: () => void;
+    onPrevious?: () => void;
     canContinue?: boolean;
     buttonLabel?: string;
 }
@@ -166,7 +170,11 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
     onExplain,
     isAnswered,
     isRetry,
+    reviewMode,
+    reviewAnswer,
+    reviewCorrect,
     onContinue,
+    onPrevious,
     canContinue,
     buttonLabel,
 }) => {
@@ -219,31 +227,55 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
                     onComplete={onQuizComplete}
                     onExplain={onExplain}
                     isAnswered={isAnswered}
+                    reviewMode={reviewMode}
+                    reviewData={reviewAnswer}
+                    reviewCorrect={reviewCorrect}
                     onContinue={onContinue}
+                    onPrevious={onPrevious}
                 />
             )}
 
             {/* Continue button inline */}
             {onContinue && block.type !== "quiz" && (
-                <button
-                    onClick={onContinue}
-                    disabled={!canContinue}
-                    style={{
-                        width: "100%",
-                        padding: "14px 0",
-                        marginTop: 24,
-                        background: canContinue ? `${color}22` : "#21262d",
-                        border: `1px solid ${canContinue ? `${color}66` : "#30363d"}`,
-                        color: canContinue ? color : "#484f58",
-                        borderRadius: 10,
-                        fontSize: 14,
-                        fontWeight: 500,
-                        cursor: canContinue ? "pointer" : "not-allowed",
-                        transition: "all 0.2s ease",
-                    }}
-                >
-                    {buttonLabel}
-                </button>
+                <div style={{ display: "flex", gap: 10, marginTop: 24 }}>
+                    {onPrevious && (
+                        <button
+                            onClick={onPrevious}
+                            style={{
+                                flex: 1,
+                                padding: "14px 0",
+                                background: "#21262d",
+                                border: "1px solid #30363d",
+                                color: "#8b949e",
+                                borderRadius: 10,
+                                fontSize: 14,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                        >
+                            ← Précédent
+                        </button>
+                    )}
+                    <button
+                        onClick={onContinue}
+                        style={{
+                            width: "100%",
+                            padding: "14px 0",
+                            marginTop: 24,
+                            background: canContinue ? `${color}22` : "#21262d",
+                            border: `1px solid ${canContinue ? `${color}66` : "#30363d"}`,
+                            color: canContinue ? color : "#484f58",
+                            borderRadius: 10,
+                            fontSize: 14,
+                            fontWeight: 500,
+                            cursor: canContinue ? "pointer" : "not-allowed",
+                            transition: "all 0.2s ease",
+                        }}
+                    >
+                        {buttonLabel}
+                    </button>
+                </div>
             )}
         </div>
     );

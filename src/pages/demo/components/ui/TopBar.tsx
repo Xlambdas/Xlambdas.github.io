@@ -50,22 +50,31 @@ export function TopBar({
             {/* --- Mobile search --- */}
             <div className="flex sm:hidden ml-auto items-center gap-2 relative">
                 {mobileSearch ? (
-                    <div className="relative">
-                        <input
-                            ref={searchInputRef}
-                            autoFocus
-                            value={searchQuery}
-                            onChange={e => onSearchChange(e.target.value)}
-                            onBlur={() => setTimeout(() => {
-                                if (!searchQuery) setMobileSearch(false);
-                            }, 150)}
-                            placeholder="Rechercher…"
-                            className="bg-[#21262d] border border-[#30363d] text-[#c9d1d9] rounded-lg px-3 py-1.5 text-xs outline-none w-48"
-                        />
+                    <div className="fixed inset-x-0 top-0 z-50 bg-[rgba(13,17,23,0.98)] p-3 border-b border-[#21262d]">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => {
+                                    setMobileSearch(false);
+                                    onSearchChange("");
+                                }}
+                                className="text-[#8b949e] text-sm"
+                            >
+                                ✕
+                            </button>
+                            <input
+                                ref={searchInputRef}
+                                autoFocus
+                                value={searchQuery}
+                                onChange={e => onSearchChange(e.target.value)}
+                                placeholder="Rechercher…"
+                                className="flex-1 bg-[#21262d] border border-[#30363d] text-[#c9d1d9] rounded-lg px-3 py-2 outline-none"
+                                style={{ fontSize: 16 }}
+                            />
+                        </div>
                         {suggestions.length > 0 && (
                             <div style={{
-                                position: "absolute", top: "calc(100% + 6px)",
-                                left: 0, right: 0,
+                                position: "absolute", top: "calc(100% + 12px)",
+                                left: 12, right: 12,
                                 background: "#161b22", border: "1px solid #30363d",
                                 borderRadius: 8, zIndex: 50, overflow: "hidden",
                                 boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
@@ -81,15 +90,17 @@ export function TopBar({
                                             borderBottom: "1px solid #21262d",
                                         }}
                                     >
-                                        <div style={{
-                                            width: 6, height: 6, borderRadius: "50%",
-                                            background: n.isUnlocked
-                                                ? n.type === "main" ? "#ffffff"
-                                                    : n.type === "folder" ? "#a5b4fc"
-                                                        : "#94a3b8"
-                                                : "#4b5563",
-                                            flexShrink: 0,
-                                        }} />
+                                        <div
+                                            style={{
+                                                width: 6, height: 6, borderRadius: "50%",
+                                                background: n.isUnlocked
+                                                    ? n.type === "main" ? "#ffffff"
+                                                        : n.type === "folder" ? "#a5b4fc"
+                                                            : "#94a3b8"
+                                                    : "#4b5563",
+                                                flexShrink: 0,
+                                            }}
+                                        />
                                         <span style={{ color: n.isUnlocked ? "#c9d1d9" : "#4b5563", fontSize: 12 }}>
                                             {n.title}
                                         </span>

@@ -7,10 +7,14 @@ import { QuizInteraction } from "./quizInteraction";
 interface QuizBlockPlayerProps {
     question: QuizQuestion;
     color: string;
-    onComplete: (correct: boolean, rating: SRRating, explanation: string) => void;
+    onComplete: (correct: boolean, rating: SRRating, userAnswer: any) => void;
     onExplain: (explanation: string) => void;
     isAnswered: boolean;
+    reviewMode?: boolean;
+    reviewData?: any;
+    reviewCorrect?: boolean;
     onContinue?: () => void;
+    onPrevious?: () => void;
 }
 
 export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
@@ -18,28 +22,58 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
     color,
     onComplete,
     onExplain,
-    // isAnswered: alreadyAnswered,
+    isAnswered,
+    reviewMode = false,
+    reviewData,
+    reviewCorrect,
     onContinue,
+    onPrevious,
 }) => {
-    const [phase, setPhase] = useState<"question" | "solution">("question");
-    const [userAnswer, setUserAnswer] = useState<any>(null);
-    const [isCorrect, setIsCorrect] = useState(false);
+    const shouldShowSolution = reviewMode || isAnswered;
+    const [phase, setPhase] = useState<"question" | "solution">(
+        shouldShowSolution ? "solution" : "question"
+    );
+    const [userAnswer, setUserAnswer] = useState<any>(reviewData ?? null);
+    const [isCorrect, setIsCorrect] = useState(reviewCorrect ?? false);
     const [usedIDK, setUsedIDK] = useState(false);
+
+    // Sync phase with props whenever they change
+    React.useEffect(() => {
+        const newPhase = (reviewMode || isAnswered) ? "solution" : "question";
+        setPhase(newPhase);
+
+        // Update user answer and correctness when in review/answered mode
+        if (reviewMode || isAnswered) {
+            if (reviewData !== undefined && reviewData !== null) {
+                setUserAnswer(reviewData);
+            }
+            if (reviewCorrect !== undefined) {
+                setIsCorrect(reviewCorrect);
+            }
+        }
+    }, [reviewMode, isAnswered, reviewData, reviewCorrect]);
 
     // Handle user submitting answer or clicking "I don't know"
     const handleSubmit = (answer: any, idk: boolean) => {
-        setUserAnswer(answer);
-        setUsedIDK(idk);
-
         // Check if answer is correct
         const correct = !idk && checkAnswer(question, answer);
+
+        // Update state
+        setUserAnswer(answer);
+        setUsedIDK(idk);
         setIsCorrect(correct);
         setPhase("solution");
+
+        // Complete quiz immediately (triggers re-insertion if wrong)
+        // Use answer parameter directly, not state
+        if (!reviewMode && !isAnswered) {
+            const rating: SRRating = correct ? "perfect" : "forgot";
+            onComplete(correct, rating, answer);
+        }
     };
 
     // Handle continue button (after showing solution)
-    const handleContinue = (rating: SRRating) => {
-        onComplete(isCorrect, rating, question.explanation);
+    const handleContinue = () => {
         onContinue?.();
     };
 
@@ -99,15 +133,73 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
 
             {/* Solution Phase */}
             {phase === "solution" && (
-                <SolutionDisplay
-                    question={question}
-                    userAnswer={userAnswer}
-                    isCorrect={isCorrect}
-                    usedIDK={usedIDK}
-                    color={color}
-                    onContinue={handleContinue}
-                    onExplain={handleExplainClick}
-                />
+                <>
+                    <QuizInteraction
+                        key="solution"
+                        question={question}
+                        onSubmit={handleSubmit}
+                        color={color}
+                        submitted={true}
+                        userAnswer={userAnswer}
+                    />
+
+                    {/* Buttons */}
+                    <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+                        {onPrevious && (
+                            <button
+                                onClick={onPrevious}
+                                style={{
+                                    flex: 1,
+                                    padding: "12px 0",
+                                    background: "#21262d",
+                                    border: "1px solid #30363d",
+                                    color: "#8b949e",
+                                    borderRadius: 8,
+                                    fontSize: 13,
+                                    fontWeight: 500,
+                                    cursor: "pointer",
+                                    transition: "all 0.15s ease",
+                                }}
+                            >
+                                ← Précédent
+                            </button>
+                        )}
+                        <button
+                            onClick={handleExplainClick}
+                            style={{
+                                flex: 1,
+                                padding: "12px 0",
+                                background: "#21262d",
+                                border: "1px solid #30363d",
+                                color: "#8b949e",
+                                borderRadius: 8,
+                                fontSize: 13,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                            }}
+                        >
+                            Explication
+                        </button>
+                        <button
+                            onClick={handleContinue}
+                            style={{
+                                flex: 1,
+                                padding: "12px 0",
+                                background: `${color}22`,
+                                border: `1px solid ${color}66`,
+                                color,
+                                borderRadius: 8,
+                                fontSize: 13,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                            }}
+                        >
+                            Continuer →
+                        </button>
+                    </div>
+                </>
             )}
         </div>
     );
@@ -123,6 +215,7 @@ interface SolutionDisplayProps {
     color: string;
     onContinue: (rating: SRRating) => void;
     onExplain: () => void;
+    onPrevious?: () => void;
 }
 
 const SolutionDisplay: React.FC<SolutionDisplayProps> = ({
@@ -132,6 +225,7 @@ const SolutionDisplay: React.FC<SolutionDisplayProps> = ({
     color,
     onContinue,
     onExplain,
+    onPrevious,
 }) => {
     const [rating, ] = useState<SRRating | null>(null);
 
@@ -196,6 +290,25 @@ const SolutionDisplay: React.FC<SolutionDisplayProps> = ({
             {/* Buttons */}
             {!rating ? (
                 <div style={{ display: "flex", gap: 10 }}>
+                    {onPrevious && (
+                        <button
+                            onClick={onPrevious}
+                            style={{
+                                flex: 1,
+                                padding: "12px 0",
+                                background: "#21262d",
+                                border: "1px solid #30363d",
+                                color: "#8b949e",
+                                borderRadius: 8,
+                                fontSize: 13,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                            }}
+                        >
+                            ← Précédent
+                        </button>
+                    )}
                     <button
                         onClick={onExplain}
                         style={{
