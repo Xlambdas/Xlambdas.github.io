@@ -1,5 +1,4 @@
-import type { ColorsPanelProps } from "../constants/types";
-import { TAB_CONFIG, type TabItem } from "../constants";
+import { TAB_CONFIG, type TabItem, type ColorsPanelProps } from '../constants';
 
 export const createTabs = (t: any): TabItem[] => [
     { id: 'colors', label: t.colors, icon: TAB_CONFIG.colors, panel: 'colors-panel' },

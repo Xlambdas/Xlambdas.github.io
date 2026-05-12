@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import type { QuizQuestion, SRRating } from "../../constants/types";
+import type { QuizQuestion, SRRating } from "../../types/types";
 import { QuizInteraction } from "./quizInteraction";
 
-// ─── Quiz Block Player ────────────────────────────────────────────────────────
+// --- Quiz Block Player ---
 
 interface QuizBlockPlayerProps {
     question: QuizQuestion;
@@ -113,7 +113,7 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
     );
 };
 
-// ─── Solution Display ─────────────────────────────────────────────────────────
+// --- Solution Display ---
 
 interface SolutionDisplayProps {
     question: QuizQuestion;
@@ -240,7 +240,7 @@ const SolutionDisplay: React.FC<SolutionDisplayProps> = ({
     );
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ---
 
 const getQuizTypeLabel = (type: QuizQuestion["type"]): string => {
     const labels: Record<QuizQuestion["type"], string> = {

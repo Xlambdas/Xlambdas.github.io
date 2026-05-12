@@ -6,10 +6,10 @@ import {
     getEarnedBadges,
     getDynamicNodes,
 } from "../../data/graphData";
-import { getDueCount } from "../../helpers/srEngine";
+import { getDueCount } from "../../utils/srEngine";
 import { NodePathSettings } from "./NodePathSettings";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// --- Constants ---
 
 const HEX_CLIP = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
 
@@ -37,7 +37,7 @@ const KIND_LABEL: Record<string, string> = {
     subconcept: "Sous-concept",
 };
 
-// ─── Stat helpers ─────────────────────────────────────────────────────────────
+// --- Stat helpers ---
 
 const getStats = (node: NodeType): { label: string; value: string | number }[] => {
     const kind = (node as any).kind ?? "concept";
@@ -86,7 +86,7 @@ const getStats = (node: NodeType): { label: string; value: string | number }[] =
     }
 };
 
-// ─── Props ────────────────────────────────────────────────────────────────────
+// --- Props ---
 
 interface NodeCardProps {
     node: NodeType | null;
@@ -96,7 +96,7 @@ interface NodeCardProps {
     onOpenStrengthen: (nodeId: string) => void;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// --- Component ---
 
 export const NodeCard: React.FC<NodeCardProps> = ({
     node, onClose, onOpenProfile, onOpenStrengthen,
@@ -123,7 +123,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
 
     if (!node && !visible) return null;
 
-    // ── Derived ───────────────────────────────────────────────────────────────
+    // --- Derived ---
     const kind = (node as any)?.kind ?? "concept";
     const color = KIND_COLOR[kind] ?? "#94a3b8";
     const icon = KIND_ICON[kind] ?? "📄";
@@ -138,7 +138,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
     const isStarted = pct > 0 && pct < 100;
     const isFinished = pct === 100;
 
-    // ── Handlers ──────────────────────────────────────────────────────────────
+    // --- Handlers ---
     const handleBackdrop = () => {
         setVisible(false);
         setTimeout(onClose, 320);
@@ -163,7 +163,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
                 : isFinished ? "↩ Revoir"
                     : "Commencer →";
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // --- Render ---
     return (
         <>
             <style>{`
@@ -202,7 +202,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
                     animation: visible ? "cardSlideUp 0.32s cubic-bezier(0.32,0.72,0,1) both" : "none",
                 }}
             >
-                {/* ── Hexagon icon (protruding from top) ── */}
+                {/* --- Hexagon icon (protruding from top) --- */}
                 <div style={{
                     position: "absolute", top: -28, left: "50%",
                     transform: "translateX(-50%)",
@@ -249,7 +249,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
                     }}
                 >×</button>
 
-                {/* ── Card body ── */}
+                {/* --- Card body --- */}
                 <div style={{
                     padding: "44px 20px 20px",
                     display: "flex", flexDirection: "column", gap: 16,

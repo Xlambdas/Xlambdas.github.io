@@ -124,6 +124,60 @@ src/
 │   ├── projects.ts
 │   └── settings.ts
 ├── pages/
+│   ├── demo/
+│   │   ├── DemoHome.tsx
+│   │   ├── index.ts
+│   │   ├── components/
+│   │   │   ├── BottomActions.tsx
+│   │   │   ├── honeyCombPath.tsx
+│   │   │   ├── legend.tsx
+│   │   │   ├── lessonPlayer.tsx
+│   │   │   ├── nodePanel.tsx
+│   │   │   ├── nodePreviewPanel.tsx
+│   │   │   ├── quizPlayer.tsx
+│   │   │   ├── settings.tsx
+│   │   │   ├── sidebar.tsx
+│   │   │   ├── stat.tsx
+│   │   │   ├── TopBar.tsx
+│   │   │   ├── lessons/
+│   │   │   │   ├── blockRenderer.tsx
+│   │   │   │   ├── explanationModal.tsx
+│   │   │   │   ├── lessonPage.tsx
+│   │   │   │   ├── lessonProgressBar.tsx
+│   │   │   │   ├── quizBlockPlayer.tsx
+│   │   │   │   └── quizInteraction.tsx
+│   │   │   └── node/
+│   │   │       ├── nodeCard.tsx
+│   │   │       ├── NodePage.tsx
+│   │   │       └── NodePathSettings.tsx
+│   │   ├── constants/
+│   │   │   ├── types.ts
+│   │   │   └── window.d.ts
+│   │   ├── data/
+│   │   │   ├── funFacts.ts
+│   │   │   ├── graphData.ts
+│   │   │   ├── practiceQuestions.ts
+│   │   │   └── teacherNotes.ts
+│   │   ├── graphView/
+│   │   │   └── demoGraph.tsx
+│   │   ├── helpers/
+│   │   │   └── srEngine.ts
+│   │   ├── hooks/
+│   │   │   ├── index.ts
+│   │   │   ├── useDemoHomeState.ts
+│   │   │   ├── useLessonFlow.ts
+│   │   │   └── useSearchSuggestion.ts
+│   │   └── section/
+│   │       ├── funFactModal.tsx
+│   │       ├── learningSession.tsx
+│   │       ├── lessonPathView.tsx
+│   │       ├── practiceModal.tsx
+│   │       ├── profileView.tsx
+│   │       ├── strengthenPage.tsx
+│   │       ├── strengthenSession.tsx
+│   │       ├── teacherLoginModal.tsx
+│   │       ├── teacherNoteCard.tsx
+│   │       └── teacherNoteEditor.tsx
 │   ├── portfolio/
 │   │   ├── index.ts
 │   │   ├── PortfolioPage.tsx

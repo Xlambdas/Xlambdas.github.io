@@ -1,2 +1,2 @@
-export { SettingsPage } from "./SettingPage";
-export * from "./constants";
+export { SettingsPage } from './SettingPage';
+export * from './constants';

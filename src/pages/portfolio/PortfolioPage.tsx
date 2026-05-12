@@ -10,7 +10,7 @@ import {
     Interests,
     Values,
     Contact,
-} from './section';
+} from './sections';
 import { SideNavigation } from './components/SideNavigator';
 import { useNavigate } from 'react-router-dom';
 

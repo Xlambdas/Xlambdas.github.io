@@ -1,1 +1,6 @@
-export { lightenColor, computeSplineColors, getColors, KEYFRAMES } from './utils';
+export {
+    lightenColor,
+    computeSplineColors,
+    getColors,
+    KEYFRAMES
+} from './utils';

@@ -1,5 +1,5 @@
-import { type NodeType, type Lesson, getNewlyUnlocked } from "../data/graphData";
-import { type ActiveLesson } from "./useDemoHomeState";
+import { type NodeType, type Lesson, getNewlyUnlocked } from '../data/graphData';
+import { type ActiveLesson } from './useDemoHomeState';
 
 interface UseLessonFlowParams {
     activeLesson: ActiveLesson | null;

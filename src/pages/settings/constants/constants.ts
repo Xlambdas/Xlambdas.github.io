@@ -1,6 +1,20 @@
 // src/pages/accessibility/constants.ts
-import type { ColorPreset, FontSection, Language, MotionPanelProps, ScaleSection, SizesPanelProps, ToggleFeature, TypographyPanelProps } from './types';
-import { AVAILABLE_PRIMARY_FONTS, AVAILABLE_SECONDARY_FONTS, BUTTON_SCALE_OPTIONS, FONT_SCALE_OPTIONS } from '../../../theme/theme.options';
+import type {
+    ColorPreset,
+    FontSection,
+    Language,
+    MotionPanelProps,
+    ScaleSection,
+    SizesPanelProps,
+    ToggleFeature,
+    TypographyPanelProps
+} from './types';
+import {
+    AVAILABLE_PRIMARY_FONTS,
+    AVAILABLE_SECONDARY_FONTS,
+    BUTTON_SCALE_OPTIONS,
+    FONT_SCALE_OPTIONS
+} from '../../../theme/theme.options';
 
 export type TabId = 'colors' | 'typography' | 'sizes' | 'language' | 'motion';
 

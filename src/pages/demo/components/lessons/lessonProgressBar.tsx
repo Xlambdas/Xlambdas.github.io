@@ -1,7 +1,7 @@
 import React from "react";
-import type { ContentBlock } from "../../constants/types";
+import type { ContentBlock } from "../../types/types";
 
-// ─── Block Icon Component ─────────────────────────────────────────────────────
+// --- Block Icon Component ---
 
 const BlockIcon: React.FC<{
     type: ContentBlock["type"];
@@ -58,7 +58,7 @@ const BlockIcon: React.FC<{
     }
 };
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// --- Main Component ---
 
 interface LessonProgressBarProps {
     blocks: ContentBlock[];

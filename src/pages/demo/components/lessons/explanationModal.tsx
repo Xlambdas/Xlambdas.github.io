@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-// ─── Explanation Modal ────────────────────────────────────────────────────────
+// --- Explanation Modal ---
 
 interface ExplanationModalProps {
     explanation: string;

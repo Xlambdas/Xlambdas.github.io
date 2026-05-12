@@ -1,5 +1,5 @@
-// src/pages/accessibility/components/LivePreview.tsx
-import { type LivePreviewProps } from '../constants/types';
+// src/pages/settings/components/LivePreview.tsx
+import { type LivePreviewProps } from '../constants';
 
 export const LivePreview: React.FC<LivePreviewProps> = ({ theme, t }) => {
     return (

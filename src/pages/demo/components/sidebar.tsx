@@ -1,17 +1,17 @@
-import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { type NodeType, initialNodes, getVisibleIds } from "../data/graphData";
-import { getNotesForNode } from "../data/teacherNotes";
-import { getDueCount } from "../helpers/srEngine";
-import { Stat } from "./stat";
-import { TeacherNoteEditor } from "../section/teacherNoteEditor";
+import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { type NodeType, initialNodes, getVisibleIds } from '../data/graphData';
+import { getNotesForNode } from '../data/teacherNotes';
+import { getDueCount } from '../utils/srEngine';
+import { Stat } from './ui/stat';
+import { TeacherNoteEditor } from '../sections/teacherNoteEditor';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types ---
 
 type TextSize = "S" | "M" | "L";
 const SIZE_MAP: Record<TextSize, number> = { S: 11, M: 13, L: 15 };
 
-// ─── Config ───────────────────────────────────────────────────────────────────
+// --- Config ---
 
 const TYPE_COLOR: Record<NodeType["type"], string> = {
     main: "#ffffff",
@@ -21,7 +21,7 @@ const TYPE_COLOR: Record<NodeType["type"], string> = {
 
 const visibleIds = getVisibleIds(initialNodes);
 
-// ─── Props ────────────────────────────────────────────────────────────────────
+// --- Props ---
 
 interface SidebarProps {
     collapsed: boolean;
@@ -32,7 +32,7 @@ interface SidebarProps {
     teacherName: string;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// --- Component ---
 
 export const Sidebar: React.FC<SidebarProps> = ({
     collapsed, onCollapse, onSelectNode, textSize, isTeacher, teacherName,
@@ -57,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
     const unlockedCount = initialNodes.filter(n => n.isUnlocked).length;
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // --- Render ---
     return (
         <div style={{
             width: 252, height: "100%",
@@ -66,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             display: "flex", flexDirection: "column", flexShrink: 0,
         }}>
 
-            {/* ── Header ── */}
+            {/* --- Header --- */}
             <div style={{
                 padding: "13px 14px 10px",
                 borderBottom: "1px solid #21262d",
@@ -100,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 />
             </div>
 
-            {/* ── Node list ── */}
+            {/* --- Node list --- */}
             <div style={{
                 flex: 1, overflowY: "auto",
                 scrollbarWidth: "thin", scrollbarColor: "#21262d transparent",
@@ -182,7 +182,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 ))}
             </div>
 
-            {/* ── Stats ── */}
+            {/* --- Stats --- */}
             <div style={{
                 padding: "10px 14px",
                 borderTop: "1px solid #21262d",
@@ -195,7 +195,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <Stat value={visibleIds.size} label="Visibles" />
             </div>
 
-            {/* ── Due reviews CTA ── */}
+            {/* --- Due reviews CTA --- */}
             {dueCount > 0 && (
                 <button
                     onClick={() => window.__graphStrengthen?.()}
@@ -215,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </button>
             )}
 
-            {/* ── Footer ── */}
+            {/* --- Footer --- */}
             <div style={{
                 padding: "8px 14px",
                 borderTop: "1px solid #21262d",

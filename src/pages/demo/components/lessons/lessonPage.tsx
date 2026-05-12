@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { ContentBlock, SRRating } from "../../constants/types";
+import type { ContentBlock, SRRating } from "../../types/types";
 import { initialNodes, completeLesson } from "../../data/graphData";
-import { upsertCard } from "../../helpers/srEngine";
+import { upsertCard } from "../../utils/srEngine";
 import { LessonProgressBar } from "./lessonProgressBar";
 import { BlockRenderer } from "./blockRenderer";
 import { ExplanationModal } from "./explanationModal";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types ---
 
 interface BlockWithMetadata {
     block: ContentBlock;
@@ -15,7 +15,7 @@ interface BlockWithMetadata {
     isRetry?: boolean; // if this is a re-added wrong quiz
 }
 
-// ─── Dock Components ──────────────────────────────────────────────────────────
+// --- Dock Components ---
 
 const DockBtn: React.FC<{
     icon: React.ReactNode;
@@ -60,7 +60,7 @@ const BackIcon = () => (
     </svg>
 );
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// --- Main Component ---
 
 export const LessonPage: React.FC = () => {
     const { nodeId, lessonId } = useParams<{ nodeId: string; lessonId: string }>();
@@ -166,7 +166,7 @@ export const LessonPage: React.FC = () => {
         return quizAnswers.has(currentIndex);
     };
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // --- Main render ---
     return (
         <div style={{
             height: "100vh",

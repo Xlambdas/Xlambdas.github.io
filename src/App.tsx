@@ -1,10 +1,12 @@
 // src/App.tsx
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import { SettingsPage } from './pages/settings';
-import { ProjectsPage } from './pages/projects';
-import { PortfolioPage } from './pages/portfolio';
-import { DemoHome } from './pages/demo';
-import { Home } from './components';
+import {
+    Home,
+    SettingsPage,
+    ProjectsPage,
+    PortfolioPage,
+    DemoHome
+} from './pages';
 import DemoGraph from './pages/demo/graphView/demoGraph';
 import { NodePage } from './pages/demo/components/node/NodePage';
 import { LessonPage } from './pages/demo/components/lessons/lessonPage';
@@ -23,6 +25,8 @@ function App() {
                 <Route path="/demoGraph" element={<DemoGraph />} />
                 <Route path="/demo/node/:nodeId" element={<NodePage />} />
                 <Route path="/demo/lesson/:nodeId/:lessonId" element={<LessonPage />} />
+                {/* <Route path="/demo/strengthen" element={<StrengthPage />} />
+                <Route path="/demo/strengthen/:nodeId" element={<StrengthPage />} /> */}
             </Routes>
         </Router>
     )

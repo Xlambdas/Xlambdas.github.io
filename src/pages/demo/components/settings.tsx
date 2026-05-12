@@ -1,5 +1,5 @@
-import { SIZE_MAP } from "./nodePanel";
-// import { TEACHER_PASSWORD } from "../data/teacherNotes";
+import { SIZE_MAP } from './node/nodePanel';
+// import { TEACHER_PASSWORD } from '../data/teacherNotes';
 
 interface SettingsPanelProps {
     onClose: () => void;

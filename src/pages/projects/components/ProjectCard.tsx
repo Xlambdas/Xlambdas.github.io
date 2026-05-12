@@ -1,8 +1,8 @@
 // src/pages/projects/components/ProjectCard.tsx
-import React from "react";
-import { useTheme } from "../../../context/themeContext";
-import { type ProjectCardProps } from "./types";
-import { PROJECTS_TRANSLATIONS } from "../../../locales";
+import React from 'react';
+import { useTheme } from '../../../context/themeContext';
+import { type ProjectCardProps } from './types';
+import { PROJECTS_TRANSLATIONS } from '../../../locales';
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     const { theme } = useTheme();

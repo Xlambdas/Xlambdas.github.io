@@ -1,38 +1,39 @@
-import { type NodeType } from "./data/graphData";
+import { type NodeType } from './data/graphData';
 
-// ─── Hooks ────────────────────────────────────────────────────────────────────
+// --- Hooks ---
 import {
     useDemoHomeState,
     SIZE_MAP,
     persist,
     useLessonFlow,
-    useSearchSuggestions } from "./hooks";
+    useSearchSuggestions
+} from './hooks';
 
-// ─── Layout components ────────────────────────────────────────────────────────
-import { TopBar } from "./components/TopBar";
-import { BottomActions } from "./components/BottomActions";
+// --- Layout components ---
+import { TopBar } from "./components/ui/TopBar";
+import { BottomActions } from "./components/ui/BottomActions";
 
-// ─── Existing components ──────────────────────────────────────────────────────
+// --- Existing components ---
 import DemoGraph from "./graphView/demoGraph";
 import { Sidebar } from "./components/sidebar";
-import { Legend } from "./components/legend";
-import { NodePanel } from "./components/nodePanel";
+import { Legend } from "./components/lessons/legend";
+import { NodePanel } from "./components/node/nodePanel";
 import { SettingsPanel } from "./components/settings";
-import { FunFactModal } from "./section/funFactModal";
-import { TeacherLoginModal } from "./section/teacherLoginModal";
-import { LessonPathView } from "./section/lessonPathView";
-import { LessonPlayer } from "./components/lessonPlayer";
-import { StrengthenSession } from "./section/strengthenSession";
-import { ProfileView } from "./section/profileView";
+import { FunFactModal } from "./sections/funFactModal";
+import { TeacherLoginModal } from "./sections/teacherLoginModal";
+import { LessonPathView } from "./sections/lessonPathView";
+import { LessonPlayer } from "./components/lessons/lessonPlayer";
+import { StrengthenSession } from "./sections/strengthenSession";
+import { ProfileView } from "./sections/profileView";
 import { initialNodes } from "./data/graphData";
 
 import { NodeCard } from "./components/node/nodeCard";
 
-// ─── Feature flags ────────────────────────────────────────────────────────────
+// --- Feature flags ---
 const SHOW_FUN_FACT = true;
 const SHOW_STRENGTHEN = true;
 
-// ─────────────────────────────────────────────────────────────────────────────
+// --- --- ---
 export function DemoHome() {
     const state = useDemoHomeState();
     const fs = SIZE_MAP[state.textSize];
@@ -51,7 +52,7 @@ export function DemoHome() {
         setSuggestions: state.setSuggestions,
     });
 
-    // ── Handlers ──────────────────────────────────────────────────────────────
+    // --- Handlers ---
     const handleNodeSelect = (node: NodeType | null) => {
         state.setActiveNode(node);
     };
@@ -76,11 +77,11 @@ export function DemoHome() {
         state.setMobileSearch(false);
     };
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // --- Render ---
     return (
-        <div className="flex h-screen w-screen overflow-hidden bg-[#0b0f14] font-sans">
+        <div className="flex h-screen w-screen overflow-hidden bg-[#0b0f14] font-sans fixed inset-0">
 
-            {/* ── Sidebar (desktop only) ── */}
+            {/* --- Sidebar (desktop only) --- */}
             <div className="hidden sm:block">
                 <Sidebar
                     collapsed={state.collapsed}
@@ -92,8 +93,8 @@ export function DemoHome() {
                 />
             </div>
 
-            {/* ── Main column ── */}
-            <div className="flex flex-col flex-1 overflow-hidden min-w-0">
+            {/* --- Main column --- */}
+            <div className="flex flex-col flex-1 overflow-hidden min-w-0 h-full">
 
                 <TopBar
                     collapsed={state.collapsed}
@@ -111,7 +112,7 @@ export function DemoHome() {
                 />
 
                 {/* Canvas area */}
-                <div className="flex-1 overflow-hidden relative">
+                <div className="flex-1 overflow-hidden relative h-0">
                     <DemoGraph
                         onSelectNode={handleNodeSelect}
                         refreshKey={state.refreshKey}
@@ -160,7 +161,7 @@ export function DemoHome() {
                 </div>
             </div>
 
-            {/* ── Fullscreen overlays ── */}
+            {/* --- Fullscreen overlays --- */}
 
             {/* <NodePreviewPanel
                 node={state.previewNode}

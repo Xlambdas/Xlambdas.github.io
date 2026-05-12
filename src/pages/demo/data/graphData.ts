@@ -1,9 +1,9 @@
-import type { NodeType } from "../constants/types";
-export type { NodeType, QuizQuestion, SRCard, SRRating, Lesson, LessonProgress, UserProfile, EarnedBadge, Badge } from "../constants/types";
-import { computeBadgeLevel } from "../helpers/srEngine";
+import type { NodeType } from "../types/types";
+export type { NodeType, QuizQuestion, SRCard, SRRating, Lesson, LessonProgress, UserProfile, EarnedBadge, Badge } from "../types/types";
+import { computeBadgeLevel } from "../utils/srEngine";
 
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ---
 
 export const getCompletedNodes = (): string[] =>
     JSON.parse(localStorage.getItem("completed_nodes") ?? "[]");
@@ -75,7 +75,7 @@ export const getNewlyUnlocked = (prevCompleted: string[], newCompleted: string[]
         .map(n => n.id);
 };
 
-// ─── User profile helpers ─────────────────────────────────────────────────────
+// --- User profile helpers ---
 
 export const getUserProfile = () => ({
     name: localStorage.getItem("user_name") ?? "Étudiant",
@@ -91,7 +91,7 @@ export const saveUserProfile = (name: string, avatarEmoji: string) => {
     }
 };
 
-// ─── Badge helpers ────────────────────────────────────────────────────────────
+// --- Badge helpers ---
 
 export const getEarnedBadges = () =>
     JSON.parse(localStorage.getItem("earned_badges") ?? "[]");
@@ -110,7 +110,7 @@ export const awardBadge = (nodeId: string, level: "bronze" | "silver" | "gold") 
 export const getBadgeForNode = (nodeId: string) =>
     getEarnedBadges().find((b: any) => b.nodeId === nodeId) ?? null;
 
-// ─── Links derived from nodes ─────────────────────────────────────────────────
+// --- Links derived from nodes ---
 
 export type LinkType = {
     source: string | NodeType;
@@ -119,7 +119,7 @@ export type LinkType = {
 
 export const initialLinks: LinkType[] = [];  // populated after initialNodes
 
-// ─── Node data ────────────────────────────────────────────────────────────────
+// --- Node data ---
 
 export const initialNodes: NodeType[] = [
     {

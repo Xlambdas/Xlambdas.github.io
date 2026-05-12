@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import * as d3 from "d3";
+import React, { useEffect, useRef } from 'react';
+import * as d3 from 'd3';
 import {
     type NodeType,
     type LinkType,
@@ -7,9 +7,9 @@ import {
     getVisibleIds,
     getDynamicNodes,
     getNodeCompletionPercent,
-} from "../data/graphData";
+} from '../data/graphData';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// --- Constants ---
 
 const NODE_RADIUS: Record<NodeType["type"], number> = {
     main: 8,
@@ -29,7 +29,7 @@ const DRAGGING_COLOR = "#fb923c";
 const PROFILE_COLOR = "#7c6af7";
 const PULSE_DURATION = 2000;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ---
 
 const isProfile = (n: NodeType) => (n as any).kind === "profile";
 
@@ -78,7 +78,7 @@ const drawNodeShape = (
     }
 };
 
-// ─── Props ────────────────────────────────────────────────────────────────────
+// --- Props ---
 
 interface DemoGraphProps {
     onSelectNode?: (node: NodeType | null) => void;
@@ -86,7 +86,7 @@ interface DemoGraphProps {
     newlyUnlockedIds?: string[];
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// --- Component ---
 
 const DemoGraph: React.FC<DemoGraphProps> = ({
     onSelectNode,
@@ -108,7 +108,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
         let width = canvas.parentElement?.clientWidth ?? window.innerWidth;
         let height = canvas.parentElement?.clientHeight ?? window.innerHeight;
 
-        // ── DPI scaling ───────────────────────────────────────────────────────
+        // --- DPI scaling ---
         const setCanvasSize = () => {
             const ratio = window.devicePixelRatio || 1;
             canvas.width = width * ratio;
@@ -119,7 +119,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
         };
         setCanvasSize();
 
-        // ── Data ──────────────────────────────────────────────────────────────
+        // --- Data ---
         const nodes: NodeType[] = getDynamicNodes().map(n => ({ ...n }));
         const links: LinkType[] = initialLinks.map(l => ({ ...l }));
         const visibleIds = getVisibleIds(nodes);
@@ -131,15 +131,15 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
             return visibleIds.has(sId) && visibleIds.has(tId);
         });
 
-        // ── Pulse ─────────────────────────────────────────────────────────────
+        // --- Pulse ---
         const pulseNodes = new Set<string>(newlyUnlockedIds);
         const pulseStart = performance.now();
 
-        // ── Search ────────────────────────────────────────────────────────────
+        // --- Search ---
         let searchFilter = "";
         window.__graphSearch = (query) => { searchFilter = query.toLowerCase(); draw(); };
 
-        // ── Simulation ────────────────────────────────────────────────────────
+        // --- Simulation ---
         const simulation = d3
             .forceSimulation(visibleNodes)
             .force("link", d3.forceLink<NodeType, LinkType>(visibleLinks)
@@ -148,7 +148,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
             .force("center", d3.forceCenter(width / 2, height / 2))
             .alphaDecay(0.03);
 
-        // ── Zoom ──────────────────────────────────────────────────────────────
+        // --- Zoom ---
         let transform = d3.zoomIdentity;
 
         let isPointerDownOnNode = false;
@@ -186,7 +186,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
         });
         canvas.addEventListener("mousemove", () => draw());
 
-        // ── Draw ──────────────────────────────────────────────────────────────
+        // --- Draw ---
         function draw() {
             const selected = selectedNodeRef.current;
             const dragging = draggingNodeRef.current;
@@ -288,7 +288,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
 
         simulation.on("tick", draw);
 
-        // ── Drag ──────────────────────────────────────────────────────────────
+        // --- Drag ---
         const drag = d3.drag<HTMLCanvasElement, unknown>()
             .subject(event => {
                 const [mx, my] = transform.invert(d3.pointer(event));
@@ -319,7 +319,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
 
         d3.select(canvas).call(drag as any);
 
-        // ── Window controls ───────────────────────────────────────────────────
+        // --- Window controls ---
         window.__graphZoom = factor => {
             const cx = width / 2;
             const cy = height / 2;
@@ -334,7 +334,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
             draw();
         };
 
-        // ── Resize ────────────────────────────────────────────────────────────
+        // --- Resize ---
         const handleResize = () => {
             width = canvas.parentElement?.clientWidth ?? window.innerWidth;
             height = canvas.parentElement?.clientHeight ?? window.innerHeight;
@@ -345,7 +345,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
 
         window.addEventListener("resize", handleResize);
 
-        // ── Cleanup ───────────────────────────────────────────────────────────
+        // --- Cleanup ---
         return () => {
             simulation.stop();
             window.removeEventListener("resize", handleResize);
@@ -355,7 +355,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
         };
     }, [refreshKey]);
 
-    return <canvas ref={canvasRef} className="block w-full h-full bg-[#0b0f14]" />;
+    return <canvas ref={canvasRef} className="block w-full h-full bg-[#0b0f14] touch-none" />;
 };
 
 export default DemoGraph;

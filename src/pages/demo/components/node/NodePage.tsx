@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { Lesson, NodeType } from "../../constants/types";
+import type { Lesson, NodeType } from "../../types/types";
 import { initialNodes, getDynamicNodes } from "../../data/graphData";
-import { HoneycombPath } from "../honeyCombPath";
-import { LessonPlayer } from "../../components/lessonPlayer";
-import { StrengthenSession } from "../../section/strengthenSession";
-import { ProfileView } from "../../section/profileView";
+import { HoneycombPath } from "../ui/honeyCombPath";
+import { LessonPlayer } from "../lessons/lessonPlayer";
+import { StrengthenSession } from "../../sections/strengthenSession";
+import { ProfileView } from "../../sections/profileView";
 import { NodePathSettings } from "./NodePathSettings";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ---
 
 const findParent = (nodeId: string) =>
     initialNodes.find(n => n.links.includes(nodeId));
@@ -83,7 +83,7 @@ const saveSelectedPath = (parentNodeId: string, selectedNodeId: string) => {
     localStorage.setItem("selected_paths", JSON.stringify(paths));
 };
 
-// ─── Dock button ──────────────────────────────────────────────────────────────
+// --- Dock button ---
 
 const DockBtn: React.FC<{
     icon: React.ReactNode;
@@ -130,7 +130,7 @@ const Divider = () => (
     }} />
 );
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
+// --- Icons ---
 
 const BackIcon = () => (
     <svg width="16" height="16" viewBox="0 0 24 24"
@@ -147,7 +147,7 @@ const SettingsIcon = () => (
     </svg>
 );
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// --- Component ---
 
 export const NodePage: React.FC = () => {
     const { nodeId } = useParams<{ nodeId: string }>();
@@ -175,7 +175,7 @@ export const NodePage: React.FC = () => {
         setRefreshKey(k => k + 1);
     };
 
-    // ── Not found ─────────────────────────────────────────────────────────────
+    // --- Not found ---
     if (!node) return (
         <div style={{
             height: "100vh",
@@ -197,7 +197,7 @@ export const NodePage: React.FC = () => {
         </div>
     );
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // --------
     return (
         <div style={{
             height: "100vh",
@@ -207,7 +207,7 @@ export const NodePage: React.FC = () => {
             position: "relative",
         }}>
 
-            {/* ── Left dock (desktop) ── */}
+            {/* --- Left dock (desktop) --- */}
             <div
                 className="hidden sm:flex flex-col items-center shrink-0 border-r border-[#21262d] bg-[#161b22] py-3 gap-1"
                 style={{ width: 56 }}
@@ -248,7 +248,7 @@ export const NodePage: React.FC = () => {
                 />
             </div>
 
-            {/* ── Main content ── */}
+            {/* --- Main content --- */}
             <div style={{ flex: 1, position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
                 {/* mobile top bar */}
@@ -324,7 +324,7 @@ export const NodePage: React.FC = () => {
                 </div>
             </div>
 
-            {/* ── Overlays ── */}
+            {/* --- Overlays --- */}
 
             {/* path settings overlay */}
             {settingsOpen && (

@@ -1,5 +1,5 @@
 // src/styles/utils.ts
-import { type AppTheme } from '../theme/theme.types.ts';
+import { type AppTheme } from '../theme';
 
 export const KEYFRAMES = `
     @keyframes fadeIn {

@@ -1,8 +1,8 @@
 import React from "react";
-import type { ContentBlock, SRRating } from "../../constants/types";
+import type { ContentBlock, SRRating } from "../../types/types";
 import { QuizBlockPlayer } from "./quizBlockPlayer";
 
-// ─── Markdown Helper ──────────────────────────────────────────────────────────
+// --- Markdown Helper ---
 
 const md = (text: string) =>
     text
@@ -12,7 +12,7 @@ const md = (text: string) =>
         .map(p => `<p style="margin:0 0 14px 0;line-height:1.85">${p}</p>`)
         .join("");
 
-// ─── Block Components ─────────────────────────────────────────────────────────
+// --- Block Components ---
 
 const ExplanationBlock: React.FC<{
     block: Extract<ContentBlock, { type: "explanation" }>;
@@ -144,7 +144,7 @@ const RecapBlock: React.FC<{
     </div>
 );
 
-// ─── Main Renderer ────────────────────────────────────────────────────────────
+// --- Main Renderer ---
 
 interface BlockRendererProps {
     block: ContentBlock;

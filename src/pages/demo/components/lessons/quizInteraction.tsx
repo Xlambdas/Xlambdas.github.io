@@ -1,17 +1,13 @@
 import React, { useState } from "react";
-import type { QuizQuestion } from "../../constants/types";
+import type { QuizQuestion } from "../../types/types";
 
-// ─── Quiz Interaction ─────────────────────────────────────────────────────────
+// --- Quiz Interaction ---
 
 interface QuizInteractionProps {
     question: QuizQuestion;
     onSubmit: (answer: any, idk: boolean) => void;
     color: string;
 }
-
-// const isAutoValidate = (type: QuizQuestion["type"]) => {
-//     return type === "multiple_choice" || type === "true_false";
-// };
 
 export const QuizInteraction: React.FC<QuizInteractionProps> = ({
     question,
@@ -122,7 +118,7 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
     );
 };
 
-// ─── Multiple Choice ──────────────────────────────────────────────────────────
+// --- Multiple Choice ---
 
 const MultipleChoiceUI: React.FC<{
     question: Extract<QuizQuestion, { type: "multiple_choice" }>;
@@ -174,7 +170,7 @@ const MultipleChoiceUI: React.FC<{
     </div>
 );
 
-// ─── True/False ───────────────────────────────────────────────────────────────
+// --- True/False ---
 
 const TrueFalseUI: React.FC<{
     selected: boolean | null;
@@ -209,7 +205,7 @@ const TrueFalseUI: React.FC<{
     </div>
 );
 
-// ─── Ordering ─────────────────────────────────────────────────────────────────
+// --- Ordering ---
 
 const OrderingUI: React.FC<{
     question: Extract<QuizQuestion, { type: "ordering" }>;
@@ -280,7 +276,7 @@ const OrderingUI: React.FC<{
     );
 };
 
-// ─── Match Pairs ──────────────────────────────────────────────────────────────
+// --- Match Pairs ---
 
 const MatchPairsUI: React.FC<{
     question: Extract<QuizQuestion, { type: "match_pairs" }>;
@@ -379,7 +375,7 @@ const MatchPairsUI: React.FC<{
     );
 };
 
-// ─── Word Bank ────────────────────────────────────────────────────────────────
+// --- Word Bank ---
 
 const WordBankUI: React.FC<{
     question: Extract<QuizQuestion, { type: "word_bank" }>;
@@ -478,7 +474,7 @@ const WordBankUI: React.FC<{
     );
 };
 
-// ─── Sentence ─────────────────────────────────────────────────────────────────
+// --- Sentence ---
 
 const SentenceUI: React.FC<{
     question: Extract<QuizQuestion, { type: "sentence" }>;

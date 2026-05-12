@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { type NodeType, getNodeCompletionPercent } from "../../data/graphData";
-import { getAllCards, saveCards } from "../../helpers/srEngine";
+import { getAllCards, saveCards } from "../../utils/srEngine";
 
 interface NodePathSettingsProps {
     node: NodeType;

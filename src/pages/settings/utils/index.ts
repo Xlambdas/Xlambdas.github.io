@@ -1,1 +1,1 @@
-export { createTabs, getPresetNames } from "./panelHelpers";
+export { createTabs, getPresetNames } from './panelHelpers';

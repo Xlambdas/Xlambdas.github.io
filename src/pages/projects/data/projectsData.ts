@@ -1,6 +1,6 @@
 // src/projects/data/projectsData.ts
-import { type Project } from "../components";
-import GOLImage from "/img/GOL_playerPage.png";
+import { type Project } from '../components';
+import GOLImage from '/img/GOL_playerPage.png';
 
 export const projects: Project[] = [
     {

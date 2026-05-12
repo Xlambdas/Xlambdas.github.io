@@ -1,23 +1,23 @@
 // all use state and logic for demo home page
+import { useState, useRef, useEffect } from 'react';
+import { type NodeType, type Lesson } from '../data/graphData';
 
-import { useState, useRef, useEffect } from "react";
-import { type NodeType, type Lesson } from "../data/graphData";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types ---
 export type TextSize = "S" | "M" | "L";
 export const SIZE_MAP: Record<TextSize, number> = { S: 10, M: 11, L: 13 };
 
 export type ActiveLesson = { node: NodeType; lesson: Lesson; index: number };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ---
+
 export const persist = (key: string, value: string) => localStorage.setItem(key, value);
 export const restore = <T extends string>(key: string, fallback: T): T =>
     (localStorage.getItem(key) as T) ?? fallback;
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ----------
 export function useDemoHomeState() {
 
-    // ── UI state ──────────────────────────────────────────────────────────────
+    // --- UI state ---
     const [collapsed, setCollapsed] = useState<boolean>(
         () => restore<"true" | "false">("graph_collapsed", "false") === "true"
     );
@@ -30,7 +30,7 @@ export function useDemoHomeState() {
     const [suggestions, setSuggestions] = useState<NodeType[]>([]);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
-    // ── Graph state ───────────────────────────────────────────────────────────
+    // --- Graph state ---
     const [selectedNode, setSelectedNode] = useState<NodeType | null>(null);
     // const [previewNode, setPreviewNode] = useState<NodeType | null>(null);
     const [activeNode, setActiveNode] = useState<NodeType | null>(null);
@@ -39,13 +39,13 @@ export function useDemoHomeState() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [newlyUnlockedIds, setNewlyUnlockedIds] = useState<string[]>([]);
 
-    // ── Modals ────────────────────────────────────────────────────────────────
+    // --- Modals ---
     const [funFactOpen, setFunFactOpen] = useState(false);
     const [strengthenOpen, setStrengthenOpen] = useState(false);
     const [strengthenNodeId, setStrengthenNodeId] = useState<string | undefined>();
     const [profileOpen, setProfileOpen] = useState(false);
 
-    // ── Teacher mode ──────────────────────────────────────────────────────────
+    // --- Teacher mode ---
     const [isTeacher, setIsTeacher] = useState<boolean>(
         () => restore<"true" | "false">("teacher_mode", "false") === "true"
     );
@@ -54,7 +54,7 @@ export function useDemoHomeState() {
     );
     const [showTeacherLogin, setShowTeacherLogin] = useState(false);
 
-    // ── Window hook: expose strengthen globally ───────────────────────────────
+    // --- Window hook: expose strengthen globally ---
     useEffect(() => {
         window.__graphStrengthen = () => {
             setStrengthenNodeId(undefined);
