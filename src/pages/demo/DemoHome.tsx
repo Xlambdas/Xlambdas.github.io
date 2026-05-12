@@ -79,7 +79,7 @@ export function DemoHome() {
 
     // --- Render ---
     return (
-        <div className="flex h-screen w-screen overflow-hidden bg-[#0b0f14] font-sans fixed inset-0">
+        <div className="flex h-screen w-screen overflow-hidden bg-[#0b0f14] font-sans fixed inset-0" style={{ height: "100dvh" }}>
 
             {/* --- Sidebar (desktop only) --- */}
             <div className="hidden sm:block">
