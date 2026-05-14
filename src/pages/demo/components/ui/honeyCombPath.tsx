@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { type NodeType, type Lesson, isLessonCompleted } from "../../data/graphData";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 // --- Constants ---
