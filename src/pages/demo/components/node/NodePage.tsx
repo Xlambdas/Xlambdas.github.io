@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import type { Lesson, NodeType } from "../../types/types";
 import { initialNodes, getDynamicNodes } from "../../data/graphData";
 import { HoneycombPath } from "../ui/honeyCombPath";
@@ -13,7 +13,7 @@ import { NodePathSettings } from "./NodePathSettings";
 const findParent = (nodeId: string) =>
     initialNodes.find(n => n.links.includes(nodeId));
 
-// Build the complete path tree starting from a node
+// Build the complete path tree - traverse backwards to root, then forwards
 const buildPathTree = (startNode: NodeType, selectedPaths: Record<string, string> = {}): {
     sections: Array<{ node: NodeType; lessons: Lesson[] }>;
     pathOptions: Array<{ nodeId: string; nodes: NodeType[] }>;
@@ -22,6 +22,21 @@ const buildPathTree = (startNode: NodeType, selectedPaths: Record<string, string
     const pathOptions: Array<{ nodeId: string; nodes: NodeType[] }> = [];
     const dynamicNodes = getDynamicNodes();
 
+    // Step 1: Traverse backwards to find root
+    const pathToRoot: NodeType[] = [];
+    let currentNode: NodeType | undefined = startNode;
+
+    while (currentNode) {
+        pathToRoot.unshift(currentNode); // Add to beginning
+        const parent = findParent(currentNode.id);
+        if (parent && !pathToRoot.some(n => n.id === parent.id)) {
+            currentNode = parent;
+        } else {
+            currentNode = undefined; // Reached root
+        }
+    }
+
+    // Step 2: Traverse forwards from root following selected paths
     const traverse = (node: NodeType) => {
         // Add current node's lessons as a section
         if (node.lessonPath && node.lessonPath.length > 0) {
@@ -50,6 +65,10 @@ const buildPathTree = (startNode: NodeType, selectedPaths: Record<string, string
             if (selectedPaths[node.id]) {
                 // Use user's selection
                 selectedNode = nextNodes.find(n => n.id === selectedPaths[node.id]);
+            } else if (pathToRoot.some(n => n.id === node.id)) {
+                // We're on the path to startNode, follow it
+                const nextInPath = pathToRoot[pathToRoot.findIndex(n => n.id === node.id) + 1];
+                selectedNode = nextNodes.find(n => n.id === nextInPath?.id);
             } else {
                 // Default: first unlocked node, or first in array
                 selectedNode = nextNodes.find(n => n.isUnlocked) || nextNodes[0];
@@ -62,7 +81,10 @@ const buildPathTree = (startNode: NodeType, selectedPaths: Record<string, string
         }
     };
 
-    traverse(startNode);
+    // Start from root
+    if (pathToRoot.length > 0) {
+        traverse(pathToRoot[0]);
+    }
 
     return { sections, pathOptions };
 };
@@ -152,6 +174,19 @@ const SettingsIcon = () => (
 export const NodePage: React.FC = () => {
     const { nodeId } = useParams<{ nodeId: string }>();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const scrollToLessonId = searchParams.get('lesson');
+
+    // Clear lesson param after reading
+    useEffect(() => {
+        if (scrollToLessonId) {
+            // Clear after a delay to ensure HoneycombPath receives it
+            const timeoutId = setTimeout(() => {
+                setSearchParams({}, { replace: true });
+            }, 500);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [scrollToLessonId, setSearchParams]);
 
     const node = initialNodes.find(n => n.id === nodeId);
     const parent = node ? findParent(node.id) : null;
@@ -162,6 +197,7 @@ export const NodePage: React.FC = () => {
     const [profileOpen, setProfileOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     // Build path tree whenever node or selectedPaths change
     const { sections, pathOptions } = node
@@ -298,16 +334,21 @@ export const NodePage: React.FC = () => {
                 </div>
 
                 {/* Honeycomb path - scrollable */}
-                <div style={{
-                    flex: 1,
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#21262d transparent",
-                }}>
+                <div
+                    ref={scrollContainerRef}
+                    style={{
+                        flex: 1,
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "#21262d transparent",
+                    }}
+                >
                     <HoneycombPath
                         key={refreshKey}
                         sections={sections}
                         currentNodeId={node.id}
+                        scrollToLesson={scrollToLessonId || undefined}
+                        scrollContainerRef={scrollContainerRef as React.RefObject<HTMLDivElement>}
                         onLessonClick={(node, lesson, index) => setActiveLesson({ node, lesson, index })}
                         onPathSelect={(selectedNodeId) => {
                             // Find which parent node this selection belongs to

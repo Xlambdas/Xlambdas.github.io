@@ -61,7 +61,7 @@ export const LessonPage: React.FC = () => {
             }}>
                 Leçon introuvable.
                 <span
-                    onClick={() => navigate(`/demo/node/${nodeId}`)}
+                    onClick={() => navigate(`/demo/node/${nodeId}?lesson=${lessonId}`)}
                     style={{ color: "#a5b4fc", cursor: "pointer", marginLeft: 8 }}
                 >
                     Retour
@@ -115,7 +115,7 @@ export const LessonPage: React.FC = () => {
             // Complete lesson and return to path
             if (nodeId && lessonId) {
                 completeLesson(nodeId, lessonId);
-                navigate(`/demo/node/${nodeId}`);
+                navigate(`/demo/node/${nodeId}?lesson=${lessonId}`);
             }
         } else {
             setCurrentIndex(i => i + 1);
@@ -498,7 +498,7 @@ export const LessonPage: React.FC = () => {
                                     Annuler
                                 </button>
                                 <button
-                                    onClick={() => navigate(`/demo/node/${nodeId}`)}
+                                    onClick={() => navigate(`/demo/node/${nodeId}?lesson=${lessonId}`)}
                                     style={{
                                         flex: 1,
                                         padding: `${8 * textScale}px 0`,

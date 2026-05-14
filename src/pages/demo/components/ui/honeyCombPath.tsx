@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { type NodeType, type Lesson, isLessonCompleted } from "../../data/graphData";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
 
 // --- Constants ---
 
@@ -79,6 +80,8 @@ interface HoneycombPathProps {
     onPathSelect?: (nodeId: string) => void;
     pathOptions?: { nodeId: string; nodes: NodeType[] }[];
     selectedPaths?: Record<string, string>;
+    scrollToLesson?: string;
+    scrollContainerRef?: React.RefObject<HTMLDivElement>;
 }
 
 // --- Hexagon Components ---
@@ -327,7 +330,8 @@ const PathSectionComponent: React.FC<{
     section: PathSection;
     color: string;
     onLessonClick: (lesson: Lesson, lessonIndex: number) => void;
-}> = ({ section, color }) => {
+    lessonRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
+}> = ({ section, color, lessonRefs }) => {
     const { node, lessons } = section;
     const navigate = useNavigate();
 
@@ -416,13 +420,16 @@ const PathSectionComponent: React.FC<{
                             )}
 
                             {/* Lesson offset left or right */}
-                            <div style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                transform: `translateX(${getOffset()}px)`,
-                                transition: "transform 0.3s ease",
-                            }}>
+                            <div
+                                ref={el => { lessonRefs.current[lesson.id] = el; }}
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    transform: `translateX(${getOffset()}px)`,
+                                    transition: "transform 0.3s ease",
+                                }}
+                            >
                                 <LessonHex
                                     lesson={lesson}
                                     status={status}
@@ -454,7 +461,48 @@ export const HoneycombPath: React.FC<HoneycombPathProps> = ({
     onPathSelect,
     pathOptions,
     selectedPaths = {},
+    scrollToLesson,
+    scrollContainerRef,
 }) => {
+    const lessonRefs = useRef<Record<string, HTMLDivElement | null>>({});
+    const [shouldScroll, setShouldScroll] = useState(scrollToLesson);
+
+    // Auto-scroll to target lesson
+    useEffect(() => {
+        if (shouldScroll && sections.length > 0 && scrollContainerRef?.current) {
+            // Wait for all sections to render
+            const timeoutId = setTimeout(() => {
+                const targetElement = lessonRefs.current[shouldScroll];
+                const container = scrollContainerRef.current;
+
+                if (targetElement && container) {
+                    // Calculate scroll position to center the element
+                    const containerRect = container.getBoundingClientRect();
+                    const elementRect = targetElement.getBoundingClientRect();
+                    const scrollTop = container.scrollTop;
+
+                    const targetScroll = scrollTop + elementRect.top - containerRect.top - (containerRect.height / 2) + (elementRect.height / 2);
+
+                    container.scrollTo({
+                        top: targetScroll,
+                        behavior: 'auto'
+                    });
+
+                    setShouldScroll(undefined); // Clear after scrolling
+                }
+            }, 300);
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [shouldScroll, sections, scrollContainerRef]);
+
+    // Update shouldScroll when scrollToLesson changes
+    useEffect(() => {
+        if (scrollToLesson) {
+            setShouldScroll(scrollToLesson);
+        }
+    }, [scrollToLesson]);
+
     return (
         <>
             <style>{`
@@ -481,6 +529,7 @@ export const HoneycombPath: React.FC<HoneycombPathProps> = ({
                                 onLessonClick={(lesson, index) =>
                                     onLessonClick(section.node, lesson, index)
                                 }
+                                lessonRefs={lessonRefs}
                             />
 
                             {/* Path selector after this section */}
