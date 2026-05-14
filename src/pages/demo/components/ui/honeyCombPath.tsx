@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { type NodeType, type Lesson, isLessonCompleted } from "../../data/graphData";
 import { useNavigate } from "react-router-dom";
 
-
 // --- Constants ---
 
 const HEX_CLIP = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
@@ -96,35 +95,62 @@ const LessonHex: React.FC<{
     position: 'left' | 'center' | 'right';
 }> = ({ lesson, status, index, color, onClick }) => {
     const [pressed, setPressed] = useState(false);
+    const [hovered, setHovered] = useState(false);
     const SIZE = 110;
 
-    const bg = status === "completed" ? color
-        : status === "current" ? `${color}33`
-            : "#1c2128";
+    const bg = status === "completed"
+        ? `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`
+        : status === "current" ? `linear-gradient(135deg, ${color}44 0%, ${color}22 100%)`
+            : "linear-gradient(135deg, #1c2128 0%, #161b22 100%)";
 
-    const borderColor = status === "locked" ? "#30363d" : color;
     const iconColor = status === "locked" ? "#484f58" : status === "completed" ? "#0d1117" : color;
 
     return (
         <div
             onClick={status !== "locked" ? onClick : undefined}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
             style={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: 8,
+                gap: 12,
                 cursor: status === "locked" ? "not-allowed" : "pointer",
                 position: "relative",
+                filter: hovered && status !== "locked" ? "brightness(1.1)" : "none",
+                transition: "filter 0.2s ease",
             }}
         >
             {/* Pulsing ring for current lesson */}
             {status === "current" && (
+                <>
+                    <div style={{
+                        position: "absolute",
+                        inset: -8,
+                        clipPath: HEX_CLIP,
+                        background: `radial-gradient(circle, ${color}33 0%, transparent 70%)`,
+                        animation: "hexPulse 2s ease-in-out infinite",
+                        zIndex: 0,
+                    }} />
+                    <div style={{
+                        position: "absolute",
+                        inset: -4,
+                        clipPath: HEX_CLIP,
+                        background: `${color}22`,
+                        animation: "hexPulseInner 2s ease-in-out infinite 0.3s",
+                        zIndex: 0,
+                    }} />
+                </>
+            )}
+
+            {/* Glow effect for completed */}
+            {status === "completed" && (
                 <div style={{
                     position: "absolute",
                     inset: -6,
                     clipPath: HEX_CLIP,
-                    background: `${color}22`,
-                    animation: "hexPulse 1.8s ease-in-out infinite",
+                    background: `radial-gradient(circle, ${color}44 0%, transparent 70%)`,
+                    filter: "blur(8px)",
                     zIndex: 0,
                 }} />
             )}
@@ -139,37 +165,42 @@ const LessonHex: React.FC<{
                     height: SIZE,
                     clipPath: HEX_CLIP,
                     background: bg,
-                    border: `2px solid ${borderColor}`,
                     display: "flex",
-                    flexDirection: "column", // ADD
+                    flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
-                    transform: pressed ? "scale(0.93)" : "scale(1)",
-                    transition: "transform 0.12s ease",
-                    boxShadow: status === "current" ? `0 0 20px ${color}44`
-                        : status === "completed" ? `0 0 10px ${color}33`
-                            : "none",
+                    transform: pressed ? "scale(0.95)" : hovered && status !== "locked" ? "scale(1.05)" : "scale(1)",
+                    transition: "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    boxShadow: status === "current" ? `0 8px 32px ${color}55, 0 0 0 1px ${color}33 inset`
+                        : status === "completed" ? `0 4px 16px ${color}44, 0 0 0 1px ${color}22 inset`
+                            : "0 2px 8px rgba(0,0,0,0.3)",
                     position: "relative",
                     zIndex: 1,
-                    padding: "0 12px", // ADD
+                    padding: "0 14px",
                 }}
             >
-                <div style={{ color: iconColor, opacity: status === "locked" ? 0.4 : 1, marginBottom: 4 }}> {/* ADD marginBottom */}
+                {/* Icon */}
+                <div style={{
+                    color: iconColor,
+                    opacity: status === "locked" ? 0.4 : 1,
+                    marginBottom: 6,
+                    transition: "all 0.2s ease",
+                }}>
                     {status === "completed" ? (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"> {/* CHANGE from 24 to 20 */}
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5">
                             <polyline points="20 6 9 17 4 12" />
                         </svg>
                     ) : (
-                        <LessonIcon type={lesson.type} size={20} />
+                        <LessonIcon type={lesson.type} size={22} />
                     )}
                 </div>
 
-                {/* Lesson title INSIDE hexagon */}
+                {/* Lesson title */}
                 <div style={{
-                    color: status === "locked" ? "#484f58" : "#c9d1d9",
-                    fontSize: 10, // CHANGE from 12
+                    color: status === "locked" ? "#484f58" : status === "completed" ? "#0d1117" : "#c9d1d9",
+                    fontSize: 10.5,
                     fontWeight: status === "current" ? 600 : 500,
-                    lineHeight: 1.2,
+                    lineHeight: 1.3,
                     textAlign: "center",
                     maxWidth: "100%",
                     overflow: "hidden",
@@ -177,6 +208,7 @@ const LessonHex: React.FC<{
                     display: "-webkit-box",
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: "vertical",
+                    textShadow: status === "completed" ? "none" : "0 1px 2px rgba(0,0,0,0.5)",
                 }}>
                     {lesson.title}
                 </div>
@@ -184,19 +216,21 @@ const LessonHex: React.FC<{
                 {/* Lesson number badge */}
                 <div style={{
                     position: "absolute",
-                    bottom: -6,
-                    right: -6,
-                    width: 20,
-                    height: 20,
+                    bottom: -8,
+                    right: -8,
+                    width: 24,
+                    height: 24,
                     borderRadius: "50%",
-                    background: status === "locked" ? "#21262d" : color,
-                    border: "2px solid #161b22",
+                    background: status === "locked" ? "#21262d"
+                        : `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
+                    // border: "3px solid #0b0f14",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: 700,
                     color: status === "locked" ? "#484f58" : "#0d1117",
+                    boxShadow: status !== "locked" ? `0 2px 8px ${color}66` : "none",
                 }}>
                     {index + 1}
                 </div>
@@ -212,9 +246,12 @@ const ConnectorHex: React.FC<{ color: string; done: boolean }> = ({ color, done 
             width: SIZE,
             height: SIZE,
             clipPath: HEX_CLIP,
-            background: done ? `${color}33` : "#21262d",
-            border: `1px solid ${done ? `${color}55` : "#30363d"}`,
-            margin: "4px 0",
+            background: done
+                ? `linear-gradient(180deg, ${color}44 0%, ${color}22 100%)`
+                : "linear-gradient(180deg, #21262d 0%, #1c2128 100%)",
+            margin: "6px 0",
+            boxShadow: done ? `0 0 16px ${color}22` : "none",
+            transition: "all 0.3s ease",
         }} />
     );
 };
@@ -229,14 +266,16 @@ const PathSelector: React.FC<{
     parentNodeId: string;
 }> = ({ options, selectedId, onSelect }) => {
     const [localSelected, setLocalSelected] = React.useState<string | null>(selectedId);
+    const [hoveredId, setHoveredId] = React.useState<string | null>(null);
 
     return (
         <div style={{
-            margin: "48px 20px",
-            padding: "24px",
-            background: "#0d1117",
+            margin: "56px 24px",
+            padding: "28px",
+            background: "linear-gradient(135deg, #0d1117 0%, #161b22 100%)",
             border: "1px solid #21262d",
-            borderRadius: 16,
+            borderRadius: 20,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         }}>
             <div style={{
                 textAlign: "center",
@@ -244,74 +283,81 @@ const PathSelector: React.FC<{
                 fontSize: 11,
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
-                marginBottom: 16,
+                marginBottom: 24,
             }}>
                 Choisis ton prochain parcours
             </div>
 
             <div style={{
                 display: "grid",
-                gridTemplateColumns: options.length === 1 ? "1fr" : "repeat(2, 1fr)",
-                gap: 12,
+                gridTemplateColumns: options.length === 1 ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: 14,
             }}>
                 {options.map(node => {
                     const isSelected = localSelected === node.id;
+                    const isHovered = hoveredId === node.id;
                     const nodeColor = NODE_COLOR[node.type];
-                    // const isLocked = false;
 
                     return (
                         <button
                             key={node.id}
                             onClick={() => {
-                                // if (!isLocked) {
-                                    setLocalSelected(node.id);
-                                    onSelect(node.id);
-                                // }
+                                setLocalSelected(node.id);
+                                onSelect(node.id);
                             }}
-                            // disabled={isLocked}
+                            onMouseEnter={() => setHoveredId(node.id)}
+                            onMouseLeave={() => setHoveredId(null)}
                             style={{
-                                padding: "16px",
-                                background: isSelected ? `${nodeColor}1a` : "#161b22",
-                                border: `2px solid ${isSelected ? nodeColor : "#21262d"}`,
-                                borderRadius: 12,
+                                padding: "18px",
+                                background: isSelected
+                                    ? `linear-gradient(135deg, ${nodeColor}22 0%, ${nodeColor}11 100%)`
+                                    : isHovered ? "linear-gradient(135deg, #1c2128 0%, #161b22 100%)"
+                                        : "#161b22",
+                                border: `2px solid ${isSelected ? nodeColor : isHovered ? "#30363d" : "#21262d"}`,
+                                borderRadius: 14,
                                 cursor: "pointer",
-                                transition: "all 0.15s ease",
-                                opacity: 1,
+                                transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                                transform: isHovered ? "translateY(-2px)" : "translateY(0)",
+                                boxShadow: isSelected
+                                    ? `0 4px 16px ${nodeColor}33, 0 0 0 1px ${nodeColor}22 inset`
+                                    : isHovered ? "0 4px 12px rgba(0,0,0,0.3)"
+                                        : "0 2px 4px rgba(0,0,0,0.2)",
                                 textAlign: "left",
                             }}
                         >
                             <div style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: 10,
-                                marginBottom: 8,
+                                gap: 12,
+                                marginBottom: 10,
                             }}>
                                 <div style={{
-                                    width: 8,
-                                    height: 8,
+                                    width: 10,
+                                    height: 10,
                                     borderRadius: "50%",
-                                    background: nodeColor,
-                                    boxShadow: `0 0 8px ${nodeColor}88`,
+                                    background: `radial-gradient(circle, ${nodeColor} 0%, ${nodeColor}cc 100%)`,
+                                    boxShadow: `0 0 12px ${nodeColor}88, 0 0 0 2px ${nodeColor}22`,
                                 }} />
                                 <div style={{
                                     color: "#c9d1d9",
-                                    fontSize: 14,
+                                    fontSize: 14.5,
                                     fontWeight: 600,
                                     flex: 1,
                                 }}>
                                     {node.title}
                                 </div>
-                                { isSelected ? (
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={nodeColor} strokeWidth="3">
+                                {isSelected && (
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={nodeColor} strokeWidth="3">
                                         <polyline points="20 6 9 17 4 12" />
                                     </svg>
-                                ) : null}
+                                )}
                             </div>
                             {node.shortDescription && (
                                 <div style={{
                                     color: "#6e7681",
-                                    fontSize: 11,
-                                    lineHeight: 1.5,
+                                    fontSize: 11.5,
+                                    lineHeight: 1.6,
+                                    paddingLeft: 22,
                                 }}>
                                     {node.shortDescription}
                                 </div>
@@ -343,7 +389,7 @@ const PathSectionComponent: React.FC<{
 
     return (
         <div style={{
-            padding: "32px 0",
+            padding: "40px 0",
         }}>
             {/* Section header */}
             <div style={{
@@ -384,7 +430,7 @@ const PathSectionComponent: React.FC<{
                 )}
             </div>
 
-            {/* Honeycomb grid - SNAKE PATTERN */}
+            {/* Honeycomb grid */}
             <div style={{
                 display: "flex",
                 flexDirection: "column",
@@ -395,20 +441,15 @@ const PathSectionComponent: React.FC<{
                 {lessons.map((lesson, index) => {
                     const status = getLessonStatus(lesson, index);
                     const prevDone = index === 0 || getLessonStatus(lessons[index - 1], index - 1) === "completed";
-
-                    // Snake pattern: determine position based on index
-                    // const row = Math.floor(index / 2);
                     const isLeftOnRow = index % 2 === 0;
 
-                    // Calculate horizontal offset for honeycomb pattern
                     const getOffset = () => {
-                        if (index % 2 === 0) return -60; // Left
-                        return 60; // Right
+                        if (index % 2 === 0) return -65;
+                        return 65;
                     };
 
                     return (
                         <React.Fragment key={lesson.id}>
-                            {/* Connector stays at center (0px) */}
                             {index > 0 && (
                                 <div style={{
                                     display: "flex",
@@ -419,7 +460,6 @@ const PathSectionComponent: React.FC<{
                                 </div>
                             )}
 
-                            {/* Lesson offset left or right */}
                             <div
                                 ref={el => { lessonRefs.current[lesson.id] = el; }}
                                 style={{
@@ -427,7 +467,7 @@ const PathSectionComponent: React.FC<{
                                     flexDirection: "column",
                                     alignItems: "center",
                                     transform: `translateX(${getOffset()}px)`,
-                                    transition: "transform 0.3s ease",
+                                    transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
                                 }}
                             >
                                 <LessonHex
@@ -456,7 +496,6 @@ const PathSectionComponent: React.FC<{
 
 export const HoneycombPath: React.FC<HoneycombPathProps> = ({
     sections,
-    // currentNodeId,
     onLessonClick,
     onPathSelect,
     pathOptions,
@@ -467,16 +506,13 @@ export const HoneycombPath: React.FC<HoneycombPathProps> = ({
     const lessonRefs = useRef<Record<string, HTMLDivElement | null>>({});
     const [shouldScroll, setShouldScroll] = useState(scrollToLesson);
 
-    // Auto-scroll to target lesson
     useEffect(() => {
         if (shouldScroll && sections.length > 0 && scrollContainerRef?.current) {
-            // Wait for all sections to render
             const timeoutId = setTimeout(() => {
                 const targetElement = lessonRefs.current[shouldScroll];
                 const container = scrollContainerRef.current;
 
                 if (targetElement && container) {
-                    // Calculate scroll position to center the element
                     const containerRect = container.getBoundingClientRect();
                     const elementRect = targetElement.getBoundingClientRect();
                     const scrollTop = container.scrollTop;
@@ -488,7 +524,7 @@ export const HoneycombPath: React.FC<HoneycombPathProps> = ({
                         behavior: 'auto'
                     });
 
-                    setShouldScroll(undefined); // Clear after scrolling
+                    setShouldScroll(undefined);
                 }
             }, 300);
 
@@ -496,7 +532,6 @@ export const HoneycombPath: React.FC<HoneycombPathProps> = ({
         }
     }, [shouldScroll, sections, scrollContainerRef]);
 
-    // Update shouldScroll when scrollToLesson changes
     useEffect(() => {
         if (scrollToLesson) {
             setShouldScroll(scrollToLesson);
@@ -507,15 +542,20 @@ export const HoneycombPath: React.FC<HoneycombPathProps> = ({
         <>
             <style>{`
                 @keyframes hexPulse {
-                    0%, 100% { opacity: 0.4; transform: scale(1); }
-                    50%      { opacity: 0.8; transform: scale(1.08); }
+                    0%, 100% { opacity: 0.3; transform: scale(1); }
+                    50%      { opacity: 0.7; transform: scale(1.12); }
+                }
+                @keyframes hexPulseInner {
+                    0%, 100% { opacity: 0.5; transform: scale(1); }
+                    50%      { opacity: 1; transform: scale(1.06); }
                 }
             `}</style>
 
             <div style={{
-                width: "min(480px, 100%)",
+                width: "min(500px, 100%)",
                 margin: "0 auto",
-                paddingBottom: 64,
+                paddingBottom: 80,
+                paddingTop: 20,
             }}>
                 {sections.map((section, sectionIndex) => {
                     const color = NODE_COLOR[section.node.type];
@@ -532,7 +572,6 @@ export const HoneycombPath: React.FC<HoneycombPathProps> = ({
                                 lessonRefs={lessonRefs}
                             />
 
-                            {/* Path selector after this section */}
                             {nextOptions && nextOptions.nodes.length > 0 && (
                                 <PathSelector
                                     options={nextOptions.nodes}
@@ -543,12 +582,12 @@ export const HoneycombPath: React.FC<HoneycombPathProps> = ({
                                 />
                             )}
 
-                            {/* Divider between sections */}
                             {sectionIndex < sections.length - 1 && (
                                 <div style={{
-                                    margin: "32px 20px",
-                                    height: 1,
-                                    background: "#21262d",
+                                    margin: "48px auto",
+                                    maxWidth: 200,
+                                    height: 2,
+                                    background: `linear-gradient(90deg, transparent 0%, #21262d 50%, transparent 100%)`,
                                 }} />
                             )}
                         </div>

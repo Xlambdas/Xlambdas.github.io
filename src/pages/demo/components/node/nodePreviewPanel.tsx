@@ -76,7 +76,7 @@ export const NodePreviewPanel: React.FC<NodePreviewPanelProps> = ({
 
     const handleStart = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (node && canStart) navigate(`/demo/node/${node.id}`);
+        if (node && canStart) navigate(`/demo/node/${node.id}?lesson=${node.lessonPath?.[0].id}`);
     };
 
     // ----------

@@ -65,16 +65,18 @@ const buildPathTree = (startNode: NodeType, selectedPaths: Record<string, string
             if (selectedPaths[node.id]) {
                 // Use user's selection
                 selectedNode = nextNodes.find(n => n.id === selectedPaths[node.id]);
-            } else if (pathToRoot.some(n => n.id === node.id)) {
-                // We're on the path to startNode, follow it
-                const nextInPath = pathToRoot[pathToRoot.findIndex(n => n.id === node.id) + 1];
-                selectedNode = nextNodes.find(n => n.id === nextInPath?.id);
             } else {
-                // Default: first unlocked node, or first in array
-                selectedNode = nextNodes.find(n => n.isUnlocked) || nextNodes[0];
+                // Check if we're on the path to startNode
+                const nodeIndexInPath = pathToRoot.findIndex(n => n.id === node.id);
+                if (nodeIndexInPath !== -1 && nodeIndexInPath < pathToRoot.length - 1) {
+                    // We're on the path to startNode, follow it
+                    const nextInPath = pathToRoot[nodeIndexInPath + 1];
+                    selectedNode = nextNodes.find(n => n.id === nextInPath?.id);
+                }
+                // else: not on path and no selection -> stop here
             }
 
-            // Continue traversing
+            // Continue traversing only if a path was selected
             if (selectedNode) {
                 traverse(selectedNode);
             }
@@ -177,21 +179,73 @@ export const NodePage: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const scrollToLessonId = searchParams.get('lesson');
 
-    // Clear lesson param after reading
+    const node = initialNodes.find(n => n.id === nodeId);
+
+    // State to track scroll target - set once, then clear after scroll
+    const [scrollTarget, setScrollTarget] = useState<string | undefined>(undefined);
+
+    // Set scroll target when navigating to a new node or when lesson param changes
     useEffect(() => {
-        if (scrollToLessonId) {
-            // Clear after a delay to ensure HoneycombPath receives it
+        const target = scrollToLessonId || node?.lessonPath?.[0]?.id;
+        if (target) {
+            setScrollTarget(target);
+        }
+    }, [nodeId, scrollToLessonId]);
+
+    // Clear both URL param and scroll target after use
+    useEffect(() => {
+        if (scrollTarget) {
             const timeoutId = setTimeout(() => {
                 setSearchParams({}, { replace: true });
-            }, 500);
+                setScrollTarget(undefined); // Clear the scroll target
+            }, 800); // Slightly longer to ensure scroll completes
             return () => clearTimeout(timeoutId);
         }
-    }, [scrollToLessonId, setSearchParams]);
+    }, [scrollTarget, setSearchParams]);
 
-    const node = initialNodes.find(n => n.id === nodeId);
     const parent = node ? findParent(node.id) : null;
 
     const [selectedPaths, setSelectedPaths] = useState<Record<string, string>>(getSelectedPaths());
+
+    // Auto-select path to current node when coming from graph (no lesson param)
+    useEffect(() => {
+        if (!node || scrollToLessonId) return; // Only when no explicit lesson (coming from graph)
+
+        // Build path from root to this node
+        const pathToNode: NodeType[] = [];
+        let currentNode: NodeType | undefined = node;
+
+        while (currentNode) {
+            pathToNode.unshift(currentNode);
+            const parent = findParent(currentNode.id);
+            if (parent && !pathToNode.some(n => n.id === parent.id)) {
+                currentNode = parent;
+            } else {
+                currentNode = undefined;
+            }
+        }
+
+        // Auto-select each step in the path
+        const newSelections: Record<string, string> = { ...getSelectedPaths() };
+        let hasChanges = false;
+
+        for (let i = 0; i < pathToNode.length - 1; i++) {
+            const parent = pathToNode[i];
+            const child = pathToNode[i + 1];
+
+            // If this selection doesn't exist or is different, set it
+            if (newSelections[parent.id] !== child.id) {
+                newSelections[parent.id] = child.id;
+                saveSelectedPath(parent.id, child.id);
+                hasChanges = true;
+            }
+        }
+
+        if (hasChanges) {
+            setSelectedPaths(newSelections);
+            setRefreshKey(k => k + 1); // Force rebuild
+        }
+    }, [nodeId, scrollToLessonId, node]);
     const [activeLesson, setActiveLesson] = useState<{ node: NodeType; lesson: Lesson; index: number } | null>(null);
     const [strengthenOpen, setStrengthenOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
@@ -347,7 +401,7 @@ export const NodePage: React.FC = () => {
                         key={refreshKey}
                         sections={sections}
                         currentNodeId={node.id}
-                        scrollToLesson={scrollToLessonId || undefined}
+                        scrollToLesson={scrollTarget}
                         scrollContainerRef={scrollContainerRef as React.RefObject<HTMLDivElement>}
                         onLessonClick={(node, lesson, index) => setActiveLesson({ node, lesson, index })}
                         onPathSelect={(selectedNodeId) => {
