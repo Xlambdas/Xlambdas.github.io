@@ -5,6 +5,7 @@ import { upsertCard } from "../../utils/srEngine";
 import { QuizPlayer } from "./quizPlayer";
 import { getNotesForNode } from "../../data/teacherNotes";
 import { TeacherNoteCard } from "../../sections/teacherNoteCard";
+import { useLessonTextSize } from "../../hooks";
 
 // --- Constants ---
 
@@ -141,7 +142,8 @@ const CompletionScreen: React.FC<{
     color: string;
     isNodeComplete: boolean;
     onContinue: () => void;
-}> = ({ lesson, node, color, isNodeComplete, onContinue }) => {
+    textScale: number;
+}> = ({ lesson, node, color, isNodeComplete, onContinue, textScale }) => {
     const [visible, setVisible] = useState(false);
     useEffect(() => {
         requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
@@ -151,25 +153,25 @@ const CompletionScreen: React.FC<{
         <div style={{
             flex: 1, display: "flex", flexDirection: "column",
             alignItems: "center", justifyContent: "center",
-            gap: 24, padding: "0 24px", textAlign: "center",
+            gap: 24 * textScale, padding: `0 ${24 * textScale}px`, textAlign: "center",
             opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0)" : "translateY(16px)",
+            transform: visible ? "translateY(0)" : `translateY(${16 * textScale}px)`,
             transition: "all 0.4s ease",
         }}>
             <div style={{
-                width: 72, height: 72, borderRadius: "50%",
+                width: 72 * textScale, height: 72 * textScale, borderRadius: "50%",
                 background: `${color}18`, border: `2px solid ${color}44`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 30, boxShadow: `0 0 30px ${color}33`,
+                fontSize: 30 * textScale, boxShadow: `0 0 30px ${color}33`,
             }}>
                 {isNodeComplete ? (node.badge?.icon ?? "✦") : "✓"}
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <h2 style={{ color: "#c9d1d9", fontSize: 18, fontWeight: 600, margin: 0 }}>
+                <h2 style={{ color: "#c9d1d9", fontSize: 18 * textScale, fontWeight: 600, margin: 0 }}>
                     {isNodeComplete ? `${node.title} complété !` : `${lesson.title} terminé !`}
                 </h2>
-                <p style={{ color: "#6e7681", fontSize: 13, lineHeight: 1.6, margin: 0 }}>
+                <p style={{ color: "#6e7681", fontSize: 13 * textScale, lineHeight: 1.6, margin: 0 }}>
                     {isNodeComplete
                         ? node.badge
                             ? `Tu as obtenu le badge "${node.badge.name}" ${node.badge.icon}`
@@ -185,12 +187,12 @@ const CompletionScreen: React.FC<{
                     display: "flex", flexDirection: "column", gap: 6,
                 }}>
                     <span style={{
-                        color, fontSize: 11, fontWeight: 600,
+                        color, fontSize: 11 * textScale, fontWeight: 600,
                         textTransform: "uppercase", letterSpacing: "0.08em",
                     }}>
                         Badge débloqué
                     </span>
-                    <span style={{ color: "#8b949e", fontSize: 12, lineHeight: 1.5 }}>
+                    <span style={{ color: "#8b949e", fontSize: 12 * textScale, lineHeight: 1.5 }}>
                         {node.badge.levels.bronze}
                     </span>
                 </div>
@@ -199,9 +201,9 @@ const CompletionScreen: React.FC<{
             <button
                 onClick={onContinue}
                 style={{
-                    padding: "14px 36px",
+                    padding: `${14 * textScale}px ${36 * textScale}px`,
                     background: `${color}22`, border: `1px solid ${color}66`,
-                    color, borderRadius: 12, fontSize: 14, fontWeight: 500,
+                    color, borderRadius: 12, fontSize: 14 * textScale, fontWeight: 500,
                     cursor: "pointer", transition: "all 0.2s ease",
                 }}
             >
@@ -232,6 +234,7 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
     const [isNodeComplete, setIsNodeComplete] = useState(false);
     const [quizDone, setQuizDone] = useState<Set<number>>(new Set());
     const scrollRef = useRef<HTMLDivElement>(null);
+    const { textScale } = useLessonTextSize();
 
     const color = NODE_COLOR[node.type];
     const blocks = lesson.blocks;
@@ -343,10 +346,10 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
                                 flexShrink: 0,
                             }} />
                             <div>
-                                <div style={{ color: "#c9d1d9", fontSize: 12, fontWeight: 500 }}>
+                                <div style={{ color: "#c9d1d9", fontSize: 12 * textScale, fontWeight: 500 }}>
                                     {lesson.title}
                                 </div>
-                                <div style={{ color: "#484f58", fontSize: 10, marginTop: 2 }}>
+                                <div style={{ color: "#484f58", fontSize: 10 * textScale, marginTop: 2 }}>
                                     {node.title} · {blockIndex + 1} / {blocks.length}
                                 </div>
                             </div>
@@ -355,8 +358,8 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
                             onClick={handleClose}
                             style={{
                                 background: "none", border: "none",
-                                color: "#484f58", fontSize: 20,
-                                cursor: "pointer", lineHeight: 1, padding: 4,
+                                color: "#484f58", fontSize: 20 * textScale,
+                                cursor: "pointer", lineHeight: 1, padding: `${4 * textScale}px`,
                             }}
                         >×</button>
                     </div>
@@ -382,12 +385,12 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
                                     gap: 6, marginBottom: 16,
                                 }}>
                                     <span style={{
-                                        color, fontSize: 10, fontWeight: 600,
+                                        color, fontSize: 10 * textScale, fontWeight: 600,
                                         textTransform: "uppercase", letterSpacing: "0.1em",
                                     }}>
                                         {currentBlock ? BLOCK_LABELS[currentBlock.type] : ""}
                                     </span>
-                                    <span style={{ color: "#30363d", fontSize: 10 }}>
+                                    <span style={{ color: "#30363d", fontSize: 10 * textScale }}>
                                         · {blockIndex + 1}/{blocks.length}
                                     </span>
                                 </div>
@@ -416,7 +419,7 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
 
                         {/* next button */}
                         <div style={{
-                            padding: "16px 24px",
+                            padding: `${16 * textScale}px ${24 * textScale}px`,
                             borderTop: "1px solid #21262d",
                             flexShrink: 0, background: "#161b22",
                         }}>
@@ -424,11 +427,11 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
                                 onClick={handleNext}
                                 disabled={!canAdvance()}
                                 style={{
-                                    width: "100%", padding: "14px 0",
+                                    width: "100%", padding: `${14 * textScale}px 0`,
                                     background: canAdvance() ? `${color}22` : "#21262d",
                                     border: `1px solid ${canAdvance() ? `${color}66` : "#30363d"}`,
                                     color: canAdvance() ? color : "#484f58",
-                                    borderRadius: 10, fontSize: 13, fontWeight: 500,
+                                    borderRadius: 10 * textScale, fontSize: 13 * textScale, fontWeight: 500,
                                     cursor: canAdvance() ? "pointer" : "not-allowed",
                                     transition: "all 0.2s ease",
                                 }}
@@ -446,6 +449,7 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
                         color={color}
                         isNodeComplete={isNodeComplete}
                         onContinue={handleContinue}
+                        textScale={textScale}
                     />
                 )}
             </div>

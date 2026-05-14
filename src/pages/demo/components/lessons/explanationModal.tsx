@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLessonTextSize } from "../../hooks";
 
 // --- Explanation Modal ---
 
@@ -12,6 +13,7 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({
     onClose,
 }) => {
     const [visible, setVisible] = useState(false);
+    const textScale = useLessonTextSize().textScale;
 
     useEffect(() => {
         requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
@@ -75,7 +77,7 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({
                             <span style={{ fontSize: 18 }}>💡</span>
                             <span style={{
                                 color: "#c9d1d9",
-                                fontSize: 14,
+                                fontSize: 14 * textScale,
                                 fontWeight: 600,
                             }}>
                                 Explication détaillée
@@ -87,9 +89,9 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({
                                 background: "none",
                                 border: "none",
                                 color: "#484f58",
-                                fontSize: 20,
+                                fontSize: 20 * textScale,
                                 cursor: "pointer",
-                                padding: 4,
+                                padding: `${4 * textScale}px`,
                                 lineHeight: 1,
                             }}
                         >
@@ -107,7 +109,7 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({
                     }}>
                         <p style={{
                             color: "#c9d1d9",
-                            fontSize: 14,
+                            fontSize: 14 * textScale,
                             lineHeight: 1.8,
                             margin: 0,
                             whiteSpace: "pre-wrap",
@@ -125,12 +127,12 @@ export const ExplanationModal: React.FC<ExplanationModalProps> = ({
                             onClick={handleClose}
                             style={{
                                 width: "100%",
-                                padding: "12px 0",
+                                padding: `${12 * textScale}px 0`,
                                 background: "rgba(165,180,252,0.12)",
                                 border: "1px solid rgba(165,180,252,0.3)",
                                 color: "#a5b4fc",
                                 borderRadius: 8,
-                                fontSize: 13,
+                                fontSize: 14 * textScale,
                                 fontWeight: 500,
                                 cursor: "pointer",
                                 transition: "all 0.15s ease",

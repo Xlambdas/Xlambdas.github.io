@@ -1,6 +1,7 @@
 import React from "react";
 import type { ContentBlock, SRRating } from "../../types/types";
 import { QuizBlockPlayer } from "./quizBlockPlayer";
+import { useLessonTextSize } from "../../hooks";
 
 // --- Markdown Helper ---
 
@@ -17,12 +18,13 @@ const md = (text: string) =>
 const ExplanationBlock: React.FC<{
     block: Extract<ContentBlock, { type: "explanation" }>;
     color: string;
-}> = ({ block, color }) => (
+    textScale: number;
+}> = ({ block, color, textScale }) => (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {block.title && (
             <h2 style={{
                 color,
-                fontSize: 18,
+                fontSize: 18 * textScale,
                 fontWeight: 600,
                 margin: 0,
                 paddingLeft: 12,
@@ -32,7 +34,7 @@ const ExplanationBlock: React.FC<{
             </h2>
         )}
         <div
-            style={{ color: "#c9d1d9", fontSize: 15 }}
+            style={{ color: "#c9d1d9", fontSize: 15 * textScale }}
             dangerouslySetInnerHTML={{ __html: md(block.content) }}
         />
     </div>
@@ -41,7 +43,8 @@ const ExplanationBlock: React.FC<{
 const VignetteBlock: React.FC<{
     block: Extract<ContentBlock, { type: "vignette" }>;
     color: string;
-}> = ({ block, color }) => (
+    textScale: number;
+}> = ({ block, color, textScale }) => (
     <div style={{
         background: "#0d1117",
         border: "1px solid #21262d",
@@ -53,10 +56,10 @@ const VignetteBlock: React.FC<{
         gap: 12,
     }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 16 }}>🎭</span>
+            <span style={{ fontSize: 16 * textScale }}>🎭</span>
             <span style={{
                 color,
-                fontSize: 11,
+                fontSize: 11 * textScale,
                 fontWeight: 600,
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
@@ -67,7 +70,7 @@ const VignetteBlock: React.FC<{
         <div
             style={{
                 color: "#8b949e",
-                fontSize: 15,
+                fontSize: 15 * textScale,
                 fontStyle: "italic",
             }}
             dangerouslySetInnerHTML={{ __html: md(block.content) }}
@@ -78,7 +81,8 @@ const VignetteBlock: React.FC<{
 const RecapBlock: React.FC<{
     block: Extract<ContentBlock, { type: "recap" }>;
     color: string;
-}> = ({ block, color }) => (
+    textScale: number;
+}> = ({ block, color, textScale }) => (
     <div style={{
         background: `${color}08`,
         border: `1px solid ${color}22`,
@@ -89,10 +93,10 @@ const RecapBlock: React.FC<{
         gap: 16,
     }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 18 }}>🔁</span>
+            <span style={{ fontSize: 18 * textScale }}>🔁</span>
             <span style={{
                 color,
-                fontSize: 12,
+                fontSize: 12 * textScale,
                 fontWeight: 600,
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
@@ -111,7 +115,7 @@ const RecapBlock: React.FC<{
                         flexShrink: 0,
                         marginTop: 8,
                     }} />
-                    <span style={{ color: "#c9d1d9", fontSize: 14, lineHeight: 1.7 }}>
+                    <span style={{ color: "#c9d1d9", fontSize: 14 * textScale, lineHeight: 1.7 }}>
                         {point}
                     </span>
                 </div>
@@ -126,7 +130,7 @@ const RecapBlock: React.FC<{
         }}>
             <span style={{
                 color: "#484f58",
-                fontSize: 10,
+                fontSize: 10 * textScale,
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
             }}>
@@ -134,7 +138,7 @@ const RecapBlock: React.FC<{
             </span>
             <p style={{
                 color: "#6e7681",
-                fontSize: 12,
+                fontSize: 12 * textScale,
                 marginTop: 8,
                 fontStyle: "italic",
             }}>
@@ -178,6 +182,7 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
     canContinue,
     buttonLabel,
 }) => {
+    const textScale = useLessonTextSize().textScale;
     return (
         <div style={{
             animation: "blockFadeIn 0.4s ease",
@@ -200,24 +205,24 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
-                    fontSize: 11,
+                    fontSize: 11 * textScale,
                     color: "#fb923c",
                     fontWeight: 500,
                 }}>
-                    🔄 Question à réviser
+                    Précédente erreur
                 </div>
             )}
 
             {block.type === "explanation" && (
-                <ExplanationBlock block={block} color={color} />
+                <ExplanationBlock block={block} color={color} textScale={textScale} />
             )}
 
             {block.type === "vignette" && (
-                <VignetteBlock block={block} color={color} />
+                <VignetteBlock block={block} color={color} textScale={textScale} />
             )}
 
             {block.type === "recap" && (
-                <RecapBlock block={block} color={color} />
+                <RecapBlock block={block} color={color} textScale={textScale} />
             )}
 
             {block.type === "quiz" && (
@@ -242,16 +247,16 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
                         <button
                             onClick={onPrevious}
                             style={{
-                                flex: 1,
-                                padding: "14px 0",
-                                background: "#21262d",
+                                padding: "12px 20px",
+                                background: "transparent",
                                 border: "1px solid #30363d",
                                 color: "#8b949e",
                                 borderRadius: 10,
-                                fontSize: 14,
+                                fontSize: 13 * textScale,
                                 fontWeight: 500,
                                 cursor: "pointer",
                                 transition: "all 0.2s ease",
+                                whiteSpace: "nowrap",
                             }}
                         >
                             ← Précédent
@@ -260,14 +265,13 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
                     <button
                         onClick={onContinue}
                         style={{
-                            width: "100%",
+                            flex: 1,
                             padding: "14px 0",
-                            marginTop: 24,
                             background: canContinue ? `${color}22` : "#21262d",
                             border: `1px solid ${canContinue ? `${color}66` : "#30363d"}`,
                             color: canContinue ? color : "#484f58",
                             borderRadius: 10,
-                            fontSize: 14,
+                            fontSize: 14 * textScale,
                             fontWeight: 500,
                             cursor: canContinue ? "pointer" : "not-allowed",
                             transition: "all 0.2s ease",

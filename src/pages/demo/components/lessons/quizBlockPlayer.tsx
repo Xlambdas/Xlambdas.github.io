@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { QuizQuestion, SRRating } from "../../types/types";
 import { QuizInteraction } from "./quizInteraction";
+import { useLessonTextSize } from "../../hooks";
 
 // --- Quiz Block Player ---
 
@@ -36,6 +37,7 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
     const [userAnswer, setUserAnswer] = useState<any>(reviewData ?? null);
     const [, setIsCorrect] = useState(reviewCorrect ?? false);
     const [, setUsedIDK] = useState(false);
+    const textScale = useLessonTextSize().textScale;
 
     // Sync phase with props whenever they change
     React.useEffect(() => {
@@ -87,10 +89,10 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
             background: "#0d1117",
             border: "1px solid #21262d",
             borderRadius: 12,
-            padding: "24px",
+            padding: `${24 * textScale}px`,
             display: "flex",
             flexDirection: "column",
-            gap: 20,
+            gap: `${20 * textScale}px`,
         }}>
             {/* Question */}
             <div>
@@ -98,13 +100,13 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
                     background: "rgba(165,180,252,0.1)",
                     border: "1px solid rgba(165,180,252,0.25)",
                     borderRadius: 20,
-                    padding: "4px 12px",
+                    padding: `${4 * textScale}px ${12 * textScale}px`,
                     display: "inline-block",
-                    marginBottom: 12,
+                    marginBottom: `${12 * textScale}px`,
                 }}>
                     <span style={{
                         color,
-                        fontSize: 10,
+                        fontSize: `${10 * textScale}px`,
                         textTransform: "uppercase",
                         letterSpacing: "0.08em",
                         fontWeight: 600,
@@ -114,7 +116,7 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
                 </div>
                 <p style={{
                     color: "#c9d1d9",
-                    fontSize: 15,
+                    fontSize: `${15 * textScale}px`,
                     lineHeight: 1.7,
                     margin: 0,
                 }}>
@@ -144,18 +146,18 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
                     />
 
                     {/* Buttons */}
-                    <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+                    <div style={{ display: "flex", gap: `${10 * textScale}px`, marginTop: `${16 * textScale}px` }}>
                         {onPrevious && (
                             <button
                                 onClick={onPrevious}
                                 style={{
                                     flex: 1,
-                                    padding: "12px 0",
+                                    padding: `${12 * textScale}px 0`,
                                     background: "#21262d",
                                     border: "1px solid #30363d",
                                     color: "#8b949e",
-                                    borderRadius: 8,
-                                    fontSize: 13,
+                                    borderRadius: `${8 * textScale}px`,
+                                    fontSize: `${13 * textScale}px`,
                                     fontWeight: 500,
                                     cursor: "pointer",
                                     transition: "all 0.15s ease",
@@ -168,12 +170,12 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
                             onClick={handleExplainClick}
                             style={{
                                 flex: 1,
-                                padding: "12px 0",
+                                padding: `${12 * textScale}px 0`,
                                 background: "#21262d",
                                 border: "1px solid #30363d",
                                 color: "#8b949e",
-                                borderRadius: 8,
-                                fontSize: 13,
+                                borderRadius: `${8 * textScale}px`,
+                                fontSize: `${13 * textScale}px`,
                                 fontWeight: 500,
                                 cursor: "pointer",
                                 transition: "all 0.15s ease",
@@ -185,12 +187,12 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
                             onClick={handleContinue}
                             style={{
                                 flex: 1,
-                                padding: "12px 0",
+                                padding: `${12 * textScale}px 0`,
                                 background: `${color}22`,
                                 border: `1px solid ${color}66`,
                                 color,
-                                borderRadius: 8,
-                                fontSize: 13,
+                                borderRadius: `${8 * textScale}px`,
+                                fontSize: `${13 * textScale}px`,
                                 fontWeight: 500,
                                 cursor: "pointer",
                                 transition: "all 0.15s ease",
@@ -204,154 +206,6 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
         </div>
     );
 };
-
-// --- Solution Display ---
-
-// interface SolutionDisplayProps {
-//     question: QuizQuestion;
-//     userAnswer: any;
-//     isCorrect: boolean;
-//     usedIDK: boolean;
-//     color: string;
-//     onContinue: (rating: SRRating) => void;
-//     onExplain: () => void;
-//     onPrevious?: () => void;
-// }
-
-// const SolutionDisplay: React.FC<SolutionDisplayProps> = ({
-//     question,
-//     isCorrect,
-//     usedIDK,
-//     color,
-//     onContinue,
-//     onExplain,
-//     onPrevious,
-// }) => {
-//     const [rating, ] = useState<SRRating | null>(null);
-
-//     // const handleRate = (r: SRRating) => {
-//     //     setRating(r);
-//     //     onContinue(r);
-//     // };
-
-//     return (
-//         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-//             {/* Result indicator */}
-//             <div style={{
-//                 background: isCorrect
-//                     ? "rgba(34,197,94,0.1)"
-//                     : "rgba(239,68,68,0.1)",
-//                 border: `1px solid ${isCorrect
-//                     ? "rgba(34,197,94,0.3)"
-//                     : "rgba(239,68,68,0.3)"}`,
-//                 borderRadius: 8,
-//                 padding: "12px 16px",
-//                 display: "flex",
-//                 alignItems: "center",
-//                 gap: 10,
-//             }}>
-//                 <span style={{ fontSize: 18 }}>
-//                     {isCorrect ? "✓" : "✗"}
-//                 </span>
-//                 <span style={{
-//                     color: isCorrect ? "#22c55e" : "#ef4444",
-//                     fontSize: 13,
-//                     fontWeight: 500,
-//                 }}>
-//                     {isCorrect
-//                         ? "Bonne réponse !"
-//                         : usedIDK
-//                             ? "Voici la bonne réponse"
-//                             : "Pas tout à fait"}
-//                 </span>
-//             </div>
-
-//             {/* Correct answer display */}
-//             <div style={{
-//                 background: "#161b22",
-//                 border: "1px solid #30363d",
-//                 borderRadius: 8,
-//                 padding: "14px 16px",
-//             }}>
-//                 <div style={{
-//                     color: "#484f58",
-//                     fontSize: 10,
-//                     textTransform: "uppercase",
-//                     letterSpacing: "0.08em",
-//                     marginBottom: 8,
-//                 }}>
-//                     Réponse correcte
-//                 </div>
-//                 <div style={{ color: "#c9d1d9", fontSize: 14 }}>
-//                     {getCorrectAnswerText(question)}
-//                 </div>
-//             </div>
-
-//             {/* Buttons */}
-//             {!rating ? (
-//                 <div style={{ display: "flex", gap: 10 }}>
-//                     {onPrevious && (
-//                         <button
-//                             onClick={onPrevious}
-//                             style={{
-//                                 flex: 1,
-//                                 padding: "12px 0",
-//                                 background: "#21262d",
-//                                 border: "1px solid #30363d",
-//                                 color: "#8b949e",
-//                                 borderRadius: 8,
-//                                 fontSize: 13,
-//                                 fontWeight: 500,
-//                                 cursor: "pointer",
-//                                 transition: "all 0.15s ease",
-//                             }}
-//                         >
-//                             ← Précédent
-//                         </button>
-//                     )}
-//                     <button
-//                         onClick={onExplain}
-//                         style={{
-//                             flex: 1,
-//                             padding: "12px 0",
-//                             background: "#21262d",
-//                             border: "1px solid #30363d",
-//                             color: "#8b949e",
-//                             borderRadius: 8,
-//                             fontSize: 13,
-//                             fontWeight: 500,
-//                             cursor: "pointer",
-//                             transition: "all 0.15s ease",
-//                         }}
-//                     >
-//                         Explication
-//                     </button>
-//                     <button
-//                         onClick={() => {
-//                             const r = isCorrect ? "perfect" : "forgot";
-//                             // handleRate(r);
-//                             onContinue(r);
-//                         }}
-//                         style={{
-//                             flex: 1,
-//                             padding: "12px 0",
-//                             background: `${color}22`,
-//                             border: `1px solid ${color}66`,
-//                             color,
-//                             borderRadius: 8,
-//                             fontSize: 13,
-//                             fontWeight: 500,
-//                             cursor: "pointer",
-//                             transition: "all 0.15s ease",
-//                         }}
-//                     >
-//                         Continuer →
-//                     </button>
-//                 </div>
-//             ) : null}
-//         </div>
-//     );
-// };
 
 // --- Helpers ---
 
@@ -387,22 +241,3 @@ const checkAnswer = (question: QuizQuestion, answer: any): boolean => {
             return false;
     }
 };
-
-// const getCorrectAnswerText = (question: QuizQuestion): string => {
-//     switch (question.type) {
-//         case "multiple_choice":
-//             return question.choices[question.correctIndex];
-//         case "true_false":
-//             return question.correct ? "Vrai" : "Faux";
-//         case "ordering":
-//             return question.correctOrder.map(i => question.items[i]).join(" → ");
-//         case "match_pairs":
-//             return question.pairs.map(p => `${p.left} → ${p.right}`).join(", ");
-//         case "word_bank":
-//             return question.correctWords.join(", ");
-//         case "sentence":
-//             return question.modelAnswer;
-//         default:
-//             return "";
-//     }
-// };

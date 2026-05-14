@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { QuizQuestion } from "../../types/types";
+import { useLessonTextSize } from "../../hooks";
 
 // --- Quiz Interaction ---
 
@@ -19,6 +20,7 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
     userAnswer: externalAnswer,
 }) => {
     const [answer, setAnswer] = useState<any>(externalAnswer ?? null);
+    const { textScale } = useLessonTextSize();
 
     React.useEffect(() => {
         if (externalAnswer !== undefined && externalAnswer !== null) {
@@ -57,6 +59,7 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
                         onSelect={setAnswer}
                         onSubmit={onSubmit}
                         color={color}
+                        textScale={textScale}
                         submitted={submitted}
                     />
                 )}
@@ -67,6 +70,7 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
                         onSelect={setAnswer}
                         onSubmit={onSubmit}
                         color={color}
+                        textScale={textScale}
                         submitted={submitted}
                     />
                 )}
@@ -76,6 +80,7 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
                         order={answer}
                         onOrderChange={setAnswer}
                         color={color}
+                        textScale={textScale}
                         submitted={submitted}
                     />
                 )}
@@ -85,6 +90,7 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
                         matches={answer}
                         onMatchChange={setAnswer}
                         color={color}
+                        textScale={textScale}
                         submitted={submitted}
                     />
                 )}
@@ -94,6 +100,7 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
                         filled={answer}
                         onFilledChange={setAnswer}
                         color={color}
+                        textScale={textScale}
                         submitted={submitted}
                     />
                 )}
@@ -102,6 +109,7 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
                         question={question}
                         value={answer}
                         onChange={setAnswer}
+                        textScale={textScale}
                         submitted={submitted}
                     />
                 )}
@@ -117,12 +125,12 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
                         onClick={() => onSubmit(null, true)}
                         style={{
                             flex: 1,
-                            padding: "12px 0",
+                            padding: `${12 * textScale}px 0`,
                             background: "#21262d",
                             border: "1px solid #30363d",
                             color: "#8b949e",
-                            borderRadius: 8,
-                            fontSize: 13,
+                            borderRadius: `${8 * textScale}px`,
+                            fontSize: `${13 * textScale}px`,
                             cursor: "pointer",
                             transition: "all 0.15s ease",
                         }}
@@ -134,12 +142,12 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
                         disabled={!hasAnswer}
                         style={{
                             flex: 1,
-                            padding: "12px 0",
+                            padding: `${12 * textScale}px 0`,
                             background: hasAnswer ? `${color}22` : "#21262d",
                             border: `1px solid ${hasAnswer ? `${color}66` : "#30363d"}`,
                             color: hasAnswer ? color : "#484f58",
-                            borderRadius: 8,
-                            fontSize: 13,
+                            borderRadius: `${8 * textScale}px`,
+                            fontSize: `${13 * textScale}px`,
                             fontWeight: 500,
                             cursor: hasAnswer ? "pointer" : "not-allowed",
                             transition: "all 0.15s ease",
@@ -161,8 +169,9 @@ const MultipleChoiceUI: React.FC<{
     onSelect: (index: number) => void;
     onSubmit: (answer: any, idk: boolean) => void;
     color: string;
+    textScale: number;
     submitted?: boolean;
-}> = ({ question, selected, onSelect, onSubmit, color, submitted = false }) => (
+}> = ({ question, selected, onSelect, onSubmit, color, textScale, submitted = false }) => (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {question.choices.map((choice, i) => (
             <button
@@ -175,7 +184,7 @@ const MultipleChoiceUI: React.FC<{
                 }}
                 disabled={submitted}
                 style={{
-                    padding: "12px 16px",
+                    padding: `${12 * textScale}px ${16 * textScale}px`,
                     background: !submitted ? (selected === i ? `${color}15` : "#161b22")
                         : i === question.correctIndex ? "rgba(34,197,94,0.12)"
                             : selected === i ? "rgba(239,68,68,0.1)"
@@ -184,12 +193,12 @@ const MultipleChoiceUI: React.FC<{
                         : i === question.correctIndex ? "#22c55e"
                             : selected === i ? "#ef4444"
                                 : "#30363d"}`,
-                    borderRadius: 8,
+                    borderRadius: `${8 * textScale}px`,
                     color: submitted && i === question.correctIndex ? "#22c55e"
                         : submitted && selected === i ? "#ef4444"
                             : submitted ? "#484f58"
                                 : "#c9d1d9",
-                    fontSize: 13,
+                    fontSize: `${13 * textScale}px`,
                     textAlign: "left",
                     cursor: "pointer",
                     transition: "all 0.15s ease",
@@ -199,14 +208,14 @@ const MultipleChoiceUI: React.FC<{
                 }}
             >
                 <span style={{
-                    width: 20,
-                    height: 20,
+                    width: 20 * textScale,
+                    height: 20 * textScale,
                     borderRadius: "50%",
                     border: `1px solid ${selected === i ? color : "#484f58"}`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 10,
+                    fontSize: 10 * textScale,
                     color: !submitted ? (selected === i ? color : "#484f58")
                         : i === question.correctIndex ? "#22c55e"
                             : selected === i ? "#ef4444"
@@ -231,8 +240,9 @@ const TrueFalseUI: React.FC<{
     onSelect: (value: boolean) => void;
     onSubmit: (answer: any, idk: boolean) => void;
     color: string;
+    textScale: number;
     submitted?: boolean;
-}> = ({ question, selected, onSelect, onSubmit, color, submitted = false }) => (
+}> = ({ question, selected, onSelect, onSubmit, color, textScale, submitted = false }) => (
     <div style={{ display: "flex", gap: 12 }}>
         {[true, false].map(val => (
             <button
@@ -246,18 +256,18 @@ const TrueFalseUI: React.FC<{
                 disabled={submitted}
                 style={{
                     flex: 1,
-                    padding: "16px 0",
+                    padding: `${16 * textScale}px 0`,
                     background: submitted && val === question.correct ? "rgba(34,197,94,0.12)"
                         : submitted && selected === val ? "rgba(239,68,68,0.1)"
                             : selected === val ? `${color}15` : "#161b22",
                     border: `1px solid ${submitted && val === question.correct ? "#22c55e"
                         : submitted && selected === val ? "#ef4444"
                             : selected === val ? color : "#30363d"}`,
-                    borderRadius: 10,
+                    borderRadius: `${10 * textScale}px`,
                     color: submitted && val === question.correct ? "#22c55e"
                         : submitted && selected === val ? "#ef4444"
                             : selected === val ? color : "#c9d1d9",
-                    fontSize: 14,
+                    fontSize: `${14 * textScale}px`,
                     fontWeight: 600,
                     cursor: "pointer",
                     transition: "all 0.15s ease",
@@ -276,8 +286,9 @@ const OrderingUI: React.FC<{
     order: number[] | null;
     onOrderChange: (order: number[]) => void;
     color: string;
+    textScale: number;
     submitted?: boolean;
-}> = ({ question, order, onOrderChange, color, submitted = false }) => {
+}> = ({ question, order, onOrderChange, color, textScale, submitted = false }) => {
     const [localOrder, setLocalOrder] = useState<number[]>([...question.items.keys()]);
     const [selected, setSelected] = useState<number | null>(null);
 
@@ -320,16 +331,16 @@ const OrderingUI: React.FC<{
                     onClick={() => handleTap(pos)}
                     disabled={submitted}
                     style={{
-                        padding: "12px 16px",
+                        padding: `${12 * textScale}px ${16 * textScale}px`,
                         background: !submitted && selected === pos ? `${color}15`
                             : submitted ? (pos === question.correctOrder.indexOf(itemIdx) ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.08)")
                                 : "#161b22",
                         border: `1px solid ${!submitted && selected === pos ? color
                             : submitted ? (pos === question.correctOrder.indexOf(itemIdx) ? "#22c55e" : "#ef4444")
                                 : "#30363d"}`,
-                        borderRadius: 8,
+                        borderRadius: `${8 * textScale}px`,
                         color: submitted ? (pos === question.correctOrder.indexOf(itemIdx) ? "#22c55e" : "#ef4444") : "#c9d1d9",
-                        fontSize: 13,
+                        fontSize: `${13 * textScale}px`,
                         textAlign: "left",
                         cursor: "pointer",
                         display: "flex",
@@ -338,14 +349,14 @@ const OrderingUI: React.FC<{
                     }}
                 >
                     <span style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: "50%",
+                        width: `${20 * textScale}px`,
+                        height: `${20 * textScale}px`,
+                        borderRadius: `${10 * textScale}px`,
                         background: "#21262d",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: 10,
+                        fontSize: `${10 * textScale}px`,
                         color: "#8b949e",
                     }}>
                         {pos + 1}
@@ -374,8 +385,9 @@ const MatchPairsUI: React.FC<{
     matches: Record<number, number> | null;
     onMatchChange: (matches: Record<number, number>) => void;
     color: string;
+    textScale: number;
     submitted?: boolean;
-}> = ({ question, matches, onMatchChange, color, submitted = false }) => {
+}> = ({ question, matches, onMatchChange, color, textScale, submitted = false }) => {
     const [localMatches, setLocalMatches] = useState<Record<number, number>>(matches ?? {});
     const [selectedLeft, setSelectedLeft] = useState<number | null>(null);
     const [selectedRight, setSelectedRight] = useState<number | null>(null);
@@ -511,7 +523,7 @@ const MatchPairsUI: React.FC<{
                                     ? isCorrect ? "#22c55e" : isWrong ? "#ef4444" : "#c9d1d9"
                                     : isMatched && pairColor ? pairColor.text
                                         : "#c9d1d9",
-                                fontSize: 12,
+                                fontSize: 12 * textScale,
                                 textAlign: "left",
                                 cursor: submitted || isMatched ? "default" : "pointer",
                                 transition: "all 0.15s ease",
@@ -565,7 +577,7 @@ const MatchPairsUI: React.FC<{
                                     ? isCorrect ? "#22c55e" : isWrong ? "#ef4444" : "#c9d1d9"
                                     : isMatched && pairColor ? pairColor.text
                                         : "#c9d1d9",
-                                fontSize: 12,
+                                fontSize: 12 * textScale,
                                 textAlign: "left",
                                 cursor: submitted || isMatched ? "default" : "pointer",
                                 transition: "all 0.15s ease",
@@ -587,8 +599,9 @@ const WordBankUI: React.FC<{
     filled: string[] | null;
     onFilledChange: (filled: string[]) => void;
     color: string;
+    textScale: number;
     submitted?: boolean;
-}> = ({ question, filled, onFilledChange, color, submitted = false }) => {
+}> = ({ question, filled, onFilledChange, color, textScale, submitted = false }) => {
     const blankCount = (question.sentence.match(/___/g) ?? []).length;
 
     // Initialize localFilled properly - expand filled array to full blank count
@@ -619,8 +632,8 @@ const WordBankUI: React.FC<{
                 background: "#161b22",
                 border: "1px solid #21262d",
                 borderRadius: 8,
-                padding: 14,
-                fontSize: 14,
+                padding: `${12 * textScale}px ${14 * textScale}px`,
+                fontSize: 14 * textScale,
                 lineHeight: 2,
                 color: "#c9d1d9",
                 display: "flex",
@@ -645,8 +658,8 @@ const WordBankUI: React.FC<{
                                 }}
                                 disabled={submitted}
                                 style={{
-                                    minWidth: 70,
-                                    padding: "2px 8px",
+                                    minWidth: 70 * textScale,
+                                    padding: `${2 * textScale}px ${8 * textScale}px`,
                                     background: !localFilled[i] ? "#1c2128"
                                         : submitted
                                             ? localFilled[i] === question.correctWords[i]
@@ -664,7 +677,7 @@ const WordBankUI: React.FC<{
                                                     : "#ef4444"  // Red
                                             : color}`,
                                     borderRadius: 6,
-                                    fontSize: 13,
+                                    fontSize: 13 * textScale,
                                     color: !localFilled[i] ? "#484f58"
                                         : submitted
                                             ? localFilled[i] === question.correctWords[i]
@@ -698,12 +711,12 @@ const WordBankUI: React.FC<{
                         }}
                         disabled={usedBank.has(word) || submitted}
                         style={{
-                            padding: "6px 12px",
+                            padding: `${6 * textScale}px ${12 * textScale}px`,
                             background: usedBank.has(word) ? "#0d1117" : "#21262d",
                             border: `1px solid ${usedBank.has(word) ? "#1c2128" : "#30363d"}`,
-                            borderRadius: 16,
+                            borderRadius: 16 * textScale,
                             color: usedBank.has(word) ? "#30363d" : "#c9d1d9",
-                            fontSize: 12,
+                            fontSize: 12 * textScale,
                             cursor: usedBank.has(word) ? "default" : "pointer",
                             textDecoration: usedBank.has(word) ? "line-through" : "none",
                         }}
@@ -722,8 +735,9 @@ const SentenceUI: React.FC<{
     question: Extract<QuizQuestion, { type: "sentence" }>;
     value: string | null;
     onChange: (value: string) => void;
+    textScale: number;
     submitted?: boolean;
-}> = ({ question, value, onChange, submitted = false }) => (
+}> = ({ question, value, onChange, textScale, submitted = false }) => (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <textarea
             value={value ?? ""}
@@ -736,9 +750,9 @@ const SentenceUI: React.FC<{
                 padding: "12px 14px",
                 background: "#161b22",
                 border: `1px solid ${submitted ? "#484f58" : "#30363d"}`,
-                borderRadius: 8,
+                borderRadius: 8 * textScale,
                 color: "#c9d1d9",
-                fontSize: 13,
+                fontSize: 13 * textScale,
                 lineHeight: 1.6,
                 resize: "none",
                 outline: "none",
@@ -750,19 +764,19 @@ const SentenceUI: React.FC<{
             <div style={{
                 background: "rgba(165,180,252,0.08)",
                 border: "1px solid rgba(165,180,252,0.2)",
-                borderRadius: 8,
-                padding: "12px 14px",
+                borderRadius: 8 * textScale,
+                padding: `${12 * textScale}px ${14 * textScale}px`,
             }}>
                 <div style={{
                     color: "#484f58",
-                    fontSize: 10,
+                    fontSize: 10 * textScale,
                     textTransform: "uppercase",
                     letterSpacing: "0.08em",
-                    marginBottom: 8,
+                    marginBottom: 8 * textScale,
                 }}>
                     Réponse de référence
                 </div>
-                <div style={{ color: "#c9d1d9", fontSize: 13, lineHeight: 1.7 }}>
+                <div style={{ color: "#c9d1d9", fontSize: 13 * textScale, lineHeight: 1.7 }}>
                     {question.modelAnswer}
                 </div>
             </div>
