@@ -51,7 +51,7 @@ export const LessonPage: React.FC = () => {
     if (!node || !lesson || lessonIndex === -1) {
         return (
             <div style={{
-                height: "100vh",
+                height: "100dvh",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -137,7 +137,7 @@ export const LessonPage: React.FC = () => {
     // --- Main render ---
     return (
         <div style={{
-            height: "100vh",
+            height: "100dvh",
             background: "#0b0f14",
             display: "flex",
             overflow: "hidden",
@@ -148,6 +148,7 @@ export const LessonPage: React.FC = () => {
                 flex: 1,
                 display: "flex",
                 flexDirection: "column",
+                height: "100%",
                 overflow: "hidden",
             }}>
                 {/* Progress Bar */}
@@ -375,16 +376,19 @@ export const LessonPage: React.FC = () => {
                 <div style={{
                     flex: 1,
                     overflowY: "auto",
+                    overflowX: "hidden",
+                    WebkitOverflowScrolling: "touch",
                     scrollbarWidth: "thin",
                     scrollbarColor: "#21262d transparent",
-                    display: "flex",
-                    flexDirection: "column",
+                    // display: "flex",
+                    // flexDirection: "column",
                 }}>
                     <div style={{
                         width: "min(700px, 100%)",
                         margin: "0 auto",
                         padding: "32px 24px",
-                        flex: 1,
+                        minHeight: "100%",
+                        // flex: 1,
                     }}>
                         {currentBlock && (
                                 <BlockRenderer
