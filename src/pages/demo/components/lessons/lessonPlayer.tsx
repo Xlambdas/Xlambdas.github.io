@@ -6,6 +6,7 @@ import { QuizPlayer } from "./quizPlayer";
 import { getNotesForNode } from "../../data/teacherNotes";
 import { TeacherNoteCard } from "../../sections/teacherNoteCard";
 import { useLessonTextSize } from "../../hooks";
+// import { FinalQuizPlayer } from "./FinalQuizPlayer";
 
 // --- Constants ---
 

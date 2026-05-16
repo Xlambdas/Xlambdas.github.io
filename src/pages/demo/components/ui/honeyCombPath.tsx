@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { type NodeType, type Lesson, isLessonCompleted } from "../../data/graphData";
 import { useNavigate } from "react-router-dom";
+import { initialNodes } from "../../data/graphData";
 
 // --- Constants ---
 
@@ -382,6 +383,28 @@ const PathSectionComponent: React.FC<{
     const navigate = useNavigate();
 
     const getLessonStatus = (lesson: Lesson, index: number): LessonStatus => {
+        // Check prerequisites for both first lesson AND final quiz
+        if ((lesson.type === "final_quiz" || index === 0) && node.prerequisites.length > 0) {
+            // All prerequisite nodes must have their final quiz completed
+            const prereqsMet = node.prerequisites.every(prereqId => {
+                const prereqNode = initialNodes.find(n => n.id === prereqId);
+                if (!prereqNode) return false;
+
+                const finalQuiz = prereqNode.lessonPath.find(l => l.type === "final_quiz");
+                if (!finalQuiz) return true; // No final quiz = consider it met
+
+                return isLessonCompleted(prereqId, finalQuiz.id);
+            });
+
+            if (!prereqsMet) return "locked";
+        }
+
+        // Final quiz: if prerequisites met, it's available
+        if (lesson.type === "final_quiz") {
+            return isLessonCompleted(node.id, lesson.id) ? "completed" : "current";
+        }
+
+        // Regular lessons follow normal progression
         if (isLessonCompleted(node.id, lesson.id)) return "completed";
         const firstIncomplete = lessons.findIndex(l => !isLessonCompleted(node.id, l.id));
         return index === firstIncomplete ? "current" : "locked";

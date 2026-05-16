@@ -15,22 +15,22 @@ export const isLessonCompleted = (nodeId: string, lessonId: string): boolean =>
     getCompletedLessons().includes(`${nodeId}::${lessonId}`);
 
 export const completeLesson = (nodeId: string, lessonId: string): void => {
+    const node = initialNodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    const lesson = node.lessonPath.find(l => l.id === lessonId);
+
+    // If it's a final quiz, use special completion logic
+    if (lesson?.type === "final_quiz") {
+        completeFinalQuiz(nodeId, lessonId);
+        return;
+    }
+
+    // Regular lesson completion
     const key = `${nodeId}::${lessonId}`;
     const current = getCompletedLessons();
     if (!current.includes(key)) {
         localStorage.setItem("completed_lessons", JSON.stringify([...current, key]));
-    }
-    // check if all lessons in node are done → complete the node
-    const node = initialNodes.find(n => n.id === nodeId);
-    if (!node) return;
-    const allDone = node.lessonPath.every(l => isLessonCompleted(nodeId, l.id));
-    if (allDone) {
-        const completedNodes = getCompletedNodes();
-        if (!completedNodes.includes(nodeId)) {
-            localStorage.setItem("completed_nodes", JSON.stringify([...completedNodes, nodeId]));
-        }
-        const level = computeBadgeLevel(nodeId);
-        if (level) awardBadge(nodeId, level);
     }
 };
 
@@ -42,10 +42,11 @@ export const getNodeCompletionPercent = (nodeId: string): number => {
 };
 
 export const getDynamicNodes = (): NodeType[] => {
-    const completed = getCompletedNodes();
     return initialNodes.map(n => {
         if (n.isUnlocked) return n;
-        const prereqsMet = n.prerequisites.every(id => completed.includes(id));
+
+        // Check if all prerequisites have their FINAL QUIZ completed
+        const prereqsMet = n.prerequisites.every(id => isFinalQuizCompleted(id));
         return { ...n, isUnlocked: prereqsMet };
     });
 };
@@ -109,6 +110,54 @@ export const awardBadge = (nodeId: string, level: "bronze" | "silver" | "gold") 
 
 export const getBadgeForNode = (nodeId: string) =>
     getEarnedBadges().find((b: any) => b.nodeId === nodeId) ?? null;
+
+
+// --- Final Quiz helpers ---
+
+export const isFinalQuizCompleted = (nodeId: string): boolean => {
+    const node = initialNodes.find(n => n.id === nodeId);
+    if (!node) return false;
+
+    const finalQuiz = node.lessonPath.find(l => l.type === "final_quiz");
+    if (!finalQuiz) return false;
+
+    return isLessonCompleted(nodeId, finalQuiz.id);
+};
+
+export const completeFinalQuiz = (nodeId: string, lessonId: string): void => {
+    const node = initialNodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    // 1. Mark the final quiz as complete
+    const key = `${nodeId}::${lessonId}`;
+    const current = getCompletedLessons();
+    if (!current.includes(key)) {
+        current.push(key);
+    }
+
+    // 2. Mark ALL "explanation" type lessons in this node as complete
+    node.lessonPath.forEach(lesson => {
+        if (lesson.type === "explanation" || lesson.type === "recap" || lesson.type === "vignette") {
+            const lessonKey = `${nodeId}::${lesson.id}`;
+            if (!current.includes(lessonKey)) {
+                current.push(lessonKey);
+            }
+        }
+    });
+
+    localStorage.setItem("completed_lessons", JSON.stringify(current));
+
+    // 3. Mark node as complete
+    const completedNodes = getCompletedNodes();
+    if (!completedNodes.includes(nodeId)) {
+        localStorage.setItem("completed_nodes", JSON.stringify([...completedNodes, nodeId]));
+    }
+
+    // 4. Award badge
+    const level = computeBadgeLevel(nodeId);
+    if (level) awardBadge(nodeId, level);
+};
+
 
 // --- Links derived from nodes ---
 
@@ -279,6 +328,116 @@ export const initialNodes: NodeType[] = [
                     },
                 ],
             },
+            {
+                id: "psychologie_final_quiz",
+                title: "Quiz Final — Psychologie Cognitive",
+                type: "final_quiz",
+                estimatedMinutes: 8,
+                blocks: [
+                    {
+                        type: "explanation",
+                        content: "Ce quiz final évalue ta compréhension de tous les concepts de ce module. Tu as droit à **3 erreurs maximum**. Bonne chance !",
+                    },
+                    {
+                        type: "quiz",
+                        question: {
+                            type: "multiple_choice",
+                            question: "La psychologie cognitive est née en réaction à quel courant ?",
+                            choices: ["Psychanalyse", "Béhaviorisme", "Gestalt", "Humanisme"],
+                            correctIndex: 1,
+                            explanation: "La psychologie cognitive s'est développée en opposition au béhaviorisme, qui refusait d'étudier les processus mentaux internes et se limitait au comportement observable.",
+                        },
+                    },
+                    // {
+                    //     type: "quiz",
+                    //     question: {
+                    //         type: "true_false",
+                    //         question: "Avant la révolution cognitive, le béhaviorisme acceptait d'étudier les processus mentaux internes.",
+                    //         correct: false,
+                    //         explanation: "Faux — le béhaviorisme refusait précisément d'étudier ce qui se passait 'dans la tête'. C'est cette limitation qui a motivé l'émergence de la psychologie cognitive.",
+                    //     },
+                    // },
+                    // {
+                    //     type: "quiz",
+                    //     question: {
+                    //         type: "multiple_choice",
+                    //         question: "Quelle métaphore centrale la psychologie cognitive utilise-t-elle pour décrire le cerveau ?",
+                    //         choices: [
+                    //             "Un muscle qui se renforce par l'exercice",
+                    //             "Un système de traitement de l'information",
+                    //             "Un réservoir d'émotions et de pulsions",
+                    //             "Un miroir de l'environnement social",
+                    //         ],
+                    //         correctIndex: 1,
+                    //         explanation: "La métaphore centrale est celle de l'ordinateur : le cerveau perçoit, stocke, récupère et transforme l'information — comme un système de traitement.",
+                    //     },
+                    // },
+                    // {
+                    //     type: "quiz",
+                    //     question: {
+                    //         type: "match_pairs",
+                    //         question: "Associe chaque méthode à ce qu'elle mesure :",
+                    //         pairs: [
+                    //             { left: "Temps de réaction", right: "Vitesse de traitement" },
+                    //             { left: "IRMf", right: "Activité cérébrale" },
+                    //             { left: "Protocole verbal", right: "Pensée consciente" },
+                    //             { left: "Expérience contrôlée", right: "Effet d'une variable isolée" },
+                    //         ],
+                    //         explanation: "Chaque outil capture un aspect différent de la cognition. Ensemble, ils permettent de construire une image complète des processus mentaux.",
+                    //     },
+                    // },
+                    // {
+                    //     type: "quiz",
+                    //     question: {
+                    //         type: "true_false",
+                    //         question: "Un temps de réaction plus long signifie toujours une performance cognitive inférieure.",
+                    //         correct: false,
+                    //         explanation: "Faux — un temps de réaction plus long peut refléter un traitement plus profond ou plus complexe, pas nécessairement une performance moindre.",
+                    //     },
+                    // },
+                    // {
+                    //     type: "quiz",
+                    //     question: {
+                    //         type: "ordering",
+                    //         question: "Remets ces étapes dans l'ordre d'une expérience contrôlée typique en psychologie cognitive :",
+                    //         items: [
+                    //             "Analyser les données et conclure",
+                    //             "Formuler une hypothèse",
+                    //             "Manipuler une variable indépendante",
+                    //             "Mesurer l'effet sur la cognition",
+                    //         ],
+                    //         correctOrder: [1, 2, 3, 0],
+                    //         explanation: "Une expérience part d'une hypothèse, manipule une variable, mesure l'effet, puis analyse les résultats pour valider ou infirmer l'hypothèse.",
+                    //     },
+                    // },
+                    // {
+                    //     type: "quiz",
+                    //     question: {
+                    //         type: "word_bank",
+                    //         question: "Complète la définition :",
+                    //         sentence: "La psychologie cognitive étudie les ___ mentaux internes, en considérant le cerveau comme un système de ___ de l'information.",
+                    //         bank: ["processus", "traitement", "stockage", "comportements", "réflexes"],
+                    //         correctWords: ["processus", "traitement"],
+                    //         explanation: "Ces deux termes résument l'essence de la discipline : elle s'intéresse aux processus (pas aux comportements) et à la façon dont l'information est traitée.",
+                    //     },
+                    // },
+                    // {
+                    //     type: "quiz",
+                    //     question: {
+                    //         type: "multiple_choice",
+                    //         question: "Dans quel contexte George Miller a-t-il présenté ses travaux fondateurs ?",
+                    //         choices: [
+                    //             "Un article publié dans Nature en 1950",
+                    //             "Une conférence en 1956",
+                    //             "Un livre publié en 1962",
+                    //             "Une émission de radio en 1948",
+                    //         ],
+                    //         correctIndex: 1,
+                    //         explanation: "George Miller a présenté ses travaux sur la limite de la mémoire lors d'une conférence en 1956, marquant un tournant dans l'histoire de la psychologie cognitive.",
+                    //     },
+                    // },
+                ],
+            },
         ],
     },
     {
@@ -444,6 +603,28 @@ export const initialNodes: NodeType[] = [
                             ],
                             correctIndex: 1,
                             explanation: "Pendant le sommeil, l'hippocampe rejoue les événements de la journée et les transfère progressivement vers le cortex pour un stockage à long terme — c'est la consolidation systémique.",
+                        },
+                    },
+                ],
+            },
+            {
+                id: "psychologie_final_quiz",
+                title: "Quiz Final — Psychologie Cognitive",
+                type: "final_quiz",
+                estimatedMinutes: 8,
+                blocks: [
+                    {
+                        type: "explanation",
+                        content: "Ce quiz final évalue ta compréhension de tous les concepts de ce module. Tu as droit à **3 erreurs maximum**. Bonne chance !",
+                    },
+                    {
+                        type: "quiz",
+                        question: {
+                            type: "multiple_choice",
+                            question: "La psychologie cognitive est née en réaction à quel courant ?",
+                            choices: ["Psychanalyse", "Béhaviorisme", "Gestalt", "Humanisme"],
+                            correctIndex: 1,
+                            explanation: "La psychologie cognitive s'est développée en opposition au béhaviorisme, qui refusait d'étudier les processus mentaux internes et se limitait au comportement observable.",
                         },
                     },
                 ],
@@ -737,6 +918,28 @@ export const initialNodes: NodeType[] = [
                             "L'administrateur central coordonne les autres sous-systèmes",
                             "Le buffer épisodique a été ajouté au modèle en 2000",
                         ],
+                    },
+                ],
+            },
+            {
+                id: "psychologie_final_quiz",
+                title: "Quiz Final — Psychologie Cognitive",
+                type: "final_quiz",
+                estimatedMinutes: 8,
+                blocks: [
+                    {
+                        type: "explanation",
+                        content: "Ce quiz final évalue ta compréhension de tous les concepts de ce module. Tu as droit à **3 erreurs maximum**. Bonne chance !",
+                    },
+                    {
+                        type: "quiz",
+                        question: {
+                            type: "multiple_choice",
+                            question: "La psychologie cognitive est née en réaction à quel courant ?",
+                            choices: ["Psychanalyse", "Béhaviorisme", "Gestalt", "Humanisme"],
+                            correctIndex: 1,
+                            explanation: "La psychologie cognitive s'est développée en opposition au béhaviorisme, qui refusait d'étudier les processus mentaux internes et se limitait au comportement observable.",
+                        },
                     },
                 ],
             },

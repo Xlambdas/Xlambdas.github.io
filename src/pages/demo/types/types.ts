@@ -109,7 +109,8 @@ export type LessonType =
     | "vignette"      // narrative story
     | "recap"         // review of previous lessons
     | "video"         // youtube / notebookLM
-    | "quiz";         // pure quiz session
+    | "quiz"          // pure quiz session
+    | "final_quiz";   // pure quiz session with all questions from previous lessons for spaced repetition
 
 export type Lesson = {
     id: string;
