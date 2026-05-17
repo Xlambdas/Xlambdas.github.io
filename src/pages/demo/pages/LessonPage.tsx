@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { ContentBlock, SRRating } from "../../types/types";
-import { initialNodes, completeLesson } from "../../data/graphData";
-import { upsertCard } from "../../utils/srEngine";
-import { LessonProgressBar } from "./lessonProgressBar";
-import { BlockRenderer } from "./blockRenderer";
-import { ExplanationModal } from "./explanationModal";
-import { useLessonTextSize } from "../../hooks";
+import type { ContentBlock, SRRating } from "../types/types";
+import { initialNodes, completeLesson } from "../data/graphData";
+import { upsertCard } from "../utils/srEngine";
+import { LessonProgressBar } from "../components/lessons/lessonProgressBar";
+import { BlockRenderer } from "../components/lessons/blockRenderer";
+import { ExplanationModal } from "../components/lessons/explanationModal";
+import { useLessonTextSize } from "../hooks";
 
 // --- Types ---
 

@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import type { Lesson, NodeType } from "../../types/types";
-import { initialNodes, getDynamicNodes } from "../../data/graphData";
-import { HoneycombPath } from "../ui/honeyCombPath";
-import { LessonPlayer } from "../lessons/lessonPlayer";
-import { StrengthenSession } from "../../sections/strengthenSession";
-import { ProfileView } from "../../sections/profileView";
-import { NodePathSettings } from "./NodePathSettings";
+import type { Lesson, NodeType } from "../types/types";
+import { initialNodes, getDynamicNodes } from "../data/graphData";
+import { HoneycombPath } from "../components/ui/honeyCombPath";
+import { LessonPlayer } from "../components/lessons/lessonPlayer";
+import { StrengthenSession } from "../sections/strengthenSession";
+import { NodePathSettings } from "../components/node/NodePathSettings";
 
 // --- Helpers ---
 
@@ -248,7 +247,7 @@ export const NodePage: React.FC = () => {
     }, [nodeId, scrollToLessonId, node]);
     const [activeLesson, setActiveLesson] = useState<{ node: NodeType; lesson: Lesson; index: number } | null>(null);
     const [strengthenOpen, setStrengthenOpen] = useState(false);
-    const [profileOpen, setProfileOpen] = useState(false);
+    // const [profileOpen, setProfileOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -315,8 +314,8 @@ export const NodePage: React.FC = () => {
                 <DockBtn
                     icon="🧠"
                     label="Profil"
-                    onClick={() => setProfileOpen(true)}
-                    active={profileOpen}
+                    onClick={() => navigate("/demo/profile")}
+                    active={false}
                 />
 
                 {/* strengthen this node only */}
@@ -476,21 +475,6 @@ export const NodePage: React.FC = () => {
                     onClose={() => {
                         setStrengthenOpen(false);
                         setRefreshKey(k => k + 1);
-                    }}
-                />
-            )}
-
-            {/* profile */}
-            {profileOpen && (
-                <ProfileView
-                    onClose={() => setProfileOpen(false)}
-                    onNavigate={(id) => {
-                        setProfileOpen(false);
-                        navigate(`/demo/node/${id}`);
-                    }}
-                    onOpenStrengthen={() => {
-                        setProfileOpen(false);
-                        setStrengthenOpen(true);
                     }}
                 />
             )}

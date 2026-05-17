@@ -26,6 +26,7 @@ import { LessonPlayer } from "./components/lessons/lessonPlayer";
 import { StrengthenSession } from "./sections/strengthenSession";
 import { ProfileView } from "./sections/profileView";
 import { initialNodes } from "./data/graphData";
+import { ProfileNodeModal } from "./sections/ProfileNodeModal";
 
 import { NodeCard } from "./components/node/nodeCard";
 
@@ -169,17 +170,29 @@ export function DemoHome() {
                 onOpenPath={openPath}
             /> */}
 
-            <NodeCard
-                node={state.activeNode}
-                onClose={() => state.setActiveNode(null)}
-                onOpenSettings={() => state.setSettingsOpen(true)}
-                onOpenProfile={() => { state.setActiveNode(null); state.setProfileOpen(true); }}
-                onOpenStrengthen={(nodeId) => {
-                    state.setActiveNode(null);
-                    state.setStrengthenNodeId(nodeId);
-                    state.setStrengthenOpen(true);
-                }}
-            />
+            {/* Node card or Profile modal */}
+            {state.activeNode && (state.activeNode as any).kind === "profile" ? (
+                <ProfileNodeModal
+                    onClose={() => state.setActiveNode(null)}
+                    onOpenStrengthen={() => {
+                        state.setActiveNode(null);
+                        state.setStrengthenNodeId(undefined);
+                        state.setStrengthenOpen(true);
+                    }}
+                />
+            ) : state.activeNode ? (
+                <NodeCard
+                    node={state.activeNode}
+                    onClose={() => state.setActiveNode(null)}
+                    onOpenSettings={() => state.setSettingsOpen(true)}
+                    onOpenProfile={() => { state.setActiveNode(null); state.setProfileOpen(true); }}
+                    onOpenStrengthen={(nodeId) => {
+                        state.setActiveNode(null);
+                        state.setStrengthenNodeId(nodeId);
+                        state.setStrengthenOpen(true);
+                    }}
+                />
+            ) : null}
 
             {state.pathNode && (
                 <LessonPathView
