@@ -297,7 +297,7 @@ const StatsBar: React.FC = () => {
             {stats.map(({ value, label, alert }, i) => (
                 <div key={label} style={{
                     flex: 1,
-                    padding: "12px 0",
+                    padding: "10px 4px",
                     textAlign: "center",
                     borderRight: i < stats.length - 1
                         ? "1px solid #21262d" : "none",
@@ -581,7 +581,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                         ? "translateX(-50%)"
                         : "translateX(-50%) translateY(100%)",
                     width: "min(600px, 100vw)",
-                    height: "96vh",
+                    maxWidth: "100vw",
+                    height: "min(96vh, 100vh)",
                     background: "#161b22",
                     borderRadius: "16px 16px 0 0",
                     border: "1px solid #30363d",
@@ -606,12 +607,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     }} />
                 </div>
 
-                {/* header */}
+                {/* Sticky header container */}
                 <div style={{
-                    padding: "20px 20px 16px",
-                    borderBottom: "1px solid #21262d",
+                    position: "sticky",
+                    top: 0,
+                    background: "#161b22",
+                    zIndex: 10,
                     flexShrink: 0,
                 }}>
+                    {/* header */}
+                    <div style={{
+                        padding: "20px 20px 16px",
+                        borderBottom: "1px solid #21262d",
+                    }}>
                     <div style={{
                         display: "flex",
                         alignItems: "flex-start",
@@ -651,7 +659,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                         }}>
                             {editingName ? (
                                 <div style={{
-                                    display: "flex", gap: 8, alignItems: "center",
+                                    display: "flex", gap: 6, alignItems: "center",
+                                    flexWrap: "wrap",
                                 }}>
                                     <input
                                         ref={nameInputRef}
@@ -664,29 +673,49 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                                         }}
                                         style={{
                                             background: "#0d1117",
-                                            border: "1px solid #30363d",
-                                            borderRadius: 7,
-                                            padding: "6px 10px",
+                                            border: "1px solid #a5b4fc",
+                                            borderRadius: 8,
+                                            padding: "8px 12px",
                                             color: "#c9d1d9",
-                                            fontSize: 16, fontWeight: 600,
+                                            fontSize: 15, fontWeight: 600,
                                             outline: "none",
-                                            flex: 1,
+                                            flex: "1 1 200px",
+                                            minWidth: 0,
                                             fontFamily: "inherit",
                                         }}
                                     />
                                     <button
                                         onClick={handleSaveName}
                                         style={{
-                                            background: "rgba(124,106,247,0.2)",
-                                            border: "1px solid rgba(124,106,247,0.4)",
-                                            color: "#a39af7",
-                                            borderRadius: 7,
-                                            padding: "6px 12px",
+                                            background: "linear-gradient(135deg, #a5b4fc 0%, #8b9dfc 100%)",
+                                            border: "none",
+                                            color: "#0d1117",
+                                            borderRadius: 8,
+                                            padding: "8px 16px",
+                                            fontSize: 12,
+                                            fontWeight: 600,
+                                            cursor: "pointer",
+                                            whiteSpace: "nowrap",
+                                        }}
+                                    >
+                                        Enregistrer
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setEditingName(false);
+                                            setNameInput(profile.name);
+                                        }}
+                                        style={{
+                                            background: "#21262d",
+                                            border: "1px solid #30363d",
+                                            color: "#8b949e",
+                                            borderRadius: 8,
+                                            padding: "8px 12px",
                                             fontSize: 12,
                                             cursor: "pointer",
                                         }}
                                     >
-                                        ✓
+                                        Annuler
                                     </button>
                                 </div>
                             ) : (
@@ -694,6 +723,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                                     display: "flex",
                                     alignItems: "center",
                                     gap: 8,
+                                    flexWrap: "wrap",
                                 }}>
                                     <span style={{
                                         color: "#c9d1d9",
@@ -707,12 +737,23 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                                             setNameInput(profile.name);
                                         }}
                                         style={{
-                                            background: "none", border: "none",
-                                            color: "#484f58", cursor: "pointer",
-                                            fontSize: 12, padding: 2,
+                                            background: "#21262d",
+                                            border: "1px solid #30363d",
+                                            borderRadius: 6,
+                                            padding: "4px 10px",
+                                            color: "#8b949e",
+                                            fontSize: 11,
+                                            cursor: "pointer",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 4,
                                         }}
                                     >
-                                        ✎
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                        </svg>
+                                        Modifier
                                     </button>
                                 </div>
                             )}
@@ -734,44 +775,42 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                         >×</button>
                     </div>
 
-                    {/* stats */}
-                    <StatsBar />
-                </div>
+                        {/* stats */}
+                        <StatsBar />
+                    </div>
 
-                {/* strengthen CTA — shown if reviews due */}
-                {dueCount > 0 && (
-                    <button
-                        onClick={() => { handleClose(); onOpenStrengthen(); }}
-                        style={{
-                            margin: "12px 20px 0",
-                            padding: "11px 16px",
-                            background: "rgba(239,68,68,0.1)",
-                            border: "1px solid rgba(239,68,68,0.3)",
-                            color: "#ef4444",
-                            borderRadius: 10,
-                            fontSize: 12,
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            flexShrink: 0,
-                        }}
-                    >
-                        <span>💪</span>
-                        <span>
-                            {dueCount} révision{dueCount > 1 ? "s" : ""} en attente — S'entraîner maintenant
-                        </span>
-                    </button>
-                )}
+                    {/* strengthen CTA — shown if reviews due */}
+                    {dueCount > 0 && (
+                        <button
+                            onClick={() => { handleClose(); onOpenStrengthen(); }}
+                            style={{
+                                margin: "12px 20px 0",
+                                padding: "11px 16px",
+                                background: "rgba(239,68,68,0.1)",
+                                border: "1px solid rgba(239,68,68,0.3)",
+                                color: "#ef4444",
+                                borderRadius: 10,
+                                fontSize: 12,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                            }}
+                        >
+                            <span>💪</span>
+                            <span>
+                                {dueCount} révision{dueCount > 1 ? "s" : ""} en attente — S'entraîner maintenant
+                            </span>
+                        </button>
+                    )}
 
-                {/* tabs */}
-                <div style={{
-                    display: "flex",
-                    borderBottom: "1px solid #21262d",
-                    padding: "0 20px",
-                    marginTop: 12,
-                    flexShrink: 0,
-                }}>
+                    {/* tabs */}
+                    <div style={{
+                        display: "flex",
+                        borderBottom: "1px solid #21262d",
+                        padding: "0 20px",
+                        marginTop: 12,
+                    }}>
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
@@ -793,6 +832,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                         </button>
                     ))}
                 </div>
+                </div>
 
                 {/* tab content */}
                 <div style={{
@@ -800,7 +840,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     overflowY: "auto",
                     scrollbarWidth: "thin",
                     scrollbarColor: "#21262d transparent",
-                    padding: "20px",
+                    padding: "20px 16px",
                     display: "flex",
                     flexDirection: "column",
                     gap: 24,

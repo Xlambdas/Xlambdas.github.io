@@ -175,79 +175,273 @@ const BadgeCard: React.FC<{
     onClick: () => void;
 }> = ({ badge, onClick }) => {
     const [hovered, setHovered] = useState(false);
+    const [flipped, setFlipped] = useState(false);
     const node = initialNodes.find(n => n.id === badge.nodeId);
 
     const levelColor = badge.level === "gold" ? "#fbbf24"
         : badge.level === "silver" ? "#94a3b8"
             : "#fb923c";
 
+    const handleCardClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setFlipped(!flipped);
+    };
+
+    const handleNavigate = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onClick();
+    };
+
     return (
-        <div
-            onClick={onClick}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            style={{
-                background: hovered
-                    ? "linear-gradient(135deg, #1c2128 0%, #161b22 100%)"
-                    : "#161b22",
-                border: `2px solid ${hovered ? levelColor + "44" : "#21262d"}`,
-                borderRadius: 16,
-                padding: "20px",
-                cursor: "pointer",
-                transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                transform: hovered ? "translateY(-4px)" : "translateY(0)",
-                boxShadow: hovered
-                    ? `0 8px 24px ${levelColor}33`
-                    : "0 2px 8px rgba(0,0,0,0.2)",
-                position: "relative",
-            }}
-        >
-            <div style={{
-                width: 80,
-                height: 80,
-                clipPath: HEX_CLIP,
-                background: `linear-gradient(135deg, ${levelColor} 0%, ${levelColor}dd 100%)`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 36,
-                margin: "0 auto 16px",
-                boxShadow: `0 4px 16px ${levelColor}44`,
-            }}>
-                {node?.badge?.icon || "🏆"}
-            </div>
+        <>
+            <style>{`
+                @keyframes badgeFlip {
+                    from { transform: rotateY(0deg); }
+                    to { transform: rotateY(180deg); }
+                }
+                @keyframes badgeFlipBack {
+                    from { transform: rotateY(180deg); }
+                    to { transform: rotateY(0deg); }
+                }
+            `}</style>
 
-            <div style={{ textAlign: "center" }}>
+            <div
+                onClick={handleCardClick}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
+                style={{
+                    position: "relative",
+                    height: 220,
+                    cursor: "pointer",
+                    perspective: "1000px",
+                }}
+            >
+                {/* Card Container */}
                 <div style={{
-                    color: "#c9d1d9",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    marginBottom: 4,
+                    position: "relative",
+                    width: "100%",
+                    height: "100%",
+                    transition: "transform 0.6s",
+                    transformStyle: "preserve-3d",
+                    transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
                 }}>
-                    {node?.badge?.name || "Badge"}
-                </div>
-                <div style={{
-                    color: levelColor,
-                    fontSize: 11,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    fontWeight: 600,
-                }}>
-                    {badge.level}
+                    {/* Front Face */}
+                    <div style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        backfaceVisibility: "hidden",
+                        background: hovered && !flipped
+                            ? "linear-gradient(135deg, #1c2128 0%, #161b22 100%)"
+                            : "#161b22",
+                        border: `2px solid ${hovered && !flipped ? levelColor + "44" : "#21262d"}`,
+                        borderRadius: 16,
+                        padding: "20px",
+                        transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                        boxShadow: hovered && !flipped
+                            ? `0 8px 24px ${levelColor}33`
+                            : "0 2px 8px rgba(0,0,0,0.2)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}>
+                        <div style={{
+                            width: 80,
+                            height: 80,
+                            clipPath: HEX_CLIP,
+                            background: `linear-gradient(135deg, ${levelColor} 0%, ${levelColor}dd 100%)`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 36,
+                            margin: "0 auto 16px",
+                            boxShadow: `0 4px 16px ${levelColor}44`,
+                        }}>
+                            {node?.badge?.icon || "🏆"}
+                        </div>
+
+                        <div style={{ textAlign: "center" }}>
+                            <div style={{
+                                color: "#c9d1d9",
+                                fontSize: 14,
+                                fontWeight: 600,
+                                marginBottom: 4,
+                            }}>
+                                {node?.badge?.name || "Badge"}
+                            </div>
+                            <div style={{
+                                color: levelColor,
+                                fontSize: 11,
+                                textTransform: "uppercase",
+                                letterSpacing: "0.1em",
+                                fontWeight: 600,
+                            }}>
+                                {badge.level}
+                            </div>
+                        </div>
+
+                        <div style={{
+                            position: "absolute",
+                            top: 12,
+                            right: 12,
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            background: levelColor,
+                            boxShadow: `0 0 12px ${levelColor}88`,
+                        }} />
+
+                        {/* Click hint */}
+                        <div style={{
+                            position: "absolute",
+                            bottom: 12,
+                            fontSize: 10,
+                            color: "#484f58",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                        }}>
+                            <span>Cliquer pour détails</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    {/* Back Face */}
+                    <div style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        backfaceVisibility: "hidden",
+                        transform: "rotateY(180deg)",
+                        background: `linear-gradient(135deg, ${levelColor}11 0%, #161b22 100%)`,
+                        border: `2px solid ${levelColor}44`,
+                        borderRadius: 16,
+                        padding: "20px",
+                        boxShadow: `0 8px 24px ${levelColor}33`,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                    }}>
+                        {/* Node info */}
+                        <div>
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 12,
+                            }}>
+                                <div style={{
+                                    width: 40,
+                                    height: 40,
+                                    clipPath: HEX_CLIP,
+                                    background: `linear-gradient(135deg, ${levelColor} 0%, ${levelColor}dd 100%)`,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: 20,
+                                    flexShrink: 0,
+                                }}>
+                                    {node?.badge?.icon || "🏆"}
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{
+                                        color: "#c9d1d9",
+                                        fontSize: 13,
+                                        fontWeight: 600,
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                    }}>
+                                        {node?.title || "Module"}
+                                    </div>
+                                    <div style={{
+                                        color: levelColor,
+                                        fontSize: 10,
+                                        textTransform: "uppercase",
+                                        letterSpacing: "0.05em",
+                                    }}>
+                                        Badge {badge.level}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Badge description */}
+                            <div style={{
+                                color: "#8b949e",
+                                fontSize: 11,
+                                lineHeight: 1.5,
+                                marginBottom: 12,
+                            }}>
+                                {node?.badge?.description || "Complété avec succès"}
+                            </div>
+
+                            {/* Badge level detail */}
+                            {/* <div style={{
+                                background: `${levelColor}11`,
+                                border: `1px solid ${levelColor}33`,
+                                borderRadius: 8,
+                                padding: "8px 10px",
+                            }}>
+                                <div style={{
+                                    color: levelColor,
+                                    fontSize: 9,
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.08em",
+                                    marginBottom: 4,
+                                }}>
+                                    Niveau {badge.level}
+                                </div>
+                                <div style={{
+                                    color: "#8b949e",
+                                    fontSize: 10,
+                                    lineHeight: 1.4,
+                                }}>
+                                    {node?.badge?.levels?.[badge.level as keyof typeof node.badge.levels] || "Badge débloqué"}
+                                </div>
+                            </div> */}
+                        </div>
+
+                        {/* Action button */}
+                        <button
+                            onClick={handleNavigate}
+                            style={{
+                                width: "100%",
+                                padding: "10px 0",
+                                background: `linear-gradient(135deg, ${levelColor} 0%, ${levelColor}dd 100%)`,
+                                border: "none",
+                                borderRadius: 10,
+                                color: badge.level === "silver" ? "#0d1117" : "#fff",
+                                fontSize: 12,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                                boxShadow: `0 2px 8px ${levelColor}44`,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 6,
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-2px)";
+                                e.currentTarget.style.boxShadow = `0 4px 12px ${levelColor}66`;
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = `0 2px 8px ${levelColor}44`;
+                            }}
+                        >
+                            Voir le module
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <div style={{
-                position: "absolute",
-                top: 12,
-                right: 12,
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: levelColor,
-                boxShadow: `0 0 12px ${levelColor}88`,
-            }} />
-        </div>
+        </>
     );
 };
 
@@ -344,12 +538,17 @@ export const ProfilePage: React.FC = () => {
         }}>
             {/* Top Navigation */}
             <div style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
                 background: "#161b22",
                 borderBottom: "1px solid #21262d",
                 padding: "16px 20px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                zIndex: 100,
             }}>
                 <button
                     onClick={() => navigate(-1)}
@@ -372,21 +571,40 @@ export const ProfilePage: React.FC = () => {
                     Retour
                 </button>
 
-                <button
-                    onClick={() => editMode ? handleSave() : setEditMode(true)}
-                    style={{
-                        background: editMode ? "linear-gradient(135deg, #a5b4fc 0%, #8b9dfc 100%)" : "#21262d",
-                        border: "1px solid " + (editMode ? "#a5b4fc" : "#30363d"),
-                        borderRadius: 10,
-                        padding: "8px 16px",
-                        color: editMode ? "#0d1117" : "#8b949e",
-                        fontSize: 13,
-                        fontWeight: 600,
-                        cursor: "pointer",
-                    }}
-                >
-                    {editMode ? "Sauvegarder" : "Modifier"}
-                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                    {editMode && (
+                        <button
+                            onClick={handleCancel}
+                            style={{
+                                background: "#21262d",
+                                border: "1px solid #30363d",
+                                borderRadius: 10,
+                                padding: "8px 16px",
+                                color: "#8b949e",
+                                fontSize: 13,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                            }}
+                        >
+                            Annuler
+                        </button>
+                    )}
+                    <button
+                        onClick={() => editMode ? handleSave() : setEditMode(true)}
+                        style={{
+                            background: editMode ? "linear-gradient(135deg, #a5b4fc 0%, #8b9dfc 100%)" : "#21262d",
+                            border: "1px solid " + (editMode ? "#a5b4fc" : "#30363d"),
+                            borderRadius: 10,
+                            padding: "8px 16px",
+                            color: editMode ? "#0d1117" : "#8b949e",
+                            fontSize: 13,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                        }}
+                    >
+                        {editMode ? "Sauvegarder" : "Modifier"}
+                    </button>
+                </div>
             </div>
 
             {/* Banner Section */}
@@ -396,35 +614,17 @@ export const ProfilePage: React.FC = () => {
                 position: "relative",
                 display: "flex",
                 alignItems: "flex-end",
-                padding: "0 40px 20px",
+                padding: "0 20px 20px",
+                marginTop: 58,
             }}>
-                {/* Settings icon in banner */}
-                {editMode && (
-                    <button
-                        onClick={handleCancel}
-                        style={{
-                            position: "absolute",
-                            top: 20,
-                            right: 20,
-                            background: "rgba(0,0,0,0.3)",
-                            border: "1px solid rgba(255,255,255,0.2)",
-                            borderRadius: 8,
-                            padding: "8px 12px",
-                            color: "#fff",
-                            fontSize: 12,
-                            cursor: "pointer",
-                        }}
-                    >
-                        Annuler
-                    </button>
-                )}
 
                 {/* Profile Section (overlapping banner) */}
                 <div style={{
                     display: "flex",
                     alignItems: "flex-end",
-                    gap: 20,
+                    gap: 16,
                     transform: "translateY(80px)",
+                    // flexWrap: "wrap",
                 }}>
                     {/* Persona Hexagon with Status */}
                     <div style={{ position: "relative" }}>
@@ -460,15 +660,19 @@ export const ProfilePage: React.FC = () => {
                             type="text"
                             value={tempName}
                             onChange={e => setTempName(e.target.value)}
+                            placeholder="Votre nom"
                             style={{
                                 background: "#fff",
-                                border: "2px solid #e5e7eb",
+                                border: "2px solid #a5b4fc",
                                 borderRadius: 10,
                                 padding: "12px 16px",
                                 color: "#1f2937",
-                                fontSize: 24,
+                                fontSize: "clamp(18px, 4vw, 24px)",
                                 fontWeight: 700,
-                                width: 300,
+                                width: "min(300px, 100%)",
+                                maxWidth: "100%",
+                                minWidth: "200px",
+                                outline: "none",
                             }}
                         />
                     ) : (
@@ -490,7 +694,7 @@ export const ProfilePage: React.FC = () => {
                 <div style={{
                     background: "#161b22",
                     borderBottom: "1px solid #21262d",
-                    padding: "80px 40px 32px",
+                    padding: "80px 20px 32px",
                 }}>
                     {/* Banner Color Picker */}
                     <div style={{ marginBottom: 24 }}>
@@ -625,10 +829,10 @@ export const ProfilePage: React.FC = () => {
             <div style={{
                 maxWidth: 1200,
                 margin: "0 auto",
-                padding: editMode ? "32px 20px" : "112px 20px 32px",
+                padding: editMode ? "32px 16px" : "112px 16px 32px",
                 display: "flex",
                 flexDirection: "column",
-                gap: 32,
+                gap: 24,
             }}>
                 {/* Stats Grid */}
                 <div style={{
@@ -666,7 +870,7 @@ export const ProfilePage: React.FC = () => {
                 <div>
                     <h3 style={{
                         color: "#c9d1d9",
-                        fontSize: 18,
+                        fontSize: "clamp(16px, 3vw, 18px)",
                         fontWeight: 600,
                         marginBottom: 16,
                     }}>
@@ -692,7 +896,7 @@ export const ProfilePage: React.FC = () => {
                 <div>
                     <h3 style={{
                         color: "#c9d1d9",
-                        fontSize: 18,
+                        fontSize: "clamp(16px, 3vw, 18px)",
                         fontWeight: 600,
                         marginBottom: 16,
                     }}>

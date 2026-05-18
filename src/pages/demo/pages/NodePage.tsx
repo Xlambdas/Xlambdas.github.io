@@ -278,7 +278,7 @@ export const NodePage: React.FC = () => {
         }}>
             Nœud introuvable.
             <span
-                onClick={() => navigate("/demoHome")}
+                onClick={() => navigate(-1)}
                 style={{ color: "#a5b4fc", cursor: "pointer" }}
             >
                 Retour
@@ -304,8 +304,8 @@ export const NodePage: React.FC = () => {
                 {/* back to graph */}
                 <DockBtn
                     icon={<BackIcon />}
-                    label="Retour au graphe"
-                    onClick={() => navigate("/demoHome")}
+                    label="Retour"
+                    onClick={() => navigate(-1)}
                 />
 
                 <Divider />
