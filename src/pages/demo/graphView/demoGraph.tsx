@@ -296,7 +296,7 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
                 // Determine line appearance
                 if (locked) {
                     ctx.strokeStyle = "rgba(148,163,184,0.25)";
-                    ctx.lineWidth = 1;
+                    ctx.lineWidth = 1.3;
                     ctx.globalAlpha = 0.6;
                 } else if (dragging_) {
                     ctx.strokeStyle = "rgba(251,146,60,0.9)";
@@ -309,22 +309,22 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
                 } else if (isProfileLinkCompleted) {
                     // Profile link with completed node - bigger and cleaner
                     ctx.strokeStyle = profileColor;
-                    ctx.lineWidth = 4;
+                    ctx.lineWidth = 2.5;
                     ctx.globalAlpha = 0.9;
                 } else if (connectedToProfile) {
                     // Normal profile link
                     ctx.strokeStyle = `${profileColor}44`;
-                    ctx.lineWidth = 1.5;
+                    ctx.lineWidth = 1.8;
                     ctx.globalAlpha = 0.5;
                 } else if (bothCompleted) {
                     // Both nodes completed (non-profile)
                     ctx.strokeStyle = branchColor;
-                    ctx.lineWidth = 3;
+                    ctx.lineWidth = 2.5;
                     ctx.globalAlpha = 0.8;
                 } else {
                     // Default link
                     ctx.strokeStyle = `${branchColor}33`;
-                    ctx.lineWidth = 1;
+                    ctx.lineWidth = 1.5;
                     ctx.globalAlpha = 0.6;
                 }
 

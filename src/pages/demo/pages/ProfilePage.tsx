@@ -26,7 +26,7 @@ const BANNER_COLORS = [
     { name: "Indigo", color: "#6366f1" },
 ];
 
-const PERSONA_OPTIONS = [
+export const PERSONA_OPTIONS = [
     { id: "avatar1", type: "image", src: "demo/avatar_1.png" },
     { id: "avatar2", type: "image", src: "demo/avatar_1.png" },
     { id: "avatar3", type: "image", src: "demo/avatar_1.png" },
@@ -73,7 +73,7 @@ const getTotalLessons = (): { completed: number; total: number } => {
 
 // --- Profile Storage ---
 
-const getProfileSettings = () => ({
+export const getProfileSettings = () => ({
     bannerColor: localStorage.getItem("profile_banner_color") || BANNER_COLORS[1].color,
     persona: localStorage.getItem("profile_persona") || PERSONA_OPTIONS[0].id,
     personaBgColor: localStorage.getItem("profile_persona_bg") || PERSONA_BG_COLORS[0].color,

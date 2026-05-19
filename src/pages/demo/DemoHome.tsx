@@ -87,7 +87,7 @@ export function DemoHome() {
                 <Sidebar
                     collapsed={state.collapsed}
                     onCollapse={() => handleCollapse(true)}
-                    onSelectNode={state.setSelectedNode}
+                    onSelectNode={state.setActiveNode}
                     textSize={state.textSize}
                     isTeacher={state.isTeacher}
                     teacherName={state.teacherName}
@@ -113,7 +113,7 @@ export function DemoHome() {
                 />
 
                 {/* Canvas area */}
-                <div className="flex-1 overflow-hidden relative h-0">
+                <div className="flex-1 overflow-hidden relative h-0" style={{ marginTop: 58 }}>
                     <DemoGraph
                         onSelectNode={handleNodeSelect}
                         refreshKey={state.refreshKey}
@@ -126,7 +126,9 @@ export function DemoHome() {
                         onClose={() => state.setSelectedNode(null)}
                         textSize={state.textSize}
                     /> */}
-                    <Legend textSize={state.textSize} />
+                    <div className='hidden sm:block'>
+                        <Legend textSize={state.textSize} />
+                    </div>
 
                     {state.settingsOpen && (
                         <SettingsPanel

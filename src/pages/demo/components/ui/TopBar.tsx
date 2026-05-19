@@ -1,4 +1,3 @@
-// import { useRef } from "react";
 import { type NodeType } from '../../data/graphData';
 import { type TextSize, SIZE_MAP } from '../../hooks/useDemoHomeState';
 
@@ -34,23 +33,65 @@ export function TopBar({
     searchInputRef,
 }: TopBarProps) {
     const ts = SIZE_MAP[textSize];
+
     return (
-        <div className="h-10.5 shrink-0 bg-[rgba(13,17,23,0.94)] border-b border-[#21262d] flex items-center px-3.5 gap-2.5 z-10">
+        <div style={{
+            position: "fixed",
+            top: 0,
+            left: collapsed ? 0 : 240,
+            right: 0,
+            background: "#161b22",
+            borderBottom: "1px solid #21262d",
+            padding: "16px 20px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            zIndex: 100,
+            transition: "left 0.3s ease",
+        }}>
+            {/* Left side - Sidebar reopen */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }} >
+                {collapsed && (
+                    <button
+                        onClick={() => onCollapse(false)}
+                        style={{
+                            background: "#21262d",
+                            border: "1px solid #30363d",
+                            borderRadius: 10,
+                            padding: "8px 16px",
+                            color: "#8b949e",
+                            fontSize: 13,
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                        }}
+                        className="hidden sm:flex"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                        Menu
+                    </button>
+                )}
 
-            {/* Sidebar reopen (desktop) */}
-            {collapsed && (
-                <button
-                    onClick={() => onCollapse(settingsOpen ? false : true)}
-                    className="hidden sm:block bg-[#21262d] border border-[#30363d] text-[#8b949e] rounded px-2 py-0.5 text-xs cursor-pointer hover:bg-[#30363d] transition-colors"
-                >≡</button>
-            )}
-
-            <span className="text-[#484f58] text-xs">Graph View</span>
+                <span style={{
+                    color: "#8b949e",
+                    fontSize: 12,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    fontWeight: 600,
+                }}>
+                    Vue Graphe
+                </span>
+            </div>
 
             {/* --- Mobile search --- */}
             <div className="flex sm:hidden ml-auto items-center gap-2 relative">
                 {mobileSearch ? (
-                    <div className="fixed inset-x-0 top-0 z-50 bg-[rgba(13,17,23,0.98)] p-3 border-b border-[#21262d]">
+                    <div className="fixed inset-x-0 top-0 z-50 bg-[rgba(22,27,34,1)] p-3 border-b border-[#21262d]">
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => {
@@ -105,7 +146,7 @@ export function TopBar({
                                             {n.title}
                                         </span>
                                         {!n.isUnlocked && (
-                                            <span style={{ color: "#30363d", fontSize: ts-1, marginLeft: "auto" }}>🔒</span>
+                                            <span style={{ color: "#30363d", fontSize: ts - 1, marginLeft: "auto" }}>🔒</span>
                                         )}
                                     </div>
                                 ))}
@@ -118,7 +159,18 @@ export function TopBar({
                             setMobileSearch(true);
                             setTimeout(() => searchInputRef.current?.focus(), 50);
                         }}
-                        className="text-[#8b949e] flex items-center justify-center w-8 h-8 bg-[#21262d] border border-[#30363d] rounded-lg"
+                        style={{
+                            width: 32,
+                            height: 32,
+                            background: "#21262d",
+                            border: "1px solid #30363d",
+                            borderRadius: 8,
+                            color: "#8b949e",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                        }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="11" cy="11" r="8" />
@@ -129,27 +181,78 @@ export function TopBar({
             </div>
 
             {/* --- Desktop controls --- */}
-            <div className="ml-auto hidden sm:flex gap-1.5 items-center">
-                {([["−", 0.8], ["+", 1.25]] as [string, number][]).map(([label, factor]) => (
-                    <button
-                        key={label}
-                        onClick={() => window.__graphZoom?.(factor)}
-                        className="bg-[#21262d] border border-[#30363d] text-[#8b949e] rounded w-6 h-6 text-sm cursor-pointer flex items-center justify-center hover:bg-[#30363d] transition-colors"
-                    >
-                        {label}
-                    </button>
-                ))}
+            <div className="ml-auto hidden sm:flex gap-2 items-center">
+                {/* Zoom controls */}
+                <div style={{ display: "flex", gap: 4 }}>
+                    {([["−", 0.8], ["+", 1.25]] as [string, number][]).map(([label, factor]) => (
+                        <button
+                            key={label}
+                            onClick={() => window.__graphZoom?.(factor)}
+                            style={{
+                                width: 32,
+                                height: 32,
+                                background: "#21262d",
+                                border: "1px solid #30363d",
+                                borderRadius: 8,
+                                color: "#8b949e",
+                                fontSize: 16,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                transition: "all 0.15s ease",
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = "#30363d"}
+                            onMouseLeave={(e) => e.currentTarget.style.background = "#21262d"}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Reset button */}
                 <button
                     onClick={() => window.__graphReset?.()}
-                    className="bg-[#21262d] border border-[#30363d] text-[#8b949e] rounded px-2 py-0.5 text-[11px] cursor-pointer hover:bg-[#30363d] transition-colors"
+                    style={{
+                        background: "#21262d",
+                        border: "1px solid #30363d",
+                        borderRadius: 8,
+                        padding: "8px 12px",
+                        color: "#8b949e",
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#30363d"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "#21262d"}
                 >
                     Reset
                 </button>
+
+                {/* Settings button */}
                 <button
                     onClick={onSettingsToggle}
-                    className="bg-[#21262d] border border-[#30363d] text-[#8b949e] rounded w-6 h-6 flex items-center justify-center cursor-pointer hover:bg-[#30363d] transition-colors"
+                    style={{
+                        width: 32,
+                        height: 32,
+                        background: settingsOpen ? "#30363d" : "#21262d",
+                        border: "1px solid #30363d",
+                        borderRadius: 8,
+                        color: "#8b949e",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#30363d"}
+                    onMouseLeave={(e) => {
+                        if (!settingsOpen) e.currentTarget.style.background = "#21262d";
+                    }}
                 >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="3" />
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                     </svg>

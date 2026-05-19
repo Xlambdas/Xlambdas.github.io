@@ -187,13 +187,7 @@ const LessonHex: React.FC<{
                     marginBottom: 6,
                     transition: "all 0.2s ease",
                 }}>
-                    {status === "completed" ? (
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                    ) : (
-                        <LessonIcon type={lesson.type} size={22} />
-                    )}
+                    <LessonIcon type={lesson.type} size={22} />
                 </div>
 
                 {/* Lesson title */}
