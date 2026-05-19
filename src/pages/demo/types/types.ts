@@ -173,6 +173,8 @@ export type NodeType = {
     // depth in hierarchy (profile = 0, domain = 1, topic = 2...)
     depth: number;
 
+    branchColor: string;
+
     // content
     hook?: string;
     shortDescription?: string;

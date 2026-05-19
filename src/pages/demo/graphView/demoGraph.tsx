@@ -26,8 +26,20 @@ const NODE_COLOR: Record<NodeType["type"], string> = {
 const LOCKED_COLOR = "#4b5563";
 const SELECTED_COLOR = "#fbbf24";
 const DRAGGING_COLOR = "#fb923c";
-const PROFILE_COLOR = "#7c6af7";
 const PULSE_DURATION = 2000;
+
+// Get branch color for a node
+const getBranchColor = (n: NodeType): string => {
+    // Use branchColor from node data if available
+    if ((n as any).branchColor) return (n as any).branchColor;
+
+    return NODE_COLOR[n.type] ?? "#6b7280";
+};
+
+// Get profile banner color from localStorage
+const getProfileBannerColor = (): string => {
+    return localStorage.getItem("profile_banner_color") || "#7c6af7";
+};
 
 // --- Helpers ---
 
@@ -41,12 +53,14 @@ const getColor = (
     if (isProfile(n)) {
         if (draggingNode?.id === n.id) return DRAGGING_COLOR;
         if (selectedNode?.id === n.id) return "#a39af7";
-        return PROFILE_COLOR;
+        return getProfileBannerColor();
     }
     if (!n.isUnlocked) return LOCKED_COLOR;
     if (draggingNode?.id === n.id) return DRAGGING_COLOR;
     if (selectedNode?.id === n.id) return SELECTED_COLOR;
-    return NODE_COLOR[n.type] ?? "#6b7280";
+
+    // Use branch color instead of default node color
+    return getBranchColor(n);
 };
 
 const getRadius = (
@@ -54,28 +68,77 @@ const getRadius = (
     selectedNode: NodeType | null,
     draggingNode: NodeType | null,
 ): number => {
+    // Profile node
+    if (isProfile(n)) {
+        if (draggingNode?.id === n.id) return 16;
+        if (selectedNode?.id === n.id) return 14;
+        return 12;
+    }
+
+    // Get completion percentage
+    const pct = getNodeCompletionPercent(n.id);
+
+    // Started or completed nodes are bigger (hexagons)
+    if (pct > 0) {
+        if (draggingNode?.id === n.id) return 12;
+        if (selectedNode?.id === n.id) return 11;
+        return 10;
+    }
+
     if (draggingNode?.id === n.id) return NODE_RADIUS[n.type] + 4;
     if (selectedNode?.id === n.id) return NODE_RADIUS[n.type] + 2;
-    return NODE_RADIUS[n.type] ?? 5;
+    return NODE_RADIUS[n.type] ?? 6;
 };
 
-const drawNodeShape = (
+// Draw profile node with double hexagon border
+const drawProfileNode = (
     ctx: CanvasRenderingContext2D,
     n: NodeType,
     radius: number,
+    color: string,
 ) => {
+    const bgColor = "#0b0f14"; // Graph background color
+
+    // Outer hexagon (banner color)
     ctx.beginPath();
-    if (isProfile(n)) {
-        for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI / 3) * i - Math.PI / 6;
-            const px = n.x! + radius * Math.cos(angle);
-            const py = n.y! + radius * Math.sin(angle);
-            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-        }
-        ctx.closePath();
-    } else {
-        ctx.arc(n.x!, n.y!, radius, 0, Math.PI * 2);
+    for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 3) * i - Math.PI / 6;
+        const px = n.x! + radius * Math.cos(angle);
+        const py = n.y! + radius * Math.sin(angle);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
     }
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    // Middle ring (background color)
+    const midRadius = radius * 0.85;
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 3) * i - Math.PI / 6;
+        const px = n.x! + midRadius * Math.cos(angle);
+        const py = n.y! + midRadius * Math.sin(angle);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fillStyle = bgColor;
+    ctx.fill();
+
+    // Inner hexagon (banner color again)
+    const innerRadius = radius * 0.65;
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 3) * i - Math.PI / 6;
+        const px = n.x! + innerRadius * Math.cos(angle);
+        const py = n.y! + innerRadius * Math.sin(angle);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = color;
+    ctx.fill();
+    ctx.shadowBlur = 0;
 };
 
 // --- Props ---
@@ -205,21 +268,71 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
                 const dragging_ = dragging && (s.id === dragging.id || t.id === dragging.id);
                 const active = selected && (s.id === selected.id || t.id === selected.id);
 
+                // Check if connected to profile and if node is completed
+                const sourceIsProfile = isProfile(s);
+                const targetIsProfile = isProfile(t);
+                const connectedToProfile = sourceIsProfile || targetIsProfile;
+
+                // Get the non-profile node
+                const otherNode = sourceIsProfile ? t : s;
+                const otherNodeCompleted = !isProfile(otherNode) && getNodeCompletionPercent(otherNode.id) === 100;
+
+                // Check if both nodes are completed (for non-profile links)
+                const sourceCompleted = !isProfile(s) && getNodeCompletionPercent(s.id) === 100;
+                const targetCompleted = !isProfile(t) && getNodeCompletionPercent(t.id) === 100;
+                const bothCompleted = sourceCompleted && targetCompleted;
+
+                // Special case: profile link with completed node
+                const isProfileLinkCompleted = connectedToProfile && otherNodeCompleted;
+
+                // Get branch color for the link
+                const branchColor = getBranchColor(sourceIsProfile ? t : s);
+                const profileColor = getProfileBannerColor();
+
                 ctx.beginPath();
                 ctx.moveTo(s.x!, s.y!);
                 ctx.lineTo(t.x!, t.y!);
 
-                ctx.strokeStyle = locked ? "rgba(148,163,184,0.25)"
-                    : dragging_ ? "rgba(251,146,60,0.9)"
-                        : active ? "rgba(255,200,120,0.9)"
-                            : "rgba(120,120,120,0.35)";
+                // Determine line appearance
+                if (locked) {
+                    ctx.strokeStyle = "rgba(148,163,184,0.25)";
+                    ctx.lineWidth = 1;
+                    ctx.globalAlpha = 0.6;
+                } else if (dragging_) {
+                    ctx.strokeStyle = "rgba(251,146,60,0.9)";
+                    ctx.lineWidth = 2;
+                    ctx.globalAlpha = 0.8;
+                } else if (active) {
+                    ctx.strokeStyle = "rgba(255,200,120,0.9)";
+                    ctx.lineWidth = 2;
+                    ctx.globalAlpha = 0.8;
+                } else if (isProfileLinkCompleted) {
+                    // Profile link with completed node - bigger and cleaner
+                    ctx.strokeStyle = profileColor;
+                    ctx.lineWidth = 4;
+                    ctx.globalAlpha = 0.9;
+                } else if (connectedToProfile) {
+                    // Normal profile link
+                    ctx.strokeStyle = `${profileColor}44`;
+                    ctx.lineWidth = 1.5;
+                    ctx.globalAlpha = 0.5;
+                } else if (bothCompleted) {
+                    // Both nodes completed (non-profile)
+                    ctx.strokeStyle = branchColor;
+                    ctx.lineWidth = 3;
+                    ctx.globalAlpha = 0.8;
+                } else {
+                    // Default link
+                    ctx.strokeStyle = `${branchColor}33`;
+                    ctx.lineWidth = 1;
+                    ctx.globalAlpha = 0.6;
+                }
 
                 ctx.setLineDash(locked ? [2, 6] : []);
-                ctx.lineWidth = active && !locked ? 2 : 1;
-                ctx.globalAlpha = 0.6;
                 ctx.stroke();
                 ctx.setLineDash([]);
                 ctx.lineWidth = 1;
+                ctx.globalAlpha = 1;
             });
 
             // nodes
@@ -227,15 +340,83 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
                 const color = getColor(n, selected, dragging);
                 const radius = getRadius(n, selected, dragging);
                 const dimmed = !!searchFilter && !n.title.toLowerCase().includes(searchFilter);
+                const pct = isProfile(n) ? 0 : getNodeCompletionPercent(n.id);
 
-                drawNodeShape(ctx, n, radius);
+                // Profile node gets special double-hexagon rendering
+                if (isProfile(n)) {
+                    ctx.globalAlpha = dimmed ? 0.15 : 1;
+                    drawProfileNode(ctx, n, radius, color);
+                    ctx.globalAlpha = 1;
+                } else {
+                    // Draw hexagon if started or completed, circle if not started
+                    if (pct > 0) {
+                        // Hexagon shape
+                        ctx.beginPath();
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (Math.PI / 3) * i - Math.PI / 6;
+                            const px = n.x! + radius * Math.cos(angle);
+                            const py = n.y! + radius * Math.sin(angle);
+                            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                        }
+                        ctx.closePath();
+                    } else {
+                        // Circle shape for not started
+                        ctx.beginPath();
+                        ctx.arc(n.x!, n.y!, radius, 0, Math.PI * 2);
+                    }
 
-                ctx.fillStyle = color;
-                ctx.shadowBlur = dragging?.id === n.id ? 18 : selected?.id === n.id ? 12 : 3;
-                ctx.shadowColor = color;
-                ctx.globalAlpha = dimmed ? 0.15 : 1;
-                ctx.fill();
-                ctx.shadowBlur = 0;
+                    // Node background - solid color for hexagons
+                    if (pct === 100) {
+                        // Completed - solid bright color
+                        ctx.fillStyle = color;
+                    } else if (pct > 0) {
+                        // Started - solid color with slight transparency
+                        ctx.fillStyle = `${color}dd`;
+                    } else {
+                        // Not started - dark background
+                        ctx.fillStyle = "#1c2128";
+                    }
+
+                    ctx.shadowBlur = dragging?.id === n.id ? 18 : selected?.id === n.id ? 12 : 3;
+                    ctx.shadowColor = color;
+                    ctx.globalAlpha = dimmed ? 0.15 : 1;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+
+                    // Border
+                    if (pct > 0) {
+                        ctx.strokeStyle = "#0b0f14"; // Dark border for contrast
+                        ctx.lineWidth = 1;
+                    } else {
+                        ctx.strokeStyle = "#30363d";
+                        ctx.lineWidth = 0.5;
+                    }
+                    ctx.stroke();
+                    ctx.lineWidth = 0.5;
+
+                    // // Icon for completed nodes - clean checkmark
+                    // if (pct === 100) {
+                    //     const checkSize = radius * 0.6;
+                    //     const checkX = n.x!;
+                    //     const checkY = n.y!;
+
+                    //     ctx.strokeStyle = "#0b0f14"; // Dark checkmark on bright background
+                    //     ctx.lineWidth = radius * 0.25;
+                    //     ctx.lineCap = "round";
+                    //     ctx.lineJoin = "round";
+
+                    //     // Draw clean checkmark path
+                    //     ctx.beginPath();
+                    //     ctx.moveTo(checkX - checkSize * 0.5, checkY);
+                    //     ctx.lineTo(checkX - checkSize * 0.1, checkY + checkSize * 0.4);
+                    //     ctx.lineTo(checkX + checkSize * 0.6, checkY - checkSize * 0.5);
+                    //     ctx.stroke();
+
+                    //     ctx.lineCap = "butt";
+                    //     ctx.lineJoin = "miter";
+                    //     ctx.lineWidth = 1;
+                    // }
+                }
 
                 // pulse ring (newly unlocked)
                 const age = performance.now() - pulseStart;
@@ -246,22 +427,6 @@ const DemoGraph: React.FC<DemoGraphProps> = ({
                     ctx.strokeStyle = color;
                     ctx.globalAlpha = (1 - t2) * 0.6;
                     ctx.lineWidth = 2;
-                    ctx.stroke();
-                    ctx.lineWidth = 1;
-                }
-
-                // completion arc (partial progress)
-                const pct = isProfile(n) ? 0 : getNodeCompletionPercent(n.id);
-                if (pct > 0 && pct < 100) {
-                    ctx.beginPath();
-                    ctx.arc(
-                        n.x!, n.y!, radius,
-                        -Math.PI / 2,
-                        -Math.PI / 2 + Math.PI * 2 * pct / 100
-                    );
-                    ctx.strokeStyle = color;
-                    ctx.lineWidth = 2.5;
-                    ctx.globalAlpha = 0.9;
                     ctx.stroke();
                     ctx.lineWidth = 1;
                 }

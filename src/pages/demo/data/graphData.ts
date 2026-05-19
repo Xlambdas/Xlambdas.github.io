@@ -180,6 +180,7 @@ export const initialNodes: NodeType[] = [
         isUnlocked: true,
         prerequisites: [],
         depth: 0,
+        branchColor: "#3b82f6",
         shortDescription: "Ton espace personnel — progression, badges, révisions.",
         lessonPath: [],
     },
@@ -192,6 +193,7 @@ export const initialNodes: NodeType[] = [
         isUnlocked: true,
         prerequisites: [],
         depth: 1,
+        branchColor: "#3b82f6",
         hook: "Depuis un siècle, des chercheurs tentent de comprendre comment l'esprit humain fonctionne. Ce qu'ils ont découvert remet en question presque tout ce qu'on croit savoir sur l'apprentissage.",
         shortDescription: "L'étude scientifique des processus mentaux.",
         badge: {
@@ -449,6 +451,7 @@ export const initialNodes: NodeType[] = [
         isUnlocked: false,
         prerequisites: ["psychologie"],
         depth: 2,
+        branchColor: "#3b82f6",
         hook: "La mémoire n'est pas un enregistreur — c'est un reconstructeur. Chaque souvenir que tu récupères est légèrement différent de la dernière fois.",
         shortDescription: "Comment le cerveau stocke, oublie, et reconstruit.",
         badge: {
@@ -640,6 +643,7 @@ export const initialNodes: NodeType[] = [
         isUnlocked: false,
         prerequisites: ["psychologie"],
         depth: 2,
+        branchColor: "#3b82f6",
         hook: "Tu crois choisir où tu portes ton attention. La recherche suggère le contraire.",
         shortDescription: "Le filtre invisible qui gouverne ta perception.",
         lessonPath: [
@@ -769,6 +773,7 @@ export const initialNodes: NodeType[] = [
         isUnlocked: false,
         prerequisites: ["memoire"],
         depth: 3,
+        branchColor: "#3b82f6",
         hook: "En 1956, un psychologue a parié sa carrière sur le chiffre 7. Il avait à la fois raison et tort.",
         shortDescription: "La mémoire du présent — limitée, volatile, essentielle.",
         badge: {
@@ -954,6 +959,7 @@ export const initialNodes: NodeType[] = [
         isUnlocked: false,
         prerequisites: ["memoire"],
         depth: 3,
+        branchColor: "#3b82f6",
         hook: "Tu sais que Paris est la capitale de la France. Mais tu ne te souviens pas du moment où tu l'as appris. Pourquoi ?",
         shortDescription: "La mémoire des faits, sans le souvenir de les avoir appris.",
         lessonPath: [],

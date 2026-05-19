@@ -12,6 +12,17 @@ import { NodePathSettings } from "../components/node/NodePathSettings";
 const findParent = (nodeId: string) =>
     initialNodes.find(n => n.links.includes(nodeId));
 
+// Check if we should go back to home
+const shouldNavigateToHome = (): boolean => {
+    // Check if we came from a lesson completion/close
+    const fromLesson = sessionStorage.getItem('from_lesson');
+    if (fromLesson === 'true') {
+        sessionStorage.removeItem('from_lesson'); // Clear the flag
+        return true;
+    }
+    return false;
+};
+
 // Build the complete path tree - traverse backwards to root, then forwards
 const buildPathTree = (startNode: NodeType, selectedPaths: Record<string, string> = {}): {
     sections: Array<{ node: NodeType; lessons: Lesson[] }>;
@@ -264,6 +275,15 @@ export const NodePage: React.FC = () => {
         setRefreshKey(k => k + 1);
     };
 
+    // Handle back navigation
+    const handleBack = () => {
+        if (shouldNavigateToHome()) {
+            navigate("/demoHome");
+        } else {
+            navigate(-1);
+        }
+    };
+
     // --- Not found ---
     if (!node) return (
         <div style={{
@@ -278,7 +298,7 @@ export const NodePage: React.FC = () => {
         }}>
             Nœud introuvable.
             <span
-                onClick={() => navigate(-1)}
+                onClick={handleBack}
                 style={{ color: "#a5b4fc", cursor: "pointer" }}
             >
                 Retour
@@ -305,7 +325,7 @@ export const NodePage: React.FC = () => {
                 <DockBtn
                     icon={<BackIcon />}
                     label="Retour"
-                    onClick={() => navigate(-1)}
+                    onClick={handleBack}
                 />
 
                 <Divider />
@@ -461,10 +481,14 @@ export const NodePage: React.FC = () => {
                     lesson={activeLesson.lesson}
                     lessonIndex={activeLesson.index}
                     onComplete={() => {
+                        sessionStorage.setItem('from_lesson', 'true');
                         setActiveLesson(null);
                         setRefreshKey(k => k + 1);
                     }}
-                    onClose={() => setActiveLesson(null)}
+                    onClose={() => {
+                        sessionStorage.setItem('from_lesson', 'true');
+                        setActiveLesson(null);
+                    }}
                 />
             )}
 

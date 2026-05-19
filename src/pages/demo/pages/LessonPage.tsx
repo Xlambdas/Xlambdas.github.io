@@ -73,7 +73,8 @@ export const LessonPage: React.FC = () => {
     const currentBlockMeta = blocks[currentIndex];
     const currentBlock = currentBlockMeta?.block;
     const isLastBlock = currentIndex === blocks.length - 1;
-    const color = "#a5b4fc";
+    // Use node's branch color or fallback to default
+    const color = (node as any).branchColor || "#a5b4fc";
 
     const isReviewMode = currentBlock?.type === "quiz" && quizAnswers.has(currentIndex);
 
@@ -115,6 +116,7 @@ export const LessonPage: React.FC = () => {
             // Complete lesson and return to path
             if (nodeId && lessonId) {
                 completeLesson(nodeId, lessonId);
+                sessionStorage.setItem('from_lesson', 'true');
                 navigate(`/demo/node/${nodeId}?lesson=${lessonId}`);
             }
         } else {
@@ -498,7 +500,10 @@ export const LessonPage: React.FC = () => {
                                     Annuler
                                 </button>
                                 <button
-                                    onClick={() => navigate(`/demo/node/${nodeId}?lesson=${lessonId}`)}
+                                    onClick={() => {
+                                        sessionStorage.setItem('from_lesson', 'true'); // Mark that we came from a lesson
+                                        navigate(`/demo/node/${nodeId}?lesson=${lessonId}`);
+                                    }}
                                     style={{
                                         flex: 1,
                                         padding: `${8 * textScale}px 0`,

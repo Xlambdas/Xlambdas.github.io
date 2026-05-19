@@ -297,7 +297,7 @@ const PathSelector: React.FC<{
                 {options.map(node => {
                     const isSelected = localSelected === node.id;
                     const isHovered = hoveredId === node.id;
-                    const nodeColor = NODE_COLOR[node.type];
+                    const nodeColor = (node as any).branchColor || NODE_COLOR[node.type];
 
                     return (
                         <button
@@ -581,7 +581,7 @@ export const HoneycombPath: React.FC<HoneycombPathProps> = ({
                 paddingTop: 20,
             }}>
                 {sections.map((section, sectionIndex) => {
-                    const color = NODE_COLOR[section.node.type];
+                    const color = (section.node as any).branchColor || NODE_COLOR[section.node.type];
                     const nextOptions = pathOptions?.find(opt => opt.nodeId === section.node.id);
 
                     return (
