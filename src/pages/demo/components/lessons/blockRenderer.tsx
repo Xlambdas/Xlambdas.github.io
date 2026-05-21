@@ -1,20 +1,10 @@
 import React from "react";
-import type { ContentBlock, SRRating } from "../../types/types";
+import type { ContentBlock, BlockRendererProps } from "../../types";
 import { QuizBlockPlayer } from "./quizBlockPlayer";
 import { useLessonTextSize } from "../../hooks";
-
-// --- Markdown Helper ---
-
-const md = (text: string) =>
-    text
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*(.*?)\*/g, "<em>$1</em>")
-        .split("\n\n")
-        .map(p => `<p style="margin:0 0 14px 0;line-height:1.85">${p}</p>`)
-        .join("");
+import { md } from "../../helpers";
 
 // --- Block Components ---
-
 const ExplanationBlock: React.FC<{
     block: Extract<ContentBlock, { type: "explanation" }>;
     color: string;
@@ -149,24 +139,6 @@ const RecapBlock: React.FC<{
 );
 
 // --- Main Renderer ---
-
-interface BlockRendererProps {
-    block: ContentBlock;
-    color: string;
-    nodeId: string;
-    onQuizComplete: (correct: boolean, rating: SRRating, userAnswer: any) => void;
-    onExplain: (explanation: string) => void;
-    isAnswered: boolean;
-    isRetry?: boolean;
-    reviewMode?: boolean;
-    reviewAnswer?: any;
-    reviewCorrect?: boolean;
-    onContinue?: () => void;
-    onPrevious?: () => void;
-    canContinue?: boolean;
-    buttonLabel?: string;
-}
-
 export const BlockRenderer: React.FC<BlockRendererProps> = ({
     block,
     color,

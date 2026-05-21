@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { ContentBlock, SRRating } from "../types/types";
 import { initialNodes, completeLesson } from "../data/graphData";
 import { upsertCard } from "../utils/srEngine";
 import { LessonProgressBar } from "../components/lessons/lessonProgressBar";
 import { BlockRenderer } from "../components/lessons/blockRenderer";
 import { ExplanationModal } from "../components/lessons/explanationModal";
 import { useLessonTextSize } from "../hooks";
-
-// --- Types ---
-
-interface BlockWithMetadata {
-    block: ContentBlock;
-    originalIndex: number;
-    isRetry?: boolean; // if this is a re-added wrong quiz
-}
+import type { BlockWithMetadata, SRRating } from "../types";
 
 // --- Main Component ---
 

@@ -207,3 +207,7 @@ export type UserProfile = {
     avatarEmoji: string;
     joinDate: string;
 };
+
+export type LessonStatus = "completed" | "current" | "locked";
+export type ConfirmState = "idle" | "confirming" | "done";
+export type Phase = "playing" | "completed";

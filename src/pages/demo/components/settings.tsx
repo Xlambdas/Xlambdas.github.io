@@ -1,15 +1,14 @@
-import { SIZE_MAP } from './node/nodePanel';
+import { SIZE_MAP } from "../constants";
+import type { SettingsPanelProps } from "../types";
 
-interface SettingsPanelProps {
-    onClose: () => void;
-    textSize: "S" | "M" | "L";
-    onTextSizeChange: (size: "S" | "M" | "L") => void;
-    isTeacher: boolean;
-    onTeacherToggle: () => void;
-    teacherName: string;
-}
-
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, textSize, onTextSizeChange, isTeacher, onTeacherToggle, teacherName }) => {
+export const SettingsPanel: React.FC<SettingsPanelProps> = ({
+    onClose,
+    textSize,
+    onTextSizeChange,
+    // isTeacher,
+    // onTeacherToggle,
+    // teacherName
+}) => {
     const fs = SIZE_MAP[textSize];
 
     return (
@@ -83,7 +82,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, textSize,
                     </div>
                 </div>
 
-                <div style={{ paddingTop: 14, borderTop: "1px solid #21262d" }}>
+                {/* <div style={{ paddingTop: 14, borderTop: "1px solid #21262d" }}>
                     <span style={{ color: "#8b949e", fontSize: fs - 1, display: "block", marginBottom: 8 }}>
                         Mode enseignant
                     </span>
@@ -126,7 +125,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, textSize,
                             Accéder au mode enseignant
                         </button>
                     )}
-                </div>
+                </div> */}
             </div>
         </>
     );

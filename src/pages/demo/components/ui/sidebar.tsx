@@ -1,18 +1,10 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { initialNodes, type NodeType } from "../../data/graphData";
-import { type TextSize, SIZE_MAP } from "../../hooks/useDemoHomeState";
 import { getNodeCompletionPercent, getVisibleIds } from "../../data/graphData";
-import { getProfileSettings, PERSONA_OPTIONS } from "../../pages/ProfilePage";
-
-interface SidebarProps {
-    collapsed: boolean;
-    onCollapse: () => void;
-    onSelectNode: (node: NodeType) => void;
-    textSize: TextSize;
-    isTeacher: boolean;
-    teacherName: string;
-}
+import { getProfileSettings } from "../../helpers";
+import { PERSONA_OPTIONS, SIZE_MAP } from "../../constants";
+import type { SidebarProps } from "../../types";
 
 export const Sidebar: React.FC<SidebarProps> = ({
     collapsed,
@@ -603,6 +595,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                 {/* Strengthen Session */}
                 <button
+                    onClick={() => {
+                        window.__openStrengthenModal?.();
+                    }}
                     style={{
                         width: "100%",
                         background: "transparent",

@@ -5,31 +5,9 @@ import {
     getUserProfile,
 } from "../data/graphData";
 import { getDueCount } from "../utils/srEngine";
-
-// --- Constants ---
-
-const HEX_CLIP = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
-
-const PERSONA_OPTIONS = [
-    { id: "avatar1", type: "image", src: "demo/avatar_1.png" },
-    { id: "avatar2", type: "image", src: "demo/avatar_1.png" },
-    { id: "avatar3", type: "image", src: "demo/avatar_1.png" },
-    { id: "avatar4", type: "image", src: "demo/avatar_1.png" },
-];
-
-// --- Helpers ---
-
-const getProfileSettings = () => ({
-    bannerColor: localStorage.getItem("profile_banner_color") || "#3b82f6",
-    persona: localStorage.getItem("profile_persona") || PERSONA_OPTIONS[0].id,
-    personaBgColor: localStorage.getItem("profile_persona_bg") || "#1f2937",
-    status: localStorage.getItem("profile_status") || "🧠",
-});
-
-const getStudyStreak = (): number => {
-    const completedNodes = JSON.parse(localStorage.getItem("completed_nodes") ?? "[]");
-    return completedNodes.length > 0 ? Math.min(completedNodes.length, 7) : 0;
-};
+import { getProfileSettings, getStudyStreak } from "../helpers";
+import { PERSONA_OPTIONS, HEX_CLIP } from "../constants";
+import type { ProfileNodeModalProps } from "../types";
 
 // --- PersonaHexagon Component ---
 
@@ -64,13 +42,6 @@ const PersonaHexagon: React.FC<{ persona: any; size: number; bgColor?: string }>
 
     return null;
 };
-
-// --- Props ---
-
-interface ProfileNodeModalProps {
-    onClose: () => void;
-    onOpenStrengthen: () => void;
-}
 
 // --- Component ---
 

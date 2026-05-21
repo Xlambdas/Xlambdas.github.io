@@ -1,121 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import type { Lesson, NodeType } from "../types/types";
-import { initialNodes, getDynamicNodes } from "../data/graphData";
+import type { Lesson, NodeType } from "../types";
+import { initialNodes } from "../data/graphData";
 import { HoneycombPath } from "../components/ui/honeyCombPath";
 import { LessonPlayer } from "../components/lessons/lessonPlayer";
-import { StrengthenSession } from "../sections/strengthenSession";
 import { NodePathSettings } from "../components/node/NodePathSettings";
-
-// --- Helpers ---
-
-const findParent = (nodeId: string) =>
-    initialNodes.find(n => n.links.includes(nodeId));
-
-// Check if we should go back to home
-const shouldNavigateToHome = (): boolean => {
-    // Check if we came from a lesson completion/close
-    const fromLesson = sessionStorage.getItem('from_lesson');
-    if (fromLesson === 'true') {
-        sessionStorage.removeItem('from_lesson'); // Clear the flag
-        return true;
-    }
-    return false;
-};
-
-// Build the complete path tree - traverse backwards to root, then forwards
-const buildPathTree = (startNode: NodeType, selectedPaths: Record<string, string> = {}): {
-    sections: Array<{ node: NodeType; lessons: Lesson[] }>;
-    pathOptions: Array<{ nodeId: string; nodes: NodeType[] }>;
-} => {
-    const sections: Array<{ node: NodeType; lessons: Lesson[] }> = [];
-    const pathOptions: Array<{ nodeId: string; nodes: NodeType[] }> = [];
-    const dynamicNodes = getDynamicNodes();
-
-    // Step 1: Traverse backwards to find root
-    const pathToRoot: NodeType[] = [];
-    let currentNode: NodeType | undefined = startNode;
-
-    while (currentNode) {
-        pathToRoot.unshift(currentNode); // Add to beginning
-        const parent = findParent(currentNode.id);
-        if (parent && !pathToRoot.some(n => n.id === parent.id)) {
-            currentNode = parent;
-        } else {
-            currentNode = undefined; // Reached root
-        }
-    }
-
-    // Step 2: Traverse forwards from root following selected paths
-    const traverse = (node: NodeType) => {
-        // Add current node's lessons as a section
-        if (node.lessonPath && node.lessonPath.length > 0) {
-            sections.push({
-                node,
-                lessons: node.lessonPath,
-            });
-        }
-
-        // Get next nodes
-        const nextNodeIds = node.links || [];
-        const nextNodes = nextNodeIds
-            .map(id => dynamicNodes.find(n => n.id === id))
-            .filter(Boolean) as NodeType[];
-
-        if (nextNodes.length > 0) {
-            // Add path options
-            pathOptions.push({
-                nodeId: node.id,
-                nodes: nextNodes,
-            });
-
-            // Determine which path to follow
-            let selectedNode: NodeType | undefined;
-
-            if (selectedPaths[node.id]) {
-                // Use user's selection
-                selectedNode = nextNodes.find(n => n.id === selectedPaths[node.id]);
-            } else {
-                // Check if we're on the path to startNode
-                const nodeIndexInPath = pathToRoot.findIndex(n => n.id === node.id);
-                if (nodeIndexInPath !== -1 && nodeIndexInPath < pathToRoot.length - 1) {
-                    // We're on the path to startNode, follow it
-                    const nextInPath = pathToRoot[nodeIndexInPath + 1];
-                    selectedNode = nextNodes.find(n => n.id === nextInPath?.id);
-                }
-                // else: not on path and no selection -> stop here
-            }
-
-            // Continue traversing only if a path was selected
-            if (selectedNode) {
-                traverse(selectedNode);
-            }
-        }
-    };
-
-    // Start from root
-    if (pathToRoot.length > 0) {
-        traverse(pathToRoot[0]);
-    }
-
-    return { sections, pathOptions };
-};
-
-// Get selected paths from localStorage
-const getSelectedPaths = (): Record<string, string> => {
-    try {
-        return JSON.parse(localStorage.getItem("selected_paths") || "{}");
-    } catch {
-        return {};
-    }
-};
-
-// Save selected path
-const saveSelectedPath = (parentNodeId: string, selectedNodeId: string) => {
-    const paths = getSelectedPaths();
-    paths[parentNodeId] = selectedNodeId;
-    localStorage.setItem("selected_paths", JSON.stringify(paths));
-};
+import {
+    getSelectedPaths,
+    saveSelectedPath,
+    findParent,
+    shouldNavigateToHome,
+    buildPathTree
+} from "../helpers";
+import {
+    BackIcon,
+    SettingsIcon,
+    Divider,
+    // node :
+    NODE_COLOR
+} from "../constants";
 
 // --- Dock button ---
 
@@ -155,31 +58,6 @@ const DockBtn: React.FC<{
     </button>
 );
 
-const Divider = () => (
-    <div style={{
-        width: 24,
-        height: 1,
-        background: "#21262d",
-        margin: "2px 0",
-    }} />
-);
-
-// --- Icons ---
-
-const BackIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" strokeWidth="2.5">
-        <path d="M19 12H5M12 5l-7 7 7 7" />
-    </svg>
-);
-
-const SettingsIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-);
 
 // --- Component ---
 
@@ -257,7 +135,7 @@ export const NodePage: React.FC = () => {
         }
     }, [nodeId, scrollToLessonId, node]);
     const [activeLesson, setActiveLesson] = useState<{ node: NodeType; lesson: Lesson; index: number } | null>(null);
-    const [strengthenOpen, setStrengthenOpen] = useState(false);
+    // const [strengthenOpen, setStrengthenOpen] = useState(false);
     // const [profileOpen, setProfileOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
@@ -339,12 +217,12 @@ export const NodePage: React.FC = () => {
                 />
 
                 {/* strengthen this node only */}
-                <DockBtn
+                {/* <DockBtn
                     icon="💪"
                     label="S'entraîner sur ce parcours"
                     onClick={() => setStrengthenOpen(true)}
                     active={strengthenOpen}
-                />
+                /> */}
 
                 <Divider />
 
@@ -477,9 +355,13 @@ export const NodePage: React.FC = () => {
             {/* lesson player */}
             {activeLesson && (
                 <LessonPlayer
+                    title={activeLesson.lesson.title}
+                    subtitle={`${activeLesson.node.title} · Leçon`}
+                    blocks={activeLesson.lesson.blocks}
+                    color={NODE_COLOR[activeLesson.node.type]}
                     node={activeLesson.node}
                     lesson={activeLesson.lesson}
-                    lessonIndex={activeLesson.index}
+                    showCompletionScreen={true}
                     onComplete={() => {
                         sessionStorage.setItem('from_lesson', 'true');
                         setActiveLesson(null);
@@ -492,16 +374,6 @@ export const NodePage: React.FC = () => {
                 />
             )}
 
-            {/* strengthen */}
-            {strengthenOpen && (
-                <StrengthenSession
-                    nodeId={node.id}
-                    onClose={() => {
-                        setStrengthenOpen(false);
-                        setRefreshKey(k => k + 1);
-                    }}
-                />
-            )}
         </div>
     );
 };

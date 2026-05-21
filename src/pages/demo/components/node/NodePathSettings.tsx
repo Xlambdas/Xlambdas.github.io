@@ -1,13 +1,8 @@
 import React, { useState } from "react";
-import { type NodeType, getNodeCompletionPercent } from "../../data/graphData";
+import { getNodeCompletionPercent } from "../../data/graphData";
 import { getAllCards, saveCards } from "../../utils/srEngine";
+import type { ConfirmState, NodePathSettingsProps } from "../../types";
 
-interface NodePathSettingsProps {
-    node: NodeType;
-    onClose: () => void;
-}
-
-type ConfirmState = "idle" | "confirming" | "done";
 
 export const NodePathSettings: React.FC<NodePathSettingsProps> = ({ node, onClose }) => {
     const [confirmReset, setConfirmReset] = useState<ConfirmState>("idle");

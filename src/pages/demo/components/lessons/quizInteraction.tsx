@@ -1,17 +1,9 @@
 import React, { useState } from "react";
-import type { QuizQuestion } from "../../types/types";
+import type { QuizQuestion, QuizInteractionProps } from "../../types";
 import { useLessonTextSize } from "../../hooks";
+import { PAIR_COLORS } from "../../constants";
 
 // --- Quiz Interaction ---
-
-interface QuizInteractionProps {
-    question: QuizQuestion;
-    onSubmit: (answer: any, idk: boolean) => void;
-    color: string;
-    submitted?: boolean;
-    userAnswer?: any;
-}
-
 export const QuizInteraction: React.FC<QuizInteractionProps> = ({
     question,
     onSubmit,
@@ -162,7 +154,6 @@ export const QuizInteraction: React.FC<QuizInteractionProps> = ({
 };
 
 // --- Multiple Choice ---
-
 const MultipleChoiceUI: React.FC<{
     question: Extract<QuizQuestion, { type: "multiple_choice" }>;
     selected: number | null;
@@ -233,7 +224,6 @@ const MultipleChoiceUI: React.FC<{
 );
 
 // --- True/False ---
-
 const TrueFalseUI: React.FC<{
     question: Extract<QuizQuestion, { type: "true_false" }>;
     selected: boolean | null;
@@ -280,7 +270,6 @@ const TrueFalseUI: React.FC<{
 );
 
 // --- Ordering ---
-
 const OrderingUI: React.FC<{
     question: Extract<QuizQuestion, { type: "ordering" }>;
     order: number[] | null;
@@ -369,17 +358,6 @@ const OrderingUI: React.FC<{
 };
 
 // --- Match Pairs ---
-
-// Color palette for matched pairs
-const PAIR_COLORS = [
-    { bg: "rgba(99,102,241,0.15)", border: "#6366f1", text: "#818cf8" },   // Indigo
-    { bg: "rgba(236,72,153,0.15)", border: "#ec4899", text: "#f472b6" },   // Pink
-    { bg: "rgba(34,197,94,0.15)", border: "#22c55e", text: "#4ade80" },    // Green
-    { bg: "rgba(251,146,60,0.15)", border: "#fb923c", text: "#fb923c" },   // Orange
-    { bg: "rgba(168,85,247,0.15)", border: "#a855f7", text: "#c084fc" },   // Purple
-    { bg: "rgba(14,165,233,0.15)", border: "#0ea5e9", text: "#38bdf8" },   // Sky
-];
-
 const MatchPairsUI: React.FC<{
     question: Extract<QuizQuestion, { type: "match_pairs" }>;
     matches: Record<number, number> | null;
@@ -593,7 +571,6 @@ const MatchPairsUI: React.FC<{
 };
 
 // --- Word Bank ---
-
 const WordBankUI: React.FC<{
     question: Extract<QuizQuestion, { type: "word_bank" }>;
     filled: string[] | null;
@@ -730,7 +707,6 @@ const WordBankUI: React.FC<{
 };
 
 // --- Sentence ---
-
 const SentenceUI: React.FC<{
     question: Extract<QuizQuestion, { type: "sentence" }>;
     value: string | null;

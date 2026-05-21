@@ -1,71 +1,8 @@
 import React from "react";
-import type { ContentBlock } from "../../types/types";
-
-// --- Block Icon Component ---
-
-const BlockIcon: React.FC<{
-    type: ContentBlock["type"];
-    isActive: boolean;
-    isPast: boolean;
-    color: string;
-}> = ({ type, isActive, isPast, color }) => {
-    const baseColor = isPast || isActive ? color : "#30363d";
-    const size = isActive ? 12 : 8;
-
-    // Different shapes based on block type
-    switch (type) {
-        case "explanation":
-        case "vignette":
-            // Square for explanation/vignette
-            return (
-                <div style={{
-                    width: size,
-                    height: size,
-                    background: baseColor,
-                    border: isActive ? `2px solid ${color}` : "none",
-                    transition: "all 0.3s ease",
-                    boxShadow: isActive ? `0 0 8px ${color}88` : "none",
-                }} />
-            );
-
-        case "quiz":
-            // Circle for quiz
-            return (
-                <div style={{
-                    width: size,
-                    height: size,
-                    borderRadius: "50%",
-                    background: baseColor,
-                    border: isActive ? `2px solid ${color}` : "none",
-                    transition: "all 0.3s ease",
-                    boxShadow: isActive ? `0 0 8px ${color}88` : "none",
-                }} />
-            );
-
-        case "recap":
-            // Triangle for recap
-            return (
-                <div style={{
-                    width: 0,
-                    height: 0,
-                    borderLeft: `${size / 2}px solid transparent`,
-                    borderRight: `${size / 2}px solid transparent`,
-                    borderBottom: `${size}px solid ${baseColor}`,
-                    filter: isActive ? `drop-shadow(0 0 4px ${color}88)` : "none",
-                    transition: "all 0.3s ease",
-                }} />
-            );
-    }
-};
+import type { LessonProgressBarProps } from "../../types";
+import { BlockIcon } from "../../constants/icons";
 
 // --- Main Component ---
-
-interface LessonProgressBarProps {
-    blocks: ContentBlock[];
-    currentIndex: number;
-    color: string;
-}
-
 export const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
     blocks,
     currentIndex,

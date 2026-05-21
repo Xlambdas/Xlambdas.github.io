@@ -1,41 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import type { NodeType, Lesson, ContentBlock, SRRating } from "../../types/types";
+import type {
+    NodeType, Lesson, ContentBlock,
+    SRRating, LessonPlayerProps, Phase
+} from "../../types";
 import { completeLesson, getNodeCompletionPercent } from "../../data/graphData";
 import { upsertCard } from "../../utils/srEngine";
 import { QuizPlayer } from "./quizPlayer";
 import { getNotesForNode } from "../../data/teacherNotes";
 import { TeacherNoteCard } from "../../sections/teacherNoteCard";
 import { useLessonTextSize } from "../../hooks";
-// import { FinalQuizPlayer } from "./FinalQuizPlayer";
+import { BLOCK_LABELS, md } from "../../constants";
 
-// --- Constants ---
-
-const NODE_COLOR: Record<NodeType["type"], string> = {
-    main: "#ffffff",
-    folder: "#a5b4fc",
-    file: "#94a3b8",
-};
-
-const BLOCK_LABELS: Record<ContentBlock["type"], string> = {
-    explanation: "Explication",
-    vignette: "Histoire",
-    quiz: "Quiz",
-    recap: "Récapitulatif",
-};
-
-// --- Markdown ---
-
-const md = (text: string) =>
-    "<p>" +
-    text
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*(.*?)\*/g, "<em>$1</em>")
-        .replace(/\n\n/g, "</p><p>")
-        .replace(/\n- /g, "<br/>• ") +
-    "</p>";
 
 // --- Sub-components ---
-
 const ExplanationBlock: React.FC<{
     block: Extract<ContentBlock, { type: "explanation" }>;
     color: string;
@@ -136,7 +113,6 @@ const RecapBlock: React.FC<{
 );
 
 // --- Completion screen ---
-
 const CompletionScreen: React.FC<{
     lesson: Lesson;
     node: NodeType;
@@ -215,19 +191,17 @@ const CompletionScreen: React.FC<{
 };
 
 // --- Main component ---
-
-interface LessonPlayerProps {
-    node: NodeType;
-    lesson: Lesson;
-    lessonIndex: number;
-    onComplete: (nodeId: string, newlyCompleted: boolean) => void;
-    onClose: () => void;
-}
-
-type Phase = "playing" | "completed";
-
 export const LessonPlayer: React.FC<LessonPlayerProps> = ({
-    node, lesson, onComplete, onClose,
+    title,
+    subtitle,
+    blocks,
+    color,
+    totalBlocks,
+    onComplete,
+    onClose,
+    node,
+    lesson,
+    showCompletionScreen = true,
 }) => {
     const [visible, setVisible] = useState(false);
     const [blockIndex, setBlockIndex] = useState(0);
@@ -237,11 +211,10 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
     const scrollRef = useRef<HTMLDivElement>(null);
     const { textScale } = useLessonTextSize();
 
-    const color = NODE_COLOR[node.type];
-    const blocks = lesson.blocks;
     const currentBlock = blocks[blockIndex];
     const isLastBlock = blockIndex === blocks.length - 1;
-    const progress = blocks.length > 0 ? (blockIndex / blocks.length) * 100 : 0;
+    const displayTotal = totalBlocks ?? blocks.length;
+    const progress = displayTotal > 0 ? ((blockIndex + 1) / displayTotal) * 100 : 0;
 
     useEffect(() => {
         requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
@@ -264,10 +237,20 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
     const handleNext = () => {
         if (!canAdvance()) return;
         if (isLastBlock) {
-            completeLesson(node.id, lesson.id);
-            const nodeCompleted = getNodeCompletionPercent(node.id) === 100;
-            setIsNodeComplete(nodeCompleted);
-            setPhase("completed");
+            // Only do lesson completion logic if we have lesson data
+            if (node && lesson) {
+                completeLesson(node.id, lesson.id);
+                const nodeCompleted = getNodeCompletionPercent(node.id) === 100;
+                setIsNodeComplete(nodeCompleted);
+            }
+
+            if (showCompletionScreen && node && lesson) {
+                setPhase("completed");
+            } else {
+                // Direct completion for strengthen
+                setVisible(false);
+                setTimeout(onComplete, 350);
+            }
         } else {
             setBlockIndex(i => i + 1);
         }
@@ -275,15 +258,20 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
 
     const handleContinue = () => {
         setVisible(false);
-        setTimeout(() => onComplete(node.id, isNodeComplete), 350);
+        setTimeout(onComplete, 350);
     };
 
-    const questionId = (blockIdx: number) => `${node.id}::${lesson.id}::${blockIdx}`;
+    const questionId = (blockIdx: number) =>
+        node && lesson
+            ? `${node.id}::${lesson.id}::${blockIdx}`
+            : `strengthen::${blockIdx}`;
 
     const handleQuizComplete = (_: string, rating: SRRating) => {
-        upsertCard(questionId(blockIndex), node.id, rating);
+        if (node) {
+            upsertCard(questionId(blockIndex), node.id, rating);
+        }
         setQuizDone(prev => new Set([...prev, blockIndex]));
-    };
+            };
 
     // --- Main render ---
     return (
@@ -348,10 +336,10 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
                             }} />
                             <div>
                                 <div style={{ color: "#c9d1d9", fontSize: 12 * textScale, fontWeight: 500 }}>
-                                    {lesson.title}
+                                    {title}
                                 </div>
                                 <div style={{ color: "#484f58", fontSize: 10 * textScale, marginTop: 2 }}>
-                                    {node.title} · {blockIndex + 1} / {blocks.length}
+                                    {subtitle} · {blockIndex + 1} / {blocks.length}
                                 </div>
                             </div>
                         </div>
@@ -398,7 +386,7 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
 
                                 {/* block content */}
                                 {currentBlock?.type === "explanation" && (
-                                    <ExplanationBlock block={currentBlock} color={color} nodeId={node.id} />
+                                    <ExplanationBlock block={currentBlock} color={color} nodeId={node?.id ?? ""} />
                                 )}
                                 {currentBlock?.type === "vignette" && (
                                     <VignetteBlock block={currentBlock} color={color} />
@@ -410,7 +398,7 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
                                     <QuizPlayer
                                         question={currentBlock.question}
                                         questionId={questionId(blockIndex)}
-                                        nodeId={node.id}
+                                        nodeId={node?.id ?? "strengthen"}
                                         onComplete={handleQuizComplete}
                                     />
                                 )}
@@ -443,16 +431,16 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({
                             </button>
                         </div>
                     </>
-                ) : (
-                    <CompletionScreen
-                        lesson={lesson}
-                        node={node}
-                        color={color}
-                        isNodeComplete={isNodeComplete}
-                        onContinue={handleContinue}
-                        textScale={textScale}
-                    />
-                )}
+                ) : lesson && node ? (
+                        <CompletionScreen
+                                lesson={lesson}
+                                node={node}
+                                color={color}
+                                isNodeComplete={isNodeComplete}
+                                onContinue={handleContinue}
+                                textScale={textScale}
+                            />
+                    ) : null}
             </div>
         </>
     );

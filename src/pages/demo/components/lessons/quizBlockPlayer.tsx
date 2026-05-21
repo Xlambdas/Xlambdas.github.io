@@ -1,23 +1,10 @@
 import React, { useState } from "react";
-import type { QuizQuestion, SRRating } from "../../types/types";
+import type { SRRating, QuizBlockPlayerProps } from "../../types";
 import { QuizInteraction } from "./quizInteraction";
 import { useLessonTextSize } from "../../hooks";
+import { getQuizTypeLabel, checkAnswer } from "../../helpers";
 
 // --- Quiz Block Player ---
-
-interface QuizBlockPlayerProps {
-    question: QuizQuestion;
-    color: string;
-    onComplete: (correct: boolean, rating: SRRating, userAnswer: any) => void;
-    onExplain: (explanation: string) => void;
-    isAnswered: boolean;
-    reviewMode?: boolean;
-    reviewData?: any;
-    reviewCorrect?: boolean;
-    onContinue?: () => void;
-    onPrevious?: () => void;
-}
-
 export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
     question,
     color,
@@ -205,39 +192,4 @@ export const QuizBlockPlayer: React.FC<QuizBlockPlayerProps> = ({
             )}
         </div>
     );
-};
-
-// --- Helpers ---
-
-const getQuizTypeLabel = (type: QuizQuestion["type"]): string => {
-    const labels: Record<QuizQuestion["type"], string> = {
-        multiple_choice: "Choix multiple",
-        true_false: "Vrai ou Faux",
-        ordering: "Ordre",
-        match_pairs: "Association",
-        word_bank: "Compléter",
-        sentence: "Réponse libre",
-    };
-    return labels[type];
-};
-
-const checkAnswer = (question: QuizQuestion, answer: any): boolean => {
-    switch (question.type) {
-        case "multiple_choice":
-            return answer === question.correctIndex;
-        case "true_false":
-            return answer === question.correct;
-        case "ordering":
-            return JSON.stringify(answer) === JSON.stringify(question.correctOrder);
-        case "match_pairs":
-            return Object.entries(answer as Record<number, number>).every(
-                ([left, right]) => question.pairs[parseInt(left)].right === question.pairs[right].right
-            );
-        case "word_bank":
-            return JSON.stringify(answer) === JSON.stringify(question.correctWords);
-        case "sentence":
-            return false; // Sentence is always marked as "needs review"
-        default:
-            return false;
-    }
 };

@@ -5,7 +5,6 @@ import {
     useDemoHomeState,
     // SIZE_MAP,
     persist,
-    useLessonFlow,
     useSearchSuggestions
 } from './hooks';
 
@@ -17,18 +16,14 @@ import { TopBar } from "./components/ui/TopBar";
 import DemoGraph from "./graphView/demoGraph";
 import { Sidebar } from "./components/ui/sidebar";
 import { Legend } from "./graphView/legend";
-// import { NodePanel } from "./components/node/nodePanel";
 import { SettingsPanel } from "./components/settings";
 import { FunFactModal } from "./sections/funFactModal";
 import { TeacherLoginModal } from "./sections/teacherLoginModal";
-import { LessonPathView } from "./sections/lessonPathView";
-import { LessonPlayer } from "./components/lessons/lessonPlayer";
-import { StrengthenSession } from "./sections/strengthenSession";
-import { ProfileView } from "./sections/profileView";
-import { initialNodes } from "./data/graphData";
 import { ProfileNodeModal } from "./sections/ProfileNodeModal";
 
 import { NodeCard } from "./components/node/nodeCard";
+import { useEffect, useState } from 'react';
+import { StrengthenModal } from './sections/strengthenModal';
 
 // --- Feature flags ---
 // const SHOW_FUN_FACT = true;
@@ -38,15 +33,15 @@ import { NodeCard } from "./components/node/nodeCard";
 export function DemoHome() {
     const state = useDemoHomeState();
     // const fs = SIZE_MAP[state.textSize];
+    const [strengthenModalOpen, setStrengthenModalOpen] = useState(false);
 
-    const { openLesson, handleLessonComplete, handleLessonClose } = useLessonFlow({
-        activeLesson: state.activeLesson,
-        setActiveLesson: state.setActiveLesson,
-        setPathNode: state.setPathNode,
-        setActiveNode: state.setActiveNode,
-        setRefreshKey: state.setRefreshKey,
-        setNewlyUnlockedIds: state.setNewlyUnlockedIds,
-    });
+    // Expose the function to open the strengthen modal globally
+    useEffect(() => {
+        window.__openStrengthenModal = () => setStrengthenModalOpen(true);
+        return () => {
+            window.__openStrengthenModal = undefined;
+        };
+    }, []);
 
     const { handleSearchChange } = useSearchSuggestions({
         setSearchQuery: state.setSearchQuery,
@@ -121,11 +116,6 @@ export function DemoHome() {
                     />
 
                     {/* Overlays inside canvas */}
-                    {/* <NodePanel
-                        node={state.selectedNode}
-                        onClose={() => state.setSelectedNode(null)}
-                        textSize={state.textSize}
-                    /> */}
                     <div className='hidden sm:block'>
                         <Legend textSize={state.textSize} />
                     </div>
@@ -150,27 +140,10 @@ export function DemoHome() {
                             }}
                         />
                     )}
-
-                    {/* <BottomActions
-                        fontSize={fs}
-                        showFunFact={SHOW_FUN_FACT}
-                        showStrengthen={SHOW_STRENGTHEN}
-                        onFunFact={() => state.setFunFactOpen(true)}
-                        onStrengthen={() => {
-                            state.setStrengthenNodeId(undefined);
-                            state.setStrengthenOpen(true);
-                        }}
-                    /> */}
                 </div>
             </div>
 
             {/* --- Fullscreen overlays --- */}
-
-            {/* <NodePreviewPanel
-                node={state.previewNode}
-                onClose={() => state.setPreviewNode(null)}
-                onOpenPath={openPath}
-            /> */}
 
             {/* Node card or Profile modal */}
             {state.activeNode && (state.activeNode as any).kind === "profile" ? (
@@ -196,29 +169,6 @@ export function DemoHome() {
                 />
             ) : null}
 
-            {state.pathNode && (
-                <LessonPathView
-                    node={state.pathNode}
-                    onClose={() => state.setPathNode(null)}
-                    onStartLesson={openLesson}
-                    onOpenStrengthen={(nodeId) => {
-                        state.setPathNode(null);
-                        state.setStrengthenNodeId(nodeId);
-                        state.setStrengthenOpen(true);
-                    }}
-                />
-            )}
-
-            {state.activeLesson && (
-                <LessonPlayer
-                    node={state.activeLesson.node}
-                    lesson={state.activeLesson.lesson}
-                    lessonIndex={state.activeLesson.index}
-                    onComplete={handleLessonComplete}
-                    onClose={handleLessonClose}
-                />
-            )}
-
             {state.funFactOpen && (
                 <FunFactModal
                     onClose={() => state.setFunFactOpen(false)}
@@ -230,28 +180,11 @@ export function DemoHome() {
                 />
             )}
 
-            {state.strengthenOpen && (
-                <StrengthenSession
-                    nodeId={state.strengthenNodeId}
-                    onClose={() => {
-                        state.setStrengthenOpen(false);
-                        state.setRefreshKey(k => k + 1);
-                    }}
-                />
-            )}
-
-            {state.profileOpen && (
-                <ProfileView
-                    onClose={() => state.setProfileOpen(false)}
-                    onNavigate={(nodeId) => {
-                        state.setProfileOpen(false);
-                        const node = initialNodes.find(n => n.id === nodeId);
-                        if (node) {
-                            state.setActiveNode(node);
-                            window.__graphFocus?.(nodeId);
-                        }
-                    }}
-                    onOpenStrengthen={() => {
+            {strengthenModalOpen && (
+                <StrengthenModal
+                    onClose={() => setStrengthenModalOpen(false)}
+                    onStartSession={() => {
+                        setStrengthenModalOpen(false);
                         state.setStrengthenNodeId(undefined);
                         state.setStrengthenOpen(true);
                     }}

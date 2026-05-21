@@ -3,89 +3,13 @@ import { useNavigate } from "react-router-dom";
 import {
     getUserProfile,
     getEarnedBadges,
-    getDynamicNodes,
     initialNodes,
-    getNodeCompletionPercent,
 } from "../data/graphData";
 import { getAllCards } from "../utils/srEngine";
-import type { EarnedBadge } from "../types/types";
+import type { EarnedBadge } from "../types";
+import { BANNER_COLORS, PERSONA_OPTIONS, PERSONA_BG_COLORS, STATUS_EMOJIS, HEX_CLIP } from "../constants";
+import { getProfileSettings, saveProfileSettings, getTotalLessons } from "../helpers";
 
-
-// --- Constants ---
-
-const HEX_CLIP = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
-
-const BANNER_COLORS = [
-    { name: "Violet", color: "#7c3aed" },
-    { name: "Bleu", color: "#3b82f6" },
-    { name: "Cyan", color: "#06b6d4" },
-    { name: "Vert", color: "#10b981" },
-    { name: "Rose", color: "#ec4899" },
-    { name: "Orange", color: "#f59e0b" },
-    { name: "Rouge", color: "#ef4444" },
-    { name: "Indigo", color: "#6366f1" },
-];
-
-export const PERSONA_OPTIONS = [
-    { id: "avatar1", type: "image", src: "demo/avatar_1.png" },
-    { id: "avatar2", type: "image", src: "demo/avatar_1.png" },
-    { id: "avatar3", type: "image", src: "demo/avatar_1.png" },
-    { id: "avatar4", type: "image", src: "demo/avatar_1.png" },
-];
-
-const PERSONA_BG_COLORS = [
-    { name: "Violet", color: "#7c3aed" },
-    { name: "Bleu", color: "#3b82f6" },
-    { name: "Rose", color: "#ec4899" },
-    { name: "Vert", color: "#10b981" },
-    { name: "Orange", color: "#f59e0b" },
-    { name: "Rouge", color: "#ef4444" },
-    { name: "Gris", color: "#6b7280" },
-    { name: "Noir", color: "#1f2937" },
-];
-
-const STATUS_EMOJIS = ["🧠", "🎯", "⚡", "🔥", "💡", "🌟", "🚀", "💪", "🎨", "📚", "✨", "🎓"];
-
-// --- Helpers ---
-
-// const getStudyStreak = (): number => {
-//     const completed = getCompletedNodes();
-//     return completed.length > 0 ? Math.min(completed.length, 7) : 0;
-// };
-
-const getTotalLessons = (): { completed: number; total: number } => {
-    const nodes = getDynamicNodes();
-    let completed = 0;
-    let total = 0;
-
-    nodes.forEach(node => {
-        if (node.lessonPath) {
-            total += node.lessonPath.length;
-            node.lessonPath.forEach(() => {
-                const pct = getNodeCompletionPercent(node.id);
-                if (pct > 0) completed++;
-            });
-        }
-    });
-
-    return { completed, total };
-};
-
-// --- Profile Storage ---
-
-export const getProfileSettings = () => ({
-    bannerColor: localStorage.getItem("profile_banner_color") || BANNER_COLORS[1].color,
-    persona: localStorage.getItem("profile_persona") || PERSONA_OPTIONS[0].id,
-    personaBgColor: localStorage.getItem("profile_persona_bg") || PERSONA_BG_COLORS[0].color,
-    status: localStorage.getItem("profile_status") || STATUS_EMOJIS[0],
-});
-
-const saveProfileSettings = (bannerColor: string, persona: string, personaBgColor: string, status: string) => {
-    localStorage.setItem("profile_banner_color", bannerColor);
-    localStorage.setItem("profile_persona", persona);
-    localStorage.setItem("profile_persona_bg", personaBgColor);
-    localStorage.setItem("profile_status", status);
-};
 // --- Sub-components ---
 
 const PersonaHexagon: React.FC<{ persona: any; size: number; bgColor?: string }> = ({ persona, size, bgColor = "#1f2937" }) => {
@@ -119,56 +43,6 @@ const PersonaHexagon: React.FC<{ persona: any; size: number; bgColor?: string }>
 
     return null;
 };
-
-// const StatCard: React.FC<{
-//     icon: string;
-//     label: string;
-//     value: string | number;
-//     color: string;
-// }> = ({ icon, label, value, color }) => (
-//     <div style={{
-//         background: "linear-gradient(135deg, #161b22 0%, #0d1117 100%)",
-//         border: "1px solid #21262d",
-//         borderRadius: 16,
-//         padding: "20px",
-//         display: "flex",
-//         flexDirection: "column",
-//         gap: 12,
-//         position: "relative",
-//         overflow: "hidden",
-//     }}>
-//         <div style={{
-//             position: "absolute",
-//             top: -20,
-//             right: -20,
-//             width: 80,
-//             height: 80,
-//             background: `radial-gradient(circle, ${color}15 0%, transparent 70%)`,
-//             borderRadius: "50%",
-//         }} />
-
-//         <div style={{ fontSize: 32, position: "relative", zIndex: 1 }}>{icon}</div>
-//         <div style={{ position: "relative", zIndex: 1 }}>
-//             <div style={{
-//                 color: "#c9d1d9",
-//                 fontSize: 28,
-//                 fontWeight: 700,
-//                 lineHeight: 1,
-//                 marginBottom: 6,
-//             }}>
-//                 {value}
-//             </div>
-//             <div style={{
-//                 color: "#6e7681",
-//                 fontSize: 12,
-//                 textTransform: "uppercase",
-//                 letterSpacing: "0.08em",
-//             }}>
-//                 {label}
-//             </div>
-//         </div>
-//     </div>
-// );
 
 const BadgeCard: React.FC<{
     badge: any;

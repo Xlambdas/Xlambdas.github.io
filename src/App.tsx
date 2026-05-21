@@ -8,7 +8,7 @@ import {
     DemoHome
 } from './pages';
 import DemoGraph from './pages/demo/graphView/demoGraph';
-import { LessonPage, NodePage, ProfilePage } from './pages/demo/pages';
+import { LessonPage, NodePage, ProfilePage, StrengthenSessionPage } from './pages/demo/pages';
 
 
 function App() {
@@ -25,8 +25,8 @@ function App() {
                 <Route path="/demo/node/:nodeId" element={<NodePage />} />
                 <Route path="/demo/lesson/:nodeId/:lessonId" element={<LessonPage />} />
                 <Route path="/demo/profile" element={<ProfilePage />} />
-                {/* <Route path="/demo/strengthen" element={<StrengthPage />} />
-                <Route path="/demo/strengthen/:nodeId" element={<StrengthPage />} /> */}
+                <Route path="/demo/strengthen" element={<StrengthenSessionPage />} />
+                {/* <Route path="/demo/strengthen/:nodeId" element={<StrengthPage />} /> */}
             </Routes>
         </Router>
     )

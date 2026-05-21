@@ -1,4 +1,68 @@
 import type { SRCard, SRRating } from "../types/types";
+import { initialNodes } from "../data/graphData";
+import type { QuizQuestion } from "../types/types";
+
+// --- Question extraction ---
+
+export interface QuestionWithId {
+    id: string;
+    nodeId: string;
+    lessonId: string;
+    question: string;
+    answer: string;
+    fullQuestion: QuizQuestion;
+}
+
+export const getAllQuestions = (): QuestionWithId[] => {
+    const questions: QuestionWithId[] = [];
+
+    initialNodes.forEach(node => {
+        node.lessonPath.forEach(lesson => {
+            lesson.blocks.forEach((block, blockIndex) => {
+                if (block.type === "quiz" && block.question) {
+                    const questionId = `${node.id}::${lesson.id}::${blockIndex}`;
+                    const q = block.question;
+
+                    let questionText = "";
+                    let answerText = "";
+
+                    // Extract question/answer based on quiz type
+                    if (q.type === "multiple_choice") {
+                        questionText = q.question;
+                        answerText = q.choices[q.correctIndex];
+                    } else if (q.type === "true_false") {
+                        questionText = q.question;
+                        answerText = q.correct ? "Vrai" : "Faux";
+                    } else if (q.type === "word_bank") {
+                        questionText = q.sentence;
+                        answerText = q.correctWords.join(", ");
+                    } else if (q.type === "match_pairs") {
+                        questionText = q.question;
+                        answerText = q.pairs.map(p => `${p.left} → ${p.right}`).join("; ");
+                    } else if (q.type === "ordering") {
+                        questionText = q.question;
+                        answerText = q.correctOrder.map(i => q.items[i]).join(" → ");
+                    }
+
+                    questions.push({
+                        id: questionId,
+                        nodeId: node.id,
+                        lessonId: lesson.id,
+                        question: questionText,
+                        answer: answerText,
+                        fullQuestion: q,
+                    });
+                }
+            });
+        });
+    });
+
+    return questions;
+};
+
+export const getQuestionById = (questionId: string): QuestionWithId | null => {
+    return getAllQuestions().find(q => q.id === questionId) || null;
+};
 
 // --- Storage ---
 

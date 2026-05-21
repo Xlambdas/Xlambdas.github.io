@@ -1,9 +1,7 @@
 import React from 'react';
-import { SIZE_MAP } from '../constants/config';
-import { type TextSize } from '../types/types';
+import { SIZE_MAP } from '../constants';
+import { type TextSize } from '../types';
 import { initialNodes } from '../data/graphData';
-
-// --- Component ---
 
 export const Legend: React.FC<{ textSize: TextSize }> = ({ textSize }) => {
     const fs = SIZE_MAP[textSize];

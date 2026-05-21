@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLessonTextSize } from "../../hooks";
+import type { ExplanationModalProps } from "../../types";
 
 // --- Explanation Modal ---
-
-interface ExplanationModalProps {
-    explanation: string;
-    onClose: () => void;
-}
-
 export const ExplanationModal: React.FC<ExplanationModalProps> = ({
     explanation,
     onClose,

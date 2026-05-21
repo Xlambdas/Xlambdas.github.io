@@ -1,10 +1,4 @@
-interface BottomActionsProps {
-    fontSize: number;
-    showFunFact: boolean;
-    showStrengthen: boolean;
-    onFunFact: () => void;
-    onStrengthen: () => void;
-}
+import type { BottomActionsProps } from "../../types";
 
 export function BottomActions({
     fontSize,

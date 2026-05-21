@@ -1,22 +1,5 @@
-import { type NodeType } from '../../data/graphData';
-import { type TextSize, SIZE_MAP } from '../../hooks/useDemoHomeState';
-
-interface TopBarProps {
-    collapsed: boolean;
-    onCollapse: (val: boolean) => void;
-    textSize: TextSize;
-    settingsOpen: boolean;
-    onSettingsToggle: () => void;
-
-    // Search
-    mobileSearch: boolean;
-    setMobileSearch: (val: boolean) => void;
-    searchQuery: string;
-    suggestions: NodeType[];
-    onSearchChange: (q: string) => void;
-    onSuggestionSelect: (node: NodeType) => void;
-    searchInputRef: React.RefObject<HTMLInputElement>;
-}
+import { type TopBarProps } from '../../types';
+import { SIZE_MAP } from '../../constants';
 
 export function TopBar({
     collapsed,
@@ -50,10 +33,11 @@ export function TopBar({
             transition: "left 0.3s ease",
         }}>
             {/* Left side - Sidebar reopen */}
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }} >
+            <div className="flex items-center gap-3">
                 {collapsed && (
                     <button
                         onClick={() => onCollapse(false)}
+                        className="hidden md:flex items-center gap-1.5"
                         style={{
                             background: "#21262d",
                             border: "1px solid #30363d",
@@ -62,24 +46,20 @@ export function TopBar({
                             color: "#8b949e",
                             fontSize: 13,
                             cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 6,
                         }}
-                        className="hidden sm:flex"
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <line x1="3" y1="12" x2="21" y2="12" />
                             <line x1="3" y1="6" x2="21" y2="6" />
                             <line x1="3" y1="18" x2="21" y2="18" />
                         </svg>
-                        Menu
+                        <span className="hidden lg:inline">Menu</span>
                     </button>
                 )}
 
                 <span style={{
                     color: "#8b949e",
-                    fontSize: 12,
+                    fontSize: "clamp(10px, 2.5vw, 12px)",
                     textTransform: "uppercase",
                     letterSpacing: "0.05em",
                     fontWeight: 600,

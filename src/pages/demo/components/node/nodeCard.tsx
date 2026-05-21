@@ -1,102 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    type NodeType,
-    getNodeCompletionPercent,
-    getEarnedBadges,
-    getDynamicNodes,
-} from "../../data/graphData";
-import { getDueCount } from "../../utils/srEngine";
+import { getNodeCompletionPercent } from "../../data/graphData";
 import { NodePathSettings } from "./NodePathSettings";
-
-// --- Constants ---
-
-const HEX_CLIP = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
-
-const KIND_COLOR: Record<string, string> = {
-    profile: "#7c6af7",
-    domain: "#a5b4fc",
-    topic: "#a5b4fc",
-    concept: "#94a3b8",
-    subconcept: "#94a3b8",
-};
-
-const KIND_ICON: Record<string, string> = {
-    profile: "🧠",
-    domain: "🗂",
-    topic: "📂",
-    concept: "📄",
-    subconcept: "🔬",
-};
-
-const KIND_LABEL: Record<string, string> = {
-    profile: "Profil",
-    domain: "Domaine",
-    topic: "Sujet",
-    concept: "Concept",
-    subconcept: "Sous-concept",
-};
-
-// --- Stat helpers ---
-
-const getStats = (node: NodeType): { label: string; value: string | number }[] => {
-    const kind = (node as any).kind ?? "concept";
-    const pct = getNodeCompletionPercent(node.id);
-
-    switch (kind) {
-        case "profile": {
-            const badges = getEarnedBadges().length;
-            const completed = JSON.parse(localStorage.getItem("completed_nodes") ?? "[]").length;
-            const due = getDueCount();
-            return [
-                { label: "Badges", value: badges },
-                { label: "Complétés", value: completed },
-                { label: "À réviser", value: due },
-            ];
-        }
-        case "domain":
-        case "topic": {
-            const children = getDynamicNodes().filter(n =>
-                node.links.includes(n.id)
-            );
-            const totalLessons = children.reduce(
-                (s, n) => s + (n.lessonPath?.length ?? 0), 0
-            );
-            const mins = children.reduce(
-                (s, n) => s + (n.lessonPath?.reduce((a, l) => a + l.estimatedMinutes, 0) ?? 0), 0
-            );
-            return [
-                { label: kind === "domain" ? "Sujets" : "Concepts", value: children.length },
-                { label: "Progression", value: `${pct}%` },
-                { label: "Leçons", value: totalLessons },
-                { label: "Durée", value: mins > 0 ? `~${mins} min` : "—" },
-            ];
-        }
-        case "concept":
-        case "subconcept":
-        default: {
-            const lessons = node.lessonPath?.length ?? 0;
-            const mins = node.lessonPath?.reduce((s, l) => s + l.estimatedMinutes, 0) ?? 0;
-            return [
-                { label: "Leçons", value: lessons },
-                { label: "Progression", value: `${pct}%` },
-                { label: "Durée", value: mins > 0 ? `~${mins} min` : "—" },
-            ];
-        }
-    }
-};
-
-// --- Props ---
-
-interface NodeCardProps {
-    node: NodeType | null;
-    onClose: () => void;
-    onOpenSettings: () => void;
-    onOpenProfile: () => void;
-    onOpenStrengthen: (nodeId: string) => void;
-}
-
-// --- Component ---
+import type { NodeCardProps } from "../../types";
+import { KIND_COLOR, KIND_ICON, KIND_LABEL, HEX_CLIP } from "../../constants";
+import { getStats } from "../../helpers";
 
 export const NodeCard: React.FC<NodeCardProps> = ({
     node, onClose, onOpenProfile, onOpenStrengthen,
