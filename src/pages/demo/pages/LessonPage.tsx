@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
 import { initialNodes, completeLesson } from "../data/graphData";
 import { upsertCard } from "../utils/srEngine";
 import { LessonProgressBar } from "../components/lessons/lessonProgressBar";
 import { BlockRenderer } from "../components/lessons/blockRenderer";
-import { ExplanationModal } from "../components/lessons/explanationModal";
+import { ExplanationModal } from "./modals";
 import { useLessonTextSize } from "../hooks";
 import type { BlockWithMetadata, SRRating } from "../types";
 
-// --- Main Component ---
+
 
 export const LessonPage: React.FC = () => {
     const { nodeId, lessonId } = useParams<{ nodeId: string; lessonId: string }>();
@@ -21,7 +22,6 @@ export const LessonPage: React.FC = () => {
     const [blocks, setBlocks] = useState<BlockWithMetadata[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [quizAnswers, setQuizAnswers] = useState<Map<number, { correct: boolean; rating?: SRRating; userAnswer?: any }>>(new Map());
-    // const [wrongQuizIndices, setWrongQuizIndices] = useState<Set<number>>(new Set());
     const [showExplanation, setShowExplanation] = useState(false);
     const [currentExplanation, setCurrentExplanation] = useState<string>("");
     const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -32,12 +32,14 @@ export const LessonPage: React.FC = () => {
     // Initialize blocks from lesson
     useEffect(() => {
         if (!lesson) return;
-        setBlocks(lesson.blocks.map((block, i) => ({
+        const initialBlocks = lesson.blocks.map((block, i) => ({
             block,
             originalIndex: i,
             isRetry: false,
-        })));
-    }, [lesson]);
+        }));
+
+        setBlocks(initialBlocks);
+    }, [lesson, nodeId, lessonId]);
 
     // Not found
     if (!node || !lesson || lessonIndex === -1) {
@@ -72,7 +74,15 @@ export const LessonPage: React.FC = () => {
 
     // Handle quiz completion
     const handleQuizComplete = (correct: boolean, rating: SRRating, userAnswer: any) => {
-        const questionId = `${nodeId}::${lessonId}::${currentBlockMeta.originalIndex}`;
+        // Construct the correct questionId based on the block
+        let questionId: string;
+        if (currentBlock.type === "quiz" && currentBlock.questionId) {
+            // New system: referenced question
+            questionId = `${nodeId}::${currentBlock.questionId}`;
+        } else {
+            // Old system fallback: inline question
+            questionId = `${nodeId}::${lessonId}::${currentBlockMeta.originalIndex}`;
+        }
 
         // Update quiz answers
         setQuizAnswers(prev => new Map(prev).set(currentIndex, { correct, rating, userAnswer }));
@@ -408,7 +418,6 @@ export const LessonPage: React.FC = () => {
                                                 : "Continuer →"
                                     }
                                 />
-
                         )}
                     </div>
                 </div>

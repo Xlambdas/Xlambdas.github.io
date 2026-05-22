@@ -1,8 +1,6 @@
-import type { SRCard, SRRating } from "../types/types";
+import type { SRCard, SRRating, QuizQuestion } from "../types";
 import { initialNodes } from "../data/graphData";
-import type { QuizQuestion } from "../types/types";
-
-// --- Question extraction ---
+// import { getAllQuizQuestions, getQuestionById as getQuestionByFullId } from '../data/graphData';
 
 export interface QuestionWithId {
     id: string;
@@ -14,54 +12,181 @@ export interface QuestionWithId {
 }
 
 export const getAllQuestions = (): QuestionWithId[] => {
-    const questions: QuestionWithId[] = [];
+    const allQuestions: QuestionWithId[] = [];
 
     initialNodes.forEach(node => {
-        node.lessonPath.forEach(lesson => {
-            lesson.blocks.forEach((block, blockIndex) => {
-                if (block.type === "quiz" && block.question) {
-                    const questionId = `${node.id}::${lesson.id}::${blockIndex}`;
-                    const q = block.question;
+        // Use new node.questions if available, otherwise fall back to old extraction
+        if (node.questions && node.questions.length > 0) {
+            node.questions.forEach(nq => {
+                const q = nq.question;
+                let questionText = "";
+                let answerText = "";
 
-                    let questionText = "";
-                    let answerText = "";
-
-                    // Extract question/answer based on quiz type
-                    if (q.type === "multiple_choice") {
-                        questionText = q.question;
-                        answerText = q.choices[q.correctIndex];
-                    } else if (q.type === "true_false") {
-                        questionText = q.question;
-                        answerText = q.correct ? "Vrai" : "Faux";
-                    } else if (q.type === "word_bank") {
-                        questionText = q.sentence;
-                        answerText = q.correctWords.join(", ");
-                    } else if (q.type === "match_pairs") {
-                        questionText = q.question;
-                        answerText = q.pairs.map(p => `${p.left} → ${p.right}`).join("; ");
-                    } else if (q.type === "ordering") {
-                        questionText = q.question;
-                        answerText = q.correctOrder.map(i => q.items[i]).join(" → ");
-                    }
-
-                    questions.push({
-                        id: questionId,
-                        nodeId: node.id,
-                        lessonId: lesson.id,
-                        question: questionText,
-                        answer: answerText,
-                        fullQuestion: q,
-                    });
+                if (q.type === "multiple_choice") {
+                    questionText = q.question;
+                    answerText = q.choices[q.correctIndex];
+                } else if (q.type === "true_false") {
+                    questionText = q.question;
+                    answerText = q.correct ? "Vrai" : "Faux";
+                } else if (q.type === "ordering") {
+                    questionText = q.question;
+                    answerText = q.correctOrder.map(i => q.items[i]).join(", ");
+                } else if (q.type === "match_pairs") {
+                    questionText = q.question;
+                    answerText = q.pairs.map(p => `${p.left} → ${p.right}`).join("; ");
+                } else if (q.type === "word_bank") {
+                    questionText = q.question;
+                    answerText = q.correctWords.join(", ");
+                } else if (q.type === "sentence") {
+                    questionText = q.question;
+                    answerText = q.modelAnswer;
                 }
+
+                allQuestions.push({
+                    id: `${node.id}::${nq.id}`,
+                    nodeId: node.id,
+                    lessonId: nq.lessonId,
+                    question: questionText,
+                    answer: answerText,
+                    fullQuestion: q,
+                });
             });
-        });
+        } else {
+            // FALLBACK: Extract from lesson blocks (old structure)
+            node.lessonPath.forEach(lesson => {
+                lesson.blocks.forEach((block, blockIndex) => {
+                    if (block.type === "quiz" && block.question) {
+                        const q = block.question;
+                        let questionText = "";
+                        let answerText = "";
+
+                        if (q.type === "multiple_choice") {
+                            questionText = q.question;
+                            answerText = q.choices[q.correctIndex];
+                        } else if (q.type === "true_false") {
+                            questionText = q.question;
+                            answerText = q.correct ? "Vrai" : "Faux";
+                        } else if (q.type === "ordering") {
+                            questionText = q.question;
+                            answerText = q.correctOrder.map(i => q.items[i]).join(", ");
+                        } else if (q.type === "match_pairs") {
+                            questionText = q.question;
+                            answerText = q.pairs.map(p => `${p.left} → ${p.right}`).join("; ");
+                        } else if (q.type === "word_bank") {
+                            questionText = q.question;
+                            answerText = q.correctWords.join(", ");
+                        } else if (q.type === "sentence") {
+                            questionText = q.question;
+                            answerText = q.modelAnswer;
+                        }
+
+                        allQuestions.push({
+                            id: `${node.id}::${lesson.id}::${blockIndex}`,
+                            nodeId: node.id,
+                            lessonId: lesson.id,
+                            question: questionText,
+                            answer: answerText,
+                            fullQuestion: q,
+                        });
+                    }
+                });
+            });
+        }
     });
 
-    return questions;
+    return allQuestions;
 };
 
 export const getQuestionById = (questionId: string): QuestionWithId | null => {
-    return getAllQuestions().find(q => q.id === questionId) || null;
+    const parts = questionId.split('::');
+
+    // if (parts.length === 2) {
+        // New format: "nodeId::questionId"
+        const [nodeId, qId] = parts;
+        const node = initialNodes.find(n => n.id === nodeId);
+        if (!node?.questions) return null;
+
+        const nq = node.questions.find(q => q.id === qId);
+        if (!nq) return null;
+
+        const q = nq.question;
+        let questionText = "";
+        let answerText = "";
+
+        if (q.type === "multiple_choice") {
+            questionText = q.question;
+            answerText = q.choices[q.correctIndex];
+        } else if (q.type === "true_false") {
+            questionText = q.question;
+            answerText = q.correct ? "Vrai" : "Faux";
+        } else if (q.type === "ordering") {
+            questionText = q.question;
+            answerText = q.correctOrder.map(i => q.items[i]).join(", ");
+        } else if (q.type === "match_pairs") {
+            questionText = q.question;
+            answerText = q.pairs.map(p => `${p.left} → ${p.right}`).join("; ");
+        } else if (q.type === "word_bank") {
+            questionText = q.question;
+            answerText = q.correctWords.join(", ");
+        } else if (q.type === "sentence") {
+            questionText = q.question;
+            answerText = q.modelAnswer;
+        }
+
+        return {
+            id: questionId,
+            nodeId,
+            lessonId: nq.lessonId,
+            question: questionText,
+            answer: answerText,
+            fullQuestion: q,
+        };
+    // } else if (parts.length === 3) {
+    //     // Old format: "nodeId::lessonId::blockIndex" - FALLBACK
+    //     const [nodeId, lessonId, blockIndexStr] = parts;
+    //     const blockIndex = parseInt(blockIndexStr, 10);
+
+    //     const node = initialNodes.find(n => n.id === nodeId);
+    //     const lesson = node?.lessonPath.find(l => l.id === lessonId);
+    //     const block = lesson?.blocks[blockIndex];
+
+    //     if (!block || block.type !== "quiz" || !block.question) return null;
+
+    //     const q = block.question;
+    //     let questionText = "";
+    //     let answerText = "";
+
+    //     if (q.type === "multiple_choice") {
+    //         questionText = q.question;
+    //         answerText = q.choices[q.correctIndex];
+    //     } else if (q.type === "true_false") {
+    //         questionText = q.question;
+    //         answerText = q.correct ? "Vrai" : "Faux";
+    //     } else if (q.type === "ordering") {
+    //         questionText = q.question;
+    //         answerText = q.correctOrder.map(i => q.items[i]).join(", ");
+    //     } else if (q.type === "match_pairs") {
+    //         questionText = q.question;
+    //         answerText = q.pairs.map(p => `${p.left} → ${p.right}`).join("; ");
+    //     } else if (q.type === "word_bank") {
+    //         questionText = q.question;
+    //         answerText = q.correctWords.join(", ");
+    //     } else if (q.type === "sentence") {
+    //         questionText = q.question;
+    //         answerText = q.modelAnswer;
+    //     }
+
+    //     return {
+    //         id: questionId,
+    //         nodeId,
+    //         lessonId,
+    //         question: questionText,
+    //         answer: answerText,
+    //         fullQuestion: q,
+    //     };
+    // }
+
+    // return null;
 };
 
 // --- Storage ---
@@ -149,13 +274,24 @@ export const upsertCard = (
 
 // --- Due card queries ---
 
-export const getDueCards = (nodeId?: string): SRCard[] =>
-    getAllCards()
-        .filter(c => c.dueDate <= today() && (!nodeId || c.nodeId === nodeId))
+export const getDueCards = (nodeId?: string): SRCard[] => {
+    const todayStr = today();
+    return getAllCards()
+        .filter(c => c.dueDate <= todayStr && (!nodeId || c.nodeId === nodeId))
         .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+};
 
-export const getDueCount = (nodeId?: string): number =>
-    getDueCards(nodeId).length;
+export const getDueCount = (nodeId?: string): number => {
+    const dueCards = getDueCards(nodeId);
+
+    // Only count cards where the question actually exists
+    const validCards = dueCards.filter(card => {
+        const question = getQuestionById(card.questionId);
+        return question !== null;
+    });
+
+    return validCards.length;
+};
 
 export const isNodeBranchBlocked = (nodeId: string): boolean =>
     getDueCards(nodeId).length > 0;

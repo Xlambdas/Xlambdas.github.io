@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { type FunFact, FUN_FACTS } from "../data/funFacts";
-import { type NodeType, initialNodes } from "../data/graphData";
+import { type FunFact, FUN_FACTS } from "../../data/funFacts";
+import { type NodeType, initialNodes } from "../../data/graphData";
 
 interface FunFactModalProps {
     onClose: () => void;

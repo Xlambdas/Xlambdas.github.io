@@ -1,4 +1,5 @@
-import { type NodeType } from './data/graphData';
+import { useEffect, useState } from 'react';
+import { initialNodes, type NodeType } from './data/graphData';
 
 // --- Hooks ---
 import {
@@ -17,13 +18,12 @@ import DemoGraph from "./graphView/demoGraph";
 import { Sidebar } from "./components/ui/sidebar";
 import { Legend } from "./graphView/legend";
 import { SettingsPanel } from "./components/settings";
-import { FunFactModal } from "./sections/funFactModal";
-import { TeacherLoginModal } from "./sections/teacherLoginModal";
-import { ProfileNodeModal } from "./sections/ProfileNodeModal";
+import {
+    FunFactModal, TeacherLoginModal,
+    ProfileNodeModal, StrengthenModal
+} from "./pages/modals";
 
 import { NodeCard } from "./components/node/nodeCard";
-import { useEffect, useState } from 'react';
-import { StrengthenModal } from './sections/strengthenModal';
 
 // --- Feature flags ---
 // const SHOW_FUN_FACT = true;
@@ -34,10 +34,16 @@ export function DemoHome() {
     const state = useDemoHomeState();
     // const fs = SIZE_MAP[state.textSize];
     const [strengthenModalOpen, setStrengthenModalOpen] = useState(false);
+    const [strengthenNodeId, setStrengthenNodeId] = useState<string | undefined>();
+    const [strengthenNodeName, setStrengthenNodeName] = useState<string | undefined>();
 
     // Expose the function to open the strengthen modal globally
     useEffect(() => {
-        window.__openStrengthenModal = () => setStrengthenModalOpen(true);
+        window.__openStrengthenModal = (nodeId?: string, nodeName?: string) => {
+            setStrengthenNodeId(nodeId);
+            setStrengthenNodeName(nodeName);
+            setStrengthenModalOpen(true);
+        };
         return () => {
             window.__openStrengthenModal = undefined;
         };
@@ -150,9 +156,7 @@ export function DemoHome() {
                 <ProfileNodeModal
                     onClose={() => state.setActiveNode(null)}
                     onOpenStrengthen={() => {
-                        state.setActiveNode(null);
-                        state.setStrengthenNodeId(undefined);
-                        state.setStrengthenOpen(true);
+                        window.__openStrengthenModal?.();
                     }}
                 />
             ) : state.activeNode ? (
@@ -162,9 +166,8 @@ export function DemoHome() {
                     onOpenSettings={() => state.setSettingsOpen(true)}
                     onOpenProfile={() => { state.setActiveNode(null); state.setProfileOpen(true); }}
                     onOpenStrengthen={(nodeId) => {
-                        state.setActiveNode(null);
-                        state.setStrengthenNodeId(nodeId);
-                        state.setStrengthenOpen(true);
+                        const node = initialNodes.find(n => n.id === nodeId);
+                        window.__openStrengthenModal?.(nodeId, node?.title);
                     }}
                 />
             ) : null}
@@ -182,12 +185,16 @@ export function DemoHome() {
 
             {strengthenModalOpen && (
                 <StrengthenModal
-                    onClose={() => setStrengthenModalOpen(false)}
+                    onClose={() => {
+                        setStrengthenModalOpen(false);
+                        setStrengthenNodeId(undefined);
+                        setStrengthenNodeName(undefined);
+                    }}
                     onStartSession={() => {
                         setStrengthenModalOpen(false);
-                        state.setStrengthenNodeId(undefined);
-                        state.setStrengthenOpen(true);
                     }}
+                    nodeId={strengthenNodeId}
+                    nodeName={strengthenNodeName}
                 />
             )}
 

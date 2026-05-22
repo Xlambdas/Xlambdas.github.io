@@ -62,8 +62,8 @@ export type QuizQuestion =
 // --- Spaced repetition ---
 
 export type SRCard = {
-    questionId: string;        // nodeId + lessonIndex + questionIndex
-    nodeId: string;
+    questionId: string;        // Format: "nodeId::questionId" (e.g., "psychologie::intro_q1")
+    nodeId: string;            // The node this question belongs to
     interval: number;          // days until next review
     easeFactor: number;        // SM-2 ease factor, starts at 2.5
     dueDate: string;           // ISO date string
@@ -88,7 +88,8 @@ export type VignetteBlock = {
 
 export type QuizBlock = {
     type: "quiz";
-    question: QuizQuestion;
+    question?: QuizQuestion;
+    questionId?: string;
 };
 
 export type RecapBlock = {
@@ -155,6 +156,13 @@ export type NodeKind =
     | "concept"    // specific: Working Memory, Semantic Memory...
     | "subconcept"; // deep: Baddeley Model, Capacity Limits...
 
+export type NodeQuestion = {
+    id: string;              // Unique question ID
+    lessonId: string;        // Which lesson it belongs to
+    blockIndex: number;      // Position in lesson blocks
+    question: QuizQuestion;  // The actual question
+};
+
 export type NodeType = {
     id: string;
     title: string;
@@ -178,6 +186,7 @@ export type NodeType = {
     // content
     hook?: string;
     shortDescription?: string;
+    questions?: NodeQuestion[]; // for quick quiz access without loading lessons
     lessonPath: Lesson[];      // ordered list of lessons (hexagons in the path)
     badge?: Badge;
 
@@ -211,3 +220,22 @@ export type UserProfile = {
 export type LessonStatus = "completed" | "current" | "locked";
 export type ConfirmState = "idle" | "confirming" | "done";
 export type Phase = "playing" | "completed";
+
+
+// --- Helper types for working with questions ---
+
+export type QuestionReference = {
+    nodeId: string;
+    questionId: string;
+};
+
+export type QuestionWithMetadata = {
+    id: string;              // Full ID: "nodeId::questionId"
+    nodeId: string;
+    lessonId: string;
+    blockIndex: number;
+    question: QuizQuestion;
+    // Derived fields for display
+    questionText: string;
+    answerText: string;
+};

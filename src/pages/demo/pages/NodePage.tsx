@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+
 import type { Lesson, NodeType } from "../types";
 import { initialNodes } from "../data/graphData";
 import { HoneycombPath } from "../components/ui/honeyCombPath";
-import { LessonPlayer } from "../components/lessons/lessonPlayer";
 import { NodePathSettings } from "../components/node/NodePathSettings";
 import {
     getSelectedPaths,
@@ -16,8 +16,6 @@ import {
     BackIcon,
     SettingsIcon,
     Divider,
-    // node :
-    NODE_COLOR
 } from "../constants";
 
 // --- Dock button ---
@@ -134,9 +132,7 @@ export const NodePage: React.FC = () => {
             setRefreshKey(k => k + 1); // Force rebuild
         }
     }, [nodeId, scrollToLessonId, node]);
-    const [activeLesson, setActiveLesson] = useState<{ node: NodeType; lesson: Lesson; index: number } | null>(null);
-    // const [strengthenOpen, setStrengthenOpen] = useState(false);
-    // const [profileOpen, setProfileOpen] = useState(false);
+    const [, setActiveLesson] = useState<{ node: NodeType; lesson: Lesson; index: number } | null>(null);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -351,29 +347,6 @@ export const NodePage: React.FC = () => {
                     </div>
                 </div>
             )}
-
-            {/* lesson player */}
-            {activeLesson && (
-                <LessonPlayer
-                    title={activeLesson.lesson.title}
-                    subtitle={`${activeLesson.node.title} · Leçon`}
-                    blocks={activeLesson.lesson.blocks}
-                    color={NODE_COLOR[activeLesson.node.type]}
-                    node={activeLesson.node}
-                    lesson={activeLesson.lesson}
-                    showCompletionScreen={true}
-                    onComplete={() => {
-                        sessionStorage.setItem('from_lesson', 'true');
-                        setActiveLesson(null);
-                        setRefreshKey(k => k + 1);
-                    }}
-                    onClose={() => {
-                        sessionStorage.setItem('from_lesson', 'true');
-                        setActiveLesson(null);
-                    }}
-                />
-            )}
-
         </div>
     );
 };

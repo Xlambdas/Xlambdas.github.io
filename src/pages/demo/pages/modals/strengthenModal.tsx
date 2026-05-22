@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { initialNodes, getNodeCompletionPercent } from '../data/graphData';
-import { getAllCards, getDueCount } from '../utils/srEngine';
 import { useNavigate } from 'react-router-dom';
-import type { StrengthenSettings, StrengthenModalProps } from '../types';
 
-export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose }) => {
+import { initialNodes, getNodeCompletionPercent } from '../../data/graphData';
+import { getAllCards, getAllQuestions, getDueCount } from '../../utils/srEngine';
+import type { StrengthenSettings, StrengthenModalProps } from '../../types';
+
+export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeId, nodeName }) => {
     const navigate = useNavigate();
     const [showSettings, setShowSettings] = useState(false);
+    const [showNodeChoice, ] = useState(!!nodeId);
     const [settings, setSettings] = useState<StrengthenSettings>({
-        sessionLength: 20,
+        sessionLength: 5,
         includeNew: true,
         focusWeak: true,
         selectedTopics: [],
@@ -32,6 +34,217 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose }) => 
         onClose();
         navigate('/demo/strengthen');
         };
+
+    if (showNodeChoice && nodeId) {
+        const nodeDueCards = getDueCount(nodeId);
+        const allNodeQuestions = getAllQuestions().filter(q => q.nodeId === nodeId);
+
+        return (
+            <>
+                {/* Backdrop */}
+                <div
+                    onClick={onClose}
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        background: "rgba(0,0,0,0.7)",
+                        backdropFilter: "blur(4px)",
+                        zIndex: 200,
+                    }}
+                />
+
+                {/* Choice Modal */}
+                <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                        position: "fixed",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        background: "#0d1117",
+                        border: "1px solid #30363d",
+                        borderRadius: 16,
+                        padding: "32px",
+                        maxWidth: 480,
+                        width: "calc(100% - 32px)",
+                        zIndex: 201,
+                        boxShadow: "0 16px 64px rgba(0,0,0,0.6)",
+                    }}
+                >
+                    {/* Header */}
+                    <div style={{
+                        marginBottom: 24,
+                    }}>
+                        <h2 style={{
+                            color: "#c9d1d9",
+                            fontSize: 20,
+                            fontWeight: 700,
+                            margin: "0 0 8px 0",
+                        }}>
+                            S'entraîner : {nodeName || nodeId}
+                        </h2>
+                        <p style={{
+                            color: "#8b949e",
+                            fontSize: 13,
+                            margin: 0,
+                        }}>
+                            Choisis ton mode de révision
+                        </p>
+                    </div>
+
+                    {/* Options */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        {/* Due cards only */}
+                        <button
+                            onClick={() => {
+                                localStorage.setItem('strengthen_settings', JSON.stringify({
+                                    ...settings,
+                                    selectedTopics: [nodeId],
+                                    mode: 'due',
+                                }));
+                                onClose();
+                                navigate('/demo/strengthen');
+                            }}
+                            disabled={nodeDueCards === 0}
+                            style={{
+                                width: "100%",
+                                background: nodeDueCards > 0 ? "#21262d" : "#161b22",
+                                border: `1px solid ${nodeDueCards > 0 ? "#30363d" : "#21262d"}`,
+                                borderRadius: 10,
+                                padding: "16px",
+                                cursor: nodeDueCards > 0 ? "pointer" : "not-allowed",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                transition: "all 0.15s ease",
+                                opacity: nodeDueCards > 0 ? 1 : 0.5,
+                            }}
+                            onMouseEnter={(e) => {
+                                if (nodeDueCards > 0) {
+                                    e.currentTarget.style.background = "#30363d";
+                                    e.currentTarget.style.borderColor = "#a5b4fc";
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (nodeDueCards > 0) {
+                                    e.currentTarget.style.background = "#21262d";
+                                    e.currentTarget.style.borderColor = "#30363d";
+                                }
+                            }}
+                        >
+                            <div style={{ textAlign: "left" }}>
+                                <div style={{
+                                    color: "#c9d1d9",
+                                    fontSize: 14,
+                                    fontWeight: 600,
+                                    marginBottom: 4,
+                                }}>
+                                    Réviser les cartes dues
+                                </div>
+                                <div style={{
+                                    color: "#6e7681",
+                                    fontSize: 12,
+                                }}>
+                                    {nodeDueCards} carte{nodeDueCards > 1 ? 's' : ''} à réviser selon l'algorithme
+                                </div>
+                            </div>
+                            <div style={{
+                                color: nodeDueCards > 0 ? "#a5b4fc" : "#484f58",
+                                fontSize: 18,
+                            }}>
+                                →
+                            </div>
+                        </button>
+
+                        {/* All cards */}
+                        <button
+                            onClick={() => {
+                                // Set mode to 'all' to show all cards
+                                localStorage.setItem('strengthen_settings', JSON.stringify({
+                                    ...settings,
+                                    selectedTopics: [nodeId],
+                                    mode: 'all',
+                                }));
+                                onClose();
+                                navigate('/demo/strengthen');
+                            }}
+                            style={{
+                                width: "100%",
+                                background: "#21262d",
+                                border: "1px solid #30363d",
+                                borderRadius: 10,
+                                padding: "16px",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                transition: "all 0.15s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#30363d";
+                                e.currentTarget.style.borderColor = "#a5b4fc";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "#21262d";
+                                e.currentTarget.style.borderColor = "#30363d";
+                            }}
+                        >
+                            <div style={{ textAlign: "left" }}>
+                                <div style={{
+                                    color: "#c9d1d9",
+                                    fontSize: 14,
+                                    fontWeight: 600,
+                                    marginBottom: 4,
+                                }}>
+                                    Réviser toutes les cartes
+                                </div>
+                                <div style={{
+                                    color: "#6e7681",
+                                    fontSize: 12,
+                                }}>
+                                    {allNodeQuestions.length} carte{allNodeQuestions.length > 1 ? 's' : ''} au total
+                                </div>
+                            </div>
+                            <div style={{
+                                color: "#a5b4fc",
+                                fontSize: 18,
+                            }}>
+                                →
+                            </div>
+                        </button>
+                    </div>
+
+                    {/* Cancel */}
+                    <button
+                        onClick={onClose}
+                        style={{
+                            width: "100%",
+                            padding: "12px",
+                            background: "transparent",
+                            border: "1px solid #30363d",
+                            borderRadius: 10,
+                            color: "#8b949e",
+                            fontSize: 13,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            marginTop: 16,
+                            transition: "all 0.15s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = "#8b949e";
+                            e.currentTarget.style.color = "#c9d1d9";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = "#30363d";
+                            e.currentTarget.style.color = "#8b949e";
+                        }}
+                    >
+                        Annuler
+                    </button>
+                </div>
+            </>
+        );
+    }
 
     if (showSettings) {
         return (
@@ -111,7 +324,7 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose }) => 
                             Nombre de cartes par session
                         </label>
                         <div style={{ display: "flex", gap: 8 }}>
-                            {[10, 20, 30, 50].map(num => (
+                            {[5, 10, 20, 30, 50].map(num => (
                                 <button
                                     key={num}
                                     onClick={() => setSettings({ ...settings, sessionLength: num })}
@@ -242,6 +455,99 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose }) => 
                                         <polyline points="20 6 9 17 4 12" />
                                     </svg>
                                 )}
+                            </div>
+                        </button>
+                    </div>
+
+                    {/* Debug Section */}
+                    <div style={{
+                        marginTop: 32,
+                        paddingTop: 24,
+                        borderTop: "1px solid #30363d",
+                    }}>
+                        <label style={{
+                            color: "#8b949e",
+                            fontSize: 13,
+                            fontWeight: 600,
+                            display: "block",
+                            marginBottom: 12,
+                        }}>
+                            🔧 Debug (Dev only)
+                        </label>
+
+                        <button
+                            onClick={() => {
+                                // Import at runtime
+                                const allQuestions = getAllQuestions();
+
+                                console.log("=== RESET DEBUG ===");
+                                console.log("Total questions found:", allQuestions.length);
+                                console.log("Sample question IDs:", allQuestions.slice(0, 5).map(q => q.id));
+
+                                // Create/reset cards for ALL questions with NEW format
+                                const resetCards = allQuestions.map(q => ({
+                                    questionId: q.id,  // This should be "nodeId::questionId" format
+                                    nodeId: q.nodeId,
+                                    dueDate: "2020-01-01",
+                                    interval: 1,
+                                    repetitions: 0,
+                                    easeFactor: 2.5,
+                                }));
+
+                                console.log("Created cards:", resetCards.length);
+                                console.log("Sample card IDs:", resetCards.slice(0, 5).map((c: any) => c.questionId));
+
+                                localStorage.setItem('sr_cards', JSON.stringify(resetCards));
+
+                                alert(`✓ ${resetCards.length} cartes créées avec le nouveau format !`);
+
+                                // Close everything and refresh
+                                onClose();
+                                window.location.reload();
+                            }}
+                            style={{
+                                width: "100%",
+                                padding: "12px 16px",
+                                background: "rgba(251,146,60,0.1)",
+                                border: "1px solid rgba(251,146,60,0.3)",
+                                borderRadius: 8,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                transition: "all 0.15s ease",
+                                marginTop: 8,
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "rgba(251,146,60,0.15)";
+                                e.currentTarget.style.borderColor = "rgba(251,146,60,0.5)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "rgba(251,146,60,0.1)";
+                                e.currentTarget.style.borderColor = "rgba(251,146,60,0.3)";
+                            }}
+                        >
+                            <div style={{ textAlign: "left" }}>
+                                <div style={{
+                                    color: "#fb923c",
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    marginBottom: 2,
+                                }}>
+                                    Nettoyer les cartes orphelines
+                                </div>
+                                <div style={{
+                                    color: "#6e7681",
+                                    fontSize: 11,
+                                }}>
+                                    Supprimer les cartes dont les questions n'existent plus
+                                </div>
+                            </div>
+                            <div style={{
+                                color: "#fb923c",
+                                fontSize: 18,
+                            }}>
+                                🧹
                             </div>
                         </button>
                     </div>

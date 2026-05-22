@@ -1,7 +1,7 @@
 import type {
     NodeType, ContentBlock, TextSize, Lesson,
     QuizQuestion,
-    SRRating
+    SRRating,
 } from "../types";
 
 
@@ -165,4 +165,34 @@ export interface SettingsPanelProps {
 export interface ProfileNodeModalProps {
     onClose: () => void;
     onOpenStrengthen: () => void;
+}
+
+// --- strengthen props ---
+
+export interface StrengthenModalProps {
+    onClose: () => void;
+    onStartSession: () => void;
+    nodeId?: string;
+    nodeName?: string;
+}
+
+export interface StrengthenSettings {
+    sessionLength: number; // number of cards
+    includeNew: boolean;
+    focusWeak: boolean;
+    selectedTopics: string[]; // node IDs
+}
+
+export interface BlockWithMetadata {
+    block: ContentBlock;
+    originalIndex: number;
+    isRetry?: boolean;  // Mark cards that were re-added
+}
+
+export interface StrengthenBlockMetadata {
+    block: ContentBlock;
+    originalIndex: number;
+    questionId: string;  // Store the full question ID
+    nodeId: string;      // Store the node ID
+    isRetry?: boolean;
 }

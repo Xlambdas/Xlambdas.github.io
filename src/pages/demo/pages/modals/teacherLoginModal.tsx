@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TEACHER_PASSWORD } from "../data/teacherNotes";
+import { TEACHER_PASSWORD } from "../../data/teacherNotes";
 
 interface TeacherLoginModalProps {
     onSuccess: (name: string) => void;

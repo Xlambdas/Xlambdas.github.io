@@ -3,6 +3,7 @@ import type { ContentBlock, BlockRendererProps } from "../../types";
 import { QuizBlockPlayer } from "./quizBlockPlayer";
 import { useLessonTextSize } from "../../hooks";
 import { md } from "../../helpers";
+import { getQuestionById } from "../../utils/srEngine";
 
 // --- Block Components ---
 const ExplanationBlock: React.FC<{
@@ -142,6 +143,7 @@ const RecapBlock: React.FC<{
 export const BlockRenderer: React.FC<BlockRendererProps> = ({
     block,
     color,
+    nodeId,
     onQuizComplete,
     onExplain,
     isAnswered,
@@ -197,20 +199,41 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
                 <RecapBlock block={block} color={color} textScale={textScale} />
             )}
 
-            {block.type === "quiz" && (
-                <QuizBlockPlayer
-                    question={block.question}
-                    color={color}
-                    onComplete={onQuizComplete}
-                    onExplain={onExplain}
-                    isAnswered={isAnswered}
-                    reviewMode={reviewMode}
-                    reviewData={reviewAnswer}
-                    reviewCorrect={reviewCorrect}
-                    onContinue={onContinue}
-                    onPrevious={onPrevious}
-                />
-            )}
+            {block.type === "quiz" && (() => {
+                // Use the nodeId prop to construct the full question ID
+                const fullQuestionId = block.questionId
+                    ? `${nodeId}::${block.questionId}`
+                    : null;
+                const questionData = fullQuestionId ? getQuestionById(fullQuestionId) : null;
+
+                const question = block.question || questionData?.fullQuestion;
+
+                if (!question) {
+                    console.error("Question not found:", {
+                        questionId: block.questionId,
+                        fullQuestionId,
+                        nodeId
+                    });
+                    return <div style={{ color: "red", padding: 20 }}>
+                        ❌ Question not found: {fullQuestionId || "no ID"}
+                    </div>;
+                }
+
+                return (
+                    <QuizBlockPlayer
+                        question={question}
+                        color={color}
+                        onComplete={onQuizComplete}
+                        onExplain={onExplain}
+                        isAnswered={isAnswered}
+                        reviewMode={reviewMode}
+                        reviewData={reviewAnswer}
+                        reviewCorrect={reviewCorrect}
+                        onContinue={onContinue}
+                        onPrevious={onPrevious}
+                    />
+                );
+            })()}
 
             {/* Continue button inline */}
             {onContinue && block.type !== "quiz" && (

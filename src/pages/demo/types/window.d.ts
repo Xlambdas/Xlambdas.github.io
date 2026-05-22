@@ -7,6 +7,6 @@ declare global {
         __graphFocus?: (nodeId: string) => void;
         __graphSearch?: (query: string) => void;
         __graphStrengthen?: () => void;
-        __openStrengthenModal?: () => void;
+        __openStrengthenModal?: (nodeId?: string, nodeName?: string) => void;
     }
 }

@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import {
     getEarnedBadges,
     getUserProfile,
-} from "../data/graphData";
-import { getDueCount } from "../utils/srEngine";
-import { getProfileSettings, getStudyStreak } from "../helpers";
-import { PERSONA_OPTIONS, HEX_CLIP } from "../constants";
-import type { ProfileNodeModalProps } from "../types";
+} from "../../data/graphData";
+import { getDueCount } from "../../utils/srEngine";
+import { getProfileSettings, getStudyStreak } from "../../helpers";
+import { PERSONA_OPTIONS, HEX_CLIP } from "../../constants";
+import type { ProfileNodeModalProps } from "../../types";
 
 // --- PersonaHexagon Component ---
 
