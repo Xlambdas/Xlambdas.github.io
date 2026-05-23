@@ -15,47 +15,8 @@ import {
 import {
     BackIcon,
     SettingsIcon,
-    Divider,
 } from "../constants";
-
-// --- Dock button ---
-
-const DockBtn: React.FC<{
-    icon: React.ReactNode;
-    label: string;
-    onClick: () => void;
-    active?: boolean;
-    danger?: boolean;
-}> = ({ icon, label, onClick, active, danger }) => (
-    <button
-        onClick={onClick}
-        title={label}
-        style={{
-            width: 40,
-            height: 40,
-            background: active
-                ? danger ? "rgba(239,68,68,0.12)" : "rgba(165,180,252,0.12)"
-                : "none",
-            border: `1px solid ${active
-                ? danger ? "rgba(239,68,68,0.3)" : "rgba(165,180,252,0.25)"
-                : "transparent"}`,
-            borderRadius: 10,
-            color: active
-                ? danger ? "#ef4444" : "#a5b4fc"
-                : "#484f58",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            fontSize: 16,
-            transition: "all 0.15s ease",
-            flexShrink: 0,
-        }}
-    >
-        {icon}
-    </button>
-);
-
+import { Dock } from "../components/ui/dock";
 
 // --- Component ---
 
@@ -190,46 +151,16 @@ export const NodePage: React.FC = () => {
             position: "relative",
         }}>
 
-            {/* --- Left dock (desktop) --- */}
-            <div
-                className="hidden sm:flex flex-col items-center shrink-0 border-r border-[#21262d] bg-[#161b22] py-3 gap-1"
-                style={{ width: 56 }}
-            >
-                {/* back to graph */}
-                <DockBtn
-                    icon={<BackIcon />}
-                    label="Retour"
-                    onClick={handleBack}
-                />
-
-                <Divider />
-
-                {/* profile */}
-                <DockBtn
-                    icon="🧠"
-                    label="Profil"
-                    onClick={() => navigate("/demo/profile")}
-                    active={false}
-                />
-
-                {/* strengthen this node only */}
-                {/* <DockBtn
-                    icon="💪"
-                    label="S'entraîner sur ce parcours"
-                    onClick={() => setStrengthenOpen(true)}
-                    active={strengthenOpen}
-                /> */}
-
-                <Divider />
-
-                {/* path settings */}
-                <DockBtn
-                    icon={<SettingsIcon />}
-                    label="Paramètres du parcours"
-                    onClick={() => setSettingsOpen(v => !v)}
-                    active={settingsOpen}
-                />
-            </div>
+            <Dock
+                items={[
+                    { type: 'back', onClick: handleBack },
+                    { type: 'divider' },
+                    { type: 'profile' },
+                    // { type: 'strengthen' },
+                    { type: 'divider' },
+                    { type: 'settings', onClick: () => setSettingsOpen(v => !v), active: settingsOpen },
+                ]}
+            />
 
             {/* --- Main content --- */}
             <div style={{ flex: 1, position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>

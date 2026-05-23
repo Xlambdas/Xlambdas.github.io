@@ -47,16 +47,16 @@ export const StrengthenSessionPage: React.FC = () => {
         const settingsStr = localStorage.getItem('strengthen_settings');
         const settings = settingsStr ? JSON.parse(settingsStr) : { sessionLength: 20 };
 
-        console.log("=== STRENGTHEN SESSION DEBUG ===");
-        console.log("Settings:", settings);
-        console.log("selectedTopics:", settings.selectedTopics);
-        console.log("mode:", settings.mode);
-        console.log("sessionLength:", settings.sessionLength);
+        // console.log("=== STRENGTHEN SESSION DEBUG ===");
+        // console.log("Settings:", settings);
+        // console.log("selectedTopics:", settings.selectedTopics);
+        // console.log("mode:", settings.mode);
+        // console.log("sessionLength:", settings.sessionLength);
 
         const allSRCards = getAllCards();
         const today = new Date().toISOString().split("T")[0];
 
-        console.log("Total SR cards:", allSRCards.length);
+        // console.log("Total SR cards:", allSRCards.length);
 
         // Filter by node if selectedTopics is specified
         let relevantCards = allSRCards;
@@ -64,7 +64,7 @@ export const StrengthenSessionPage: React.FC = () => {
             relevantCards = allSRCards.filter(card =>
                 settings.selectedTopics.includes(card.nodeId)
             );
-            console.log("Filtered to node-specific cards:", relevantCards.length);
+            // console.log("Filtered to node-specific cards:", relevantCards.length);
         }
 
         // Filter by due date UNLESS mode is 'all'
@@ -74,7 +74,7 @@ export const StrengthenSessionPage: React.FC = () => {
 
         // Filter out locked questions (questions from lessons not yet accessible)
         dueCards = dueCards.filter(card => isQuestionAccessible(card.questionId, card.nodeId));
-        console.log("Due cards (after date filter):", dueCards.length);
+        // console.log("Due cards (after date filter):", dueCards.length);
 
         // Apply session length limit ONLY for global sessions (not node-specific)
         const isNodeSpecific = settings.selectedTopics && settings.selectedTopics.length > 0;
@@ -106,7 +106,7 @@ export const StrengthenSessionPage: React.FC = () => {
 
         // If no valid blocks after filtering, redirect
         if (quizBlocks.length === 0) {
-            console.log("No valid quiz blocks found, redirecting...");
+            // console.log("No valid quiz blocks found, redirecting...");
             const nextLesson = findNextLesson();
             if (nextLesson) {
                 navigate(`/demo/lesson/${nextLesson.node.id}/${nextLesson.lesson.id}`);
@@ -120,7 +120,7 @@ export const StrengthenSessionPage: React.FC = () => {
         setTotalCards(quizBlocks.length);
 
         // Don't clear settings here - they'll be cleared when session completes
-        console.log("Session loaded with", quizBlocks.length, "cards");
+        // console.log("Session loaded with", quizBlocks.length, "cards");
     }, [navigate]);
 
     if (blocks.length === 0) {
@@ -267,6 +267,10 @@ export const StrengthenSessionPage: React.FC = () => {
                     blocks={blocks.map(b => b.block)}
                     currentIndex={currentIndex}
                     color={color}
+                    colors={blocks.map(b => {
+                        const node = initialNodes.find(n => n.id === b.nodeId);
+                        return (node as any)?.branchColor || "#a5b4fc";
+                    })}
                 />
 
                 {/* Header */}

@@ -13,6 +13,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     textSize,
     isTeacher,
     teacherName,
+    onOpenFunFact,
 }) => {
     const navigate = useNavigate();
     const fs = SIZE_MAP[textSize];
@@ -633,6 +634,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                 {/* Fun Facts */}
                 <button
+                    onClick={onOpenFunFact}
                     style={{
                         width: "100%",
                         background: "transparent",

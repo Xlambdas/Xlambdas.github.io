@@ -7,8 +7,12 @@ export const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
     blocks,
     currentIndex,
     color,
+    colors,
 }) => {
-    const progress = blocks.length > 0 ? ((currentIndex + 1) / blocks.length) * 100 : 0;
+    // Use individual colors if provided, otherwise use single color for all
+    const getBlockColor = (index: number) => {
+        return colors && colors[index] ? colors[index] : color;
+    };
 
     return (
         <div style={{
@@ -16,22 +20,37 @@ export const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
             borderBottom: "1px solid #21262d",
             padding: "12px 24px",
         }}>
-            {/* Progress bar fill */}
+            {/* Segmented progress bar */}
             <div style={{
-                height: 3,
-                background: "#21262d",
-                borderRadius: 2,
+                display: "flex",
+                gap: 2,
+                height: 4,
                 marginBottom: 12,
-                position: "relative",
-                overflow: "hidden",
             }}>
-                <div style={{
-                    height: "100%",
-                    width: `${progress}%`,
-                    background: color,
-                    transition: "width 0.4s ease",
-                    borderRadius: 2,
-                }} />
+                {blocks.map((_, i) => {
+                    const blockColor = getBlockColor(i);
+                    const isPast = i < currentIndex;
+                    const isCurrent = i === currentIndex;
+                    // const isFuture = i > currentIndex;
+
+                    return (
+                        <div
+                            key={i}
+                            style={{
+                                flex: 1,
+                                height: "100%",
+                                borderRadius: 2,
+                                background: isPast
+                                    ? blockColor // Completed: full color
+                                    : isCurrent
+                                        ? `${blockColor}88` // Current: semi-transparent
+                                        : `${blockColor}22`, // Future: very faint
+                                transition: "all 0.4s ease",
+                                boxShadow: isCurrent ? `0 0 8px ${blockColor}66` : "none",
+                            }}
+                        />
+                    );
+                })}
             </div>
 
             {/* Block indicators */}
@@ -42,13 +61,13 @@ export const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
                 gap: 6,
                 flexWrap: "wrap",
             }}>
-                {blocks.map((block, i) => (
+                {blocks.map((_, i) => (
                     <BlockIcon
                         key={i}
-                        type={block.type}
+                        type={blocks[i].type}
                         isActive={i === currentIndex}
                         isPast={i < currentIndex}
-                        color={color}
+                        color={getBlockColor(i)}
                     />
                 ))}
             </div>

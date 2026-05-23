@@ -61,6 +61,7 @@ export interface SidebarProps {
     textSize: TextSize;
     isTeacher: boolean;
     teacherName: string;
+    onOpenFunFact: () => void;
 }
 
 // -- honeyCombPath props --
@@ -112,6 +113,7 @@ export interface LessonProgressBarProps {
     blocks: ContentBlock[];
     currentIndex: number;
     color: string;
+    colors?: string[];
 }
 
 export interface LessonPlayerProps {

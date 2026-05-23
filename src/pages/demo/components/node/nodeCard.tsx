@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getNodeCompletionPercent } from "../../data/graphData";
+import { getDynamicNodes, getNodeCompletionPercent, getVisibleIds } from "../../data/graphData";
 import { NodePathSettings } from "./NodePathSettings";
 import type { NodeCardProps } from "../../types";
 import { KIND_LABEL, HEX_CLIP, getNodeIcon } from "../../constants";
@@ -40,7 +40,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
     const kind = (node as any)?.kind ?? "concept";
     const color = (node as any)?.branchColor ?? "#94a3b8";
     const IconComponent = getNodeIcon(kind);
-    const isLocked = !node?.isUnlocked;
+
     // Recalculate stats when refreshKey changes (forces fresh calculation)
     const stats = node ? getStats(node) : [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,8 +48,12 @@ export const NodeCard: React.FC<NodeCardProps> = ({
         // Trigger re-render when localStorage changes
     }, [refreshKey]);
 
+    // Recalculate if node is locked (don't trust node.isUnlocked from other sources)
+    const visibleIds = getVisibleIds(getDynamicNodes());
+    const isLocked = node ? !visibleIds.has(node.id) : true;
+
     // const pct = node ? getNodeCompletionPercent(node.id) : 0;
-    const isStarted = pct > 0;
+    const isStarted = pct > 0 && pct < 100;
     const isFinished = pct === 100;
 
     // --- Handlers ---
@@ -333,7 +337,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
                     {/* CTAs */}
                     <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
                         {/* strengthen button */}
-                        {isStarted && !isLocked  && (
+                        {(isStarted || isFinished) && !isLocked  && (
                             <button
                                 onClick={() => onOpenStrengthen(node!.id)}
                                 style={{

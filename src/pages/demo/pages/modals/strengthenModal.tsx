@@ -23,12 +23,38 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeI
     };
 
     const [showSettings, setShowSettings] = useState(false);
-    const [showNodeChoice, ] = useState(!!nodeId);
-    const [settings, setSettings] = useState<StrengthenSettings>({
-        sessionLength: 5,
-        includeNew: true,
-        focusWeak: true,
-        selectedTopics: [],
+    const [showNodeChoice,] = useState(!!nodeId);
+
+    // Load settings from localStorage or use defaults
+    const [settings, setSettings] = useState<StrengthenSettings>(() => {
+        const savedSettings = localStorage.getItem('strengthen_settings');
+        if (savedSettings) {
+            try {
+                const parsed = JSON.parse(savedSettings);
+                // Return saved settings but clear node-specific ones
+                return {
+                    sessionLength: parsed.sessionLength ?? 5,
+                    includeNew: parsed.includeNew ?? true,
+                    focusWeak: parsed.focusWeak ?? true,
+                    selectedTopics: [], // Always start fresh for modal
+                };
+            } catch {
+                // Fall back to defaults if parsing fails
+                return {
+                    sessionLength: 5,
+                    includeNew: true,
+                    focusWeak: true,
+                    selectedTopics: [],
+                };
+            }
+        }
+        // No saved settings - use defaults
+        return {
+            sessionLength: 5,
+            includeNew: true,
+            focusWeak: true,
+            selectedTopics: [],
+        };
     });
 
     const allCards = getAllCards();
@@ -579,7 +605,11 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeI
 
                     {/* Save Button */}
                     <button
-                        onClick={() => setShowSettings(false)}
+                        onClick={() => {
+                            // Save settings to localStorage
+                            localStorage.setItem('strengthen_settings', JSON.stringify(settings));
+                            setShowSettings(false);
+                        }}
                         style={{
                             width: "100%",
                             padding: "12px",

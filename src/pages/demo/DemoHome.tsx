@@ -11,7 +11,7 @@ import {
 
 // --- Layout components ---
 import { TopBar } from "./components/ui/TopBar";
-// import { BottomActions } from "./components/ui/BottomActions";
+import { BottomActions } from "./components/ui/BottomActions";
 
 // --- Existing components ---
 import DemoGraph from "./graphView/demoGraph";
@@ -92,6 +92,7 @@ export function DemoHome() {
                     textSize={state.textSize}
                     isTeacher={state.isTeacher}
                     teacherName={state.teacherName}
+                    onOpenFunFact={() => state.setFunFactOpen(true)}
                 />
             </div>
 
@@ -125,6 +126,15 @@ export function DemoHome() {
                     <div className='hidden sm:block'>
                         <Legend textSize={state.textSize} />
                     </div>
+
+                    {/* Bottom Actions */}
+                    <BottomActions
+                        fontSize={12}
+                        showFunFact={true}
+                        showStrengthen={true}
+                        onFunFact={() => state.setFunFactOpen(true)}
+                        onStrengthen={() => window.__openStrengthenModal?.()}
+                    />
 
                     {state.settingsOpen && (
                         <SettingsPanel

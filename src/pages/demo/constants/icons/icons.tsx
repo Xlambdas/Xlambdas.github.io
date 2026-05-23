@@ -138,8 +138,9 @@ export const BlockIcon: React.FC<{
     isPast: boolean;
     color: string;
 }> = ({ type, isActive, isPast, color }) => {
-    const baseColor = isPast || isActive ? color : "#30363d";
     const size = isActive ? 12 : 8;
+    const borderWidth = 2;
+    const isFilled = isPast || isActive; // Fill if completed OR current
 
     // Different shapes based on block type
     switch (type) {
@@ -150,10 +151,11 @@ export const BlockIcon: React.FC<{
                 <div style={{
                     width: size,
                     height: size,
-                    background: baseColor,
-                    border: isActive ? `2px solid ${color}` : "none",
+                    background: isFilled ? color : "transparent", // Filled if completed or current
+                    border: `${borderWidth}px solid ${color}`, // Always show colored border
                     transition: "all 0.3s ease",
                     boxShadow: isActive ? `0 0 8px ${color}88` : "none",
+                    opacity: isFilled ? 1 : 0.4,
                 }} />
             );
 
@@ -164,25 +166,60 @@ export const BlockIcon: React.FC<{
                     width: size,
                     height: size,
                     borderRadius: "50%",
-                    background: baseColor,
-                    border: isActive ? `2px solid ${color}` : "none",
+                    background: isFilled ? color : "transparent", // Filled if completed or current
+                    border: `${borderWidth}px solid ${color}`, // Always show colored border
                     transition: "all 0.3s ease",
                     boxShadow: isActive ? `0 0 8px ${color}88` : "none",
+                    opacity: isFilled ? 1 : 0.4,
                 }} />
             );
 
         case "recap":
-            // Triangle for recap
+            // Triangle for recap (always filled since border trick doesn't work well for hollow triangles)
             return (
                 <div style={{
                     width: 0,
                     height: 0,
                     borderLeft: `${size / 2}px solid transparent`,
                     borderRight: `${size / 2}px solid transparent`,
-                    borderBottom: `${size}px solid ${baseColor}`,
+                    borderBottom: `${size}px solid ${color}`,
                     filter: isActive ? `drop-shadow(0 0 4px ${color}88)` : "none",
                     transition: "all 0.3s ease",
+                    opacity: isFilled ? 1 : 0.4,
                 }} />
             );
+        default:
+            return null;
     }
 };
+
+// Dock Icons
+
+export const StrengthenIcon: React.FC<IconProps> = ({ size = 24, color = "currentColor", strokeWidth = 2 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}>
+        <path d="M14.4 14.4L9.6 9.6" />
+        <path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z" />
+        <path d="M21.5 11.5l-1.914-1.914A2 2 0 1 1 17.672 7.672L15.914 5.914a2 2 0 1 1-1.414-1.414l1.914-1.914A2 2 0 1 1 14.5 0.672L12.672 2.586a2 2 0 1 1-1.414 1.414L9.5 2.5" />
+    </svg>
+);
+
+export const HomeIcon: React.FC<IconProps> = ({ size = 24, color = "currentColor", strokeWidth = 2 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}>
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+);
+
+export const SearchIcon: React.FC<IconProps> = ({ size = 24, color = "currentColor", strokeWidth = 2 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}>
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+);
+
+export const NotificationIcon: React.FC<IconProps> = ({ size = 24, color = "currentColor", strokeWidth = 2 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}>
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+);
