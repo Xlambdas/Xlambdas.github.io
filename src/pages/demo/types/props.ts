@@ -51,7 +51,6 @@ export interface NodeCardProps {
     node: NodeType | null;
     onClose: () => void;
     onOpenSettings: () => void;
-    onOpenProfile: () => void;
     onOpenStrengthen: (nodeId: string) => void;
 }
 

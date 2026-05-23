@@ -11,6 +11,27 @@ import type { SRRating, StrengthenBlockMetadata } from '../types';
 
 export const StrengthenSessionPage: React.FC = () => {
     const navigate = useNavigate();
+
+    // Helper to check if a question's lesson is accessible
+    const isQuestionAccessible = (questionId: string, nodeId: string): boolean => {
+        const questionData = getQuestionById(questionId);
+        if (!questionData) return false;
+
+        const targetNode = initialNodes.find(n => n.id === nodeId);
+        if (!targetNode?.lessonPath) return false;
+
+        const lessonIndex = targetNode.lessonPath.findIndex(l => l.id === questionData.lessonId);
+        if (lessonIndex === -1) return false;
+
+        // Check if all previous lessons are completed
+        for (let i = 0; i < lessonIndex; i++) {
+            if (!isLessonCompleted(nodeId, targetNode.lessonPath[i].id)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
     const [blocks, setBlocks] = useState<StrengthenBlockMetadata[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [quizAnswers, setQuizAnswers] = useState<Map<number, { correct: boolean; rating?: SRRating; userAnswer?: any }>>(new Map());
@@ -47,10 +68,12 @@ export const StrengthenSessionPage: React.FC = () => {
         }
 
         // Filter by due date UNLESS mode is 'all'
-        const dueCards = settings.mode === 'all'
+        let dueCards = settings.mode === 'all'
             ? relevantCards  // Show all cards from the node, regardless of due date
             : relevantCards.filter(c => c.dueDate <= today);  // Only show due cards
 
+        // Filter out locked questions (questions from lessons not yet accessible)
+        dueCards = dueCards.filter(card => isQuestionAccessible(card.questionId, card.nodeId));
         console.log("Due cards (after date filter):", dueCards.length);
 
         // Apply session length limit ONLY for global sessions (not node-specific)
@@ -59,8 +82,6 @@ export const StrengthenSessionPage: React.FC = () => {
             ? dueCards  // Node-specific: show ALL cards from the node
             : dueCards.slice(0, settings.sessionLength);  // Global: apply session length limit
 
-        console.log("Is node-specific?", isNodeSpecific);
-        console.log("Cards to use:", cardsToUse.length);
         // Convert SRCards to quiz blocks (filter out invalid questions)
         const quizBlocks: StrengthenBlockMetadata[] = cardsToUse
             .map((srCard, index): StrengthenBlockMetadata | null => {

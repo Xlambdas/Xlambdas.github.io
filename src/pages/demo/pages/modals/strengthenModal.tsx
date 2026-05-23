@@ -1,12 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { initialNodes, getNodeCompletionPercent } from '../../data/graphData';
+import { initialNodes, getNodeCompletionPercent, isLessonCompleted } from '../../data/graphData';
 import { getAllCards, getAllQuestions, getDueCount } from '../../utils/srEngine';
 import type { StrengthenSettings, StrengthenModalProps } from '../../types';
 
 export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeId, nodeName }) => {
     const navigate = useNavigate();
+
+    // Helper to check if a question's lesson is COMPLETED
+    const isQuestionAccessible = (question: any, targetNodeId: string): boolean => {
+        if (!question) return false;
+
+        const targetNode = initialNodes.find(n => n.id === targetNodeId);
+        if (!targetNode?.lessonPath) return false;
+
+        const lesson = targetNode.lessonPath.find(l => l.id === question.lessonId);
+        if (!lesson) return false;
+
+        // Question is only accessible if its lesson is COMPLETED
+        return isLessonCompleted(targetNodeId, question.lessonId);
+    };
+
     const [showSettings, setShowSettings] = useState(false);
     const [showNodeChoice, ] = useState(!!nodeId);
     const [settings, setSettings] = useState<StrengthenSettings>({
@@ -36,8 +51,20 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeI
         };
 
     if (showNodeChoice && nodeId) {
-        const nodeDueCards = getDueCount(nodeId);
-        const allNodeQuestions = getAllQuestions().filter(q => q.nodeId === nodeId);
+        // Filter to only accessible questions (from completed lessons)
+        const allQuestions = getAllQuestions();
+        const accessibleNodeQuestions = allQuestions.filter(q =>
+            q.nodeId === nodeId && isQuestionAccessible(q, nodeId)
+        );
+
+        // Count only accessible due cards
+        const allCards = getAllCards();
+        const today = new Date().toISOString().split("T")[0];
+        const nodeDueCards = allCards.filter(c =>
+            c.nodeId === nodeId &&
+            c.dueDate <= today &&
+            isQuestionAccessible(allQuestions.find(q => q.id === c.questionId), nodeId)
+        ).length;
 
         return (
             <>
@@ -145,8 +172,7 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeI
                                     color: "#6e7681",
                                     fontSize: 12,
                                 }}>
-                                    {nodeDueCards} carte{nodeDueCards > 1 ? 's' : ''} à réviser selon l'algorithme
-                                </div>
+                                    {nodeDueCards} carte{nodeDueCards > 1 ? 's' : ''} à réviser                                </div>
                             </div>
                             <div style={{
                                 color: nodeDueCards > 0 ? "#a5b4fc" : "#484f58",
@@ -202,8 +228,7 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeI
                                     color: "#6e7681",
                                     fontSize: 12,
                                 }}>
-                                    {allNodeQuestions.length} carte{allNodeQuestions.length > 1 ? 's' : ''} au total
-                                </div>
+                                    {accessibleNodeQuestions.length} carte{accessibleNodeQuestions.length > 1 ? 's' : ''} au total                                </div>
                             </div>
                             <div style={{
                                 color: "#a5b4fc",

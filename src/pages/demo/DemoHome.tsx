@@ -164,7 +164,6 @@ export function DemoHome() {
                     node={state.activeNode}
                     onClose={() => state.setActiveNode(null)}
                     onOpenSettings={() => state.setSettingsOpen(true)}
-                    onOpenProfile={() => { state.setActiveNode(null); state.setProfileOpen(true); }}
                     onOpenStrengthen={(nodeId) => {
                         const node = initialNodes.find(n => n.id === nodeId);
                         window.__openStrengthenModal?.(nodeId, node?.title);

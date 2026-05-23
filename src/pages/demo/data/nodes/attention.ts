@@ -12,7 +12,25 @@ export const AttentionNode: NodeType = {
     branchColor: "#3b82f6",
     hook: "Tu crois choisir où tu portes ton attention. La recherche suggère le contraire.",
     shortDescription: "Le filtre invisible qui gouverne ta perception.",
-    questions: [],
+    questions: [
+        {
+            id: "q1",
+            lessonId: "attention_intro",
+            blockIndex: 2,
+            question: {
+                type: "multiple_choice",
+                question: "Qu'est-ce que la cécité d'inattention démontre principalement ?",
+                choices: [
+                    "Que les humains ont une mauvaise vue",
+                    "Que l'attention filtre activement ce qui entre dans la conscience",
+                    "Que regarder des vidéos est une mauvaise méthode d'apprentissage",
+                    "Que la mémoire de travail est limitée à 7 éléments",
+                ],
+                correctIndex: 1,
+                explanation: "La cécité d'inattention montre que l'attention est un filtre actif : on ne perçoit consciemment que ce sur quoi le système cognitif est configuré — même si le reste est physiquement visible.",
+            },
+        }
+    ],
     lessonPath: [
         {
             id: "attention_intro",
@@ -30,21 +48,10 @@ export const AttentionNode: NodeType = {
                     title: "La cécité d'inattention",
                     content: "Cet effet s'appelle la **cécité d'inattention** (Simons & Chabris, 1999).\n\nIl démontre que l'attention n'est pas un enregistreur passif. C'est un **filtre actif** — ce qui entre dans le champ de conscience dépend de ce sur quoi le système cognitif est configuré.\n\nTu ne vois pas ce que tu ne cherches pas.",
                 },
-                // {
-                //     type: "quiz",
-                //     question: {
-                //         type: "multiple_choice",
-                //         question: "Qu'est-ce que la cécité d'inattention démontre principalement ?",
-                //         choices: [
-                //             "Que les humains ont une mauvaise vue",
-                //             "Que l'attention filtre activement ce qui entre dans la conscience",
-                //             "Que regarder des vidéos est une mauvaise méthode d'apprentissage",
-                //             "Que la mémoire de travail est limitée à 7 éléments",
-                //         ],
-                //         correctIndex: 1,
-                //         explanation: "La cécité d'inattention montre que l'attention est un filtre actif : on ne perçoit consciemment que ce sur quoi le système cognitif est configuré — même si le reste est physiquement visible.",
-                //     },
-                // },
+                {
+                    type: "quiz",
+                    questionId: "q1",
+                },
                 // {
                 //     type: "quiz",
                 //     question: {

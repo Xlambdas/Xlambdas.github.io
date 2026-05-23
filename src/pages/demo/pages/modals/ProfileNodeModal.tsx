@@ -8,6 +8,7 @@ import { getDueCount } from "../../utils/srEngine";
 import { getProfileSettings, getStudyStreak } from "../../helpers";
 import { PERSONA_OPTIONS, HEX_CLIP } from "../../constants";
 import type { ProfileNodeModalProps } from "../../types";
+import { TrophyIcon, CheckCircleIcon, BookOpenIcon, FlameIcon, CloseIcon } from "../../constants";
 
 // --- PersonaHexagon Component ---
 
@@ -79,11 +80,10 @@ export const ProfileNodeModal: React.FC<ProfileNodeModalProps> = ({
     };
 
     const stats = [
-        { label: "Badges", value: badges.length, icon: "🏆", color: "#fbbf24" },
-        { label: "Modules", value: completedNodes.length, icon: "✅", color: "#22c55e" },
-        { label: "À réviser", value: dueCards, icon: "📚", color: "#a5b4fc" },
+        { label: "Badges", value: badges.length, IconComponent: TrophyIcon, color: "#fbbf24" },
+        { label: "Modules", value: completedNodes.length, IconComponent: CheckCircleIcon, color: "#22c55e" },
+        { label: "À réviser", value: dueCards, IconComponent: BookOpenIcon, color: "#a5b4fc" },
     ];
-
     return (
         <>
             <style>{`
@@ -127,19 +127,21 @@ export const ProfileNodeModal: React.FC<ProfileNodeModalProps> = ({
                     position: "absolute",
                     top: 12,
                     left: 12,
-                    border: "1px solid #ef4444",
+                    background: streak >= 5 ? "rgba(251,191,36,0.15)" : "rgba(239,68,68,0.15)",
+                    border: `1px solid ${streak >= 5 ? "#fbbf24" : "#ef4444"}`,
                     borderRadius: 8,
-                    padding: "4px 10px",
+                    padding: "6px 10px",
                     display: "flex",
                     alignItems: "center",
-                    gap: 5,
-                    borderColor: streak >= 5 ? "#fbbf24" : "#ef4444",
-                    boxShadow: streak >= 5 ? "0 2px 8px rgba(251,191,36,0.3)" : "0 2px 8px rgba(239,68,68,0.3)",
+                    gap: 6,
+                    boxShadow: streak >= 5
+                        ? "0 2px 8px rgba(251,191,36,0.3)"
+                        : "0 2px 8px rgba(239,68,68,0.3)",
                     zIndex: 3,
                 }}>
-                    <span style={{ fontSize: 16 }}>🔥</span>
+                    <FlameIcon size={16} color={streak >= 5 ? "#fbbf24" : "#ef4444"} />
                     <span style={{
-                        color: "#fff",
+                        color: streak >= 5 ? "#fbbf24" : "#ef4444",
                         fontSize: 14,
                         fontWeight: 700,
                     }}>
@@ -205,10 +207,7 @@ export const ProfileNodeModal: React.FC<ProfileNodeModalProps> = ({
                         e.currentTarget.style.color = "#8b949e";
                     }}
                 >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
+                    <CloseIcon size={18} />
                 </button>
 
                 {/* Card body */}
@@ -260,7 +259,7 @@ export const ProfileNodeModal: React.FC<ProfileNodeModalProps> = ({
                         display: "flex",
                         overflow: "hidden",
                     }}>
-                        {stats.map(({ label, value, icon }, i) => (
+                        {stats.map(({ label, value, IconComponent, color }, i) => (
                             <div key={label} style={{
                                 flex: 1,
                                 padding: "12px 8px",
@@ -268,7 +267,14 @@ export const ProfileNodeModal: React.FC<ProfileNodeModalProps> = ({
                                 borderRight: i < stats.length - 1
                                     ? "1px solid #21262d" : "none",
                             }}>
-                                <div style={{ fontSize: 20, marginBottom: 4 }}>{icon}</div>
+                                <div style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginBottom: 4,
+                                }}>
+                                    <IconComponent size={20} color={color} />
+                                </div>
                                 <div style={{
                                     color: "#c9d1d9",
                                     fontSize: 16, fontWeight: 700,

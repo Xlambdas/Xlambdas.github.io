@@ -1,6 +1,6 @@
 import React from "react";
 import type { LessonProgressBarProps } from "../../types";
-import { BlockIcon } from "../../constants/icons";
+import { BlockIcon } from "../../constants/icons/icons";
 
 // --- Main Component ---
 export const LessonProgressBar: React.FC<LessonProgressBarProps> = ({

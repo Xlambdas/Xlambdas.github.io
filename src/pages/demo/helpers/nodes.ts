@@ -1,6 +1,6 @@
 import type { Lesson, NodeType } from "../types/types";
-import { initialNodes, getDynamicNodes, getNodeCompletionPercent, getEarnedBadges } from "../data/graphData";
-import { getDueCount } from "../utils/srEngine";
+import { initialNodes, getDynamicNodes, getNodeCompletionPercent, isLessonCompleted } from "../data/graphData";
+import { getAllQuestions, getAllCards } from "../utils/srEngine";
 
 export const findParent = (nodeId: string) =>
     initialNodes.find(n => n.links.includes(nodeId));
@@ -115,17 +115,21 @@ export const getStats = (node: NodeType): { label: string; value: string | numbe
     const kind = (node as any).kind ?? "concept";
     const pct = getNodeCompletionPercent(node.id);
 
+    // Helper to check if a question's lesson is COMPLETED (not just accessible)
+    const isQuestionAccessible = (question: any, nodeId: string) => {
+        if (!question) return false;
+
+        const targetNode = getDynamicNodes().find(n => n.id === nodeId);
+        if (!targetNode?.lessonPath) return false;
+
+        const lesson = targetNode.lessonPath.find(l => l.id === question.lessonId);
+        if (!lesson) return false;
+
+        // Question is only accessible if its lesson is COMPLETED
+        return isLessonCompleted(nodeId, question.lessonId);
+    };
+
     switch (kind) {
-        case "profile": {
-            const badges = getEarnedBadges().length;
-            const completed = JSON.parse(localStorage.getItem("completed_nodes") ?? "[]").length;
-            const due = getDueCount();
-            return [
-                { label: "Badges", value: badges },
-                { label: "Complétés", value: completed },
-                { label: "À réviser", value: due },
-            ];
-        }
         case "domain":
         case "topic": {
             const children = getDynamicNodes().filter(n =>
@@ -134,25 +138,96 @@ export const getStats = (node: NodeType): { label: string; value: string | numbe
             const totalLessons = children.reduce(
                 (s, n) => s + (n.lessonPath?.length ?? 0), 0
             );
-            const mins = children.reduce(
-                (s, n) => s + (n.lessonPath?.reduce((a, l) => a + l.estimatedMinutes, 0) ?? 0), 0
-            );
+
+            // Count questions from this node + children, filtered by accessibility
+            const allQuestions = getAllQuestions();
+
+            const totalQuestions = allQuestions.filter(q =>
+                q.nodeId === node.id && isQuestionAccessible(q, node.id)
+            ).length;
+            // Count due cards (only from accessible questions)
+            const allCards = getAllCards();
+            const today = new Date().toISOString().split("T")[0];
+
+            const totalDue = allCards.filter(c =>
+                c.nodeId === node.id &&
+                c.dueDate <= today &&
+                isQuestionAccessible(allQuestions.find(q => q.id === c.questionId), node.id)
+            ).length;
+
+            if (pct === 0) {
+                return [
+                    { label: kind === "domain" ? "Sujets" : "Concepts", value: children.length },
+                    { label: "Questions", value: "--" },
+                    { label: "À réviser", value: "--" },
+                ];
+            }
+
+            if (pct === 100) {
+                return [
+                    { label: kind === "domain" ? "Sujets" : "Concepts", value: children.length },
+                    { label: "Questions", value: totalQuestions },
+                    { label: "À réviser", value: totalDue },
+                ];
+            }
+
+            if (totalDue > 0) {
+                return [
+                    { label: kind === "domain" ? "Sujets" : "Concepts", value: children.length },
+                    // { label: "Questions", value: totalQuestions },
+                    { label: "À réviser", value: `${totalDue}/${totalQuestions}` },
+                    { label: "Progression", value: `${pct}%` },
+                ];
+            }
+
+
             return [
                 { label: kind === "domain" ? "Sujets" : "Concepts", value: children.length },
-                { label: "Progression", value: `${pct}%` },
                 { label: "Leçons", value: totalLessons },
-                { label: "Durée", value: mins > 0 ? `~${mins} min` : "—" },
+                { label: "Progression", value: `${pct}%` },
             ];
         }
         case "concept":
         case "subconcept":
         default: {
             const lessons = node.lessonPath?.length ?? 0;
-            const mins = node.lessonPath?.reduce((s, l) => s + l.estimatedMinutes, 0) ?? 0;
+
+            // Count only accessible questions for this node
+            const allQuestions = getAllQuestions();
+            const questions = allQuestions.filter(q =>
+                q.nodeId === node.id && isQuestionAccessible(q, node.id)
+            ).length;
+
+            // Count only due cards from accessible questions
+            const allCards = getAllCards();
+            const today = new Date().toISOString().split("T")[0];
+            const dueForNode = allCards.filter(c =>
+                c.nodeId === node.id &&
+                c.dueDate <= today &&
+                isQuestionAccessible(allQuestions.find(q => q.id === c.questionId), node.id)
+            ).length;
+
+            if (pct === 100) {
+                return [
+                    { label: "Leçons", value: lessons },
+                    { label: "Questions", value: questions },
+                    { label: "À réviser", value: dueForNode },
+                ];
+            }
+
+
+            if (dueForNode > 0) {
+                return [
+                    { label: "Leçons", value: lessons },
+                    { label: "À réviser", value: `${dueForNode}/${questions}` },
+                    { label: "Progression", value: `${pct}%` },
+                ];
+            }
+
             return [
                 { label: "Leçons", value: lessons },
+                { label: "Questions", value: questions },
                 { label: "Progression", value: `${pct}%` },
-                { label: "Durée", value: mins > 0 ? `~${mins} min` : "—" },
             ];
         }
     }
