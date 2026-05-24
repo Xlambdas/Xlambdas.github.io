@@ -8,9 +8,13 @@ import { BlockRenderer } from '../components/lessons/blockRenderer';
 import { ExplanationModal } from './modals';
 import { useLessonTextSize } from '../hooks';
 import type { SRRating, StrengthenBlockMetadata } from '../types';
+import { FeedbackButton } from '../components/feedbackBtn';
+import { FeedbackModal } from './modals/feedbackModal';
 
 export const StrengthenSessionPage: React.FC = () => {
     const navigate = useNavigate();
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
+
 
     // Helper to check if a question's lesson is accessible
     const isQuestionAccessible = (questionId: string, nodeId: string): boolean => {
@@ -794,6 +798,13 @@ export const StrengthenSessionPage: React.FC = () => {
                     />
                 )}
             </div>
+
+            {/* Feedback System */}
+            <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+
+            {feedbackOpen && (
+                <FeedbackModal onClose={() => setFeedbackOpen(false)} from="StrengthenSessionPage" />
+            )}
         </div>
     );
 };

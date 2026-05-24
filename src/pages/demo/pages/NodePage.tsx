@@ -18,6 +18,8 @@ import {
 } from "../constants";
 import { Dock } from "../components/ui/dock";
 import { DockFooter } from "../components/ui/dockFooter";
+import { FeedbackButton } from "../components/feedbackBtn";
+import { FeedbackModal } from "./modals/feedbackModal";
 
 // --- Component ---
 
@@ -26,6 +28,7 @@ export const NodePage: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const scrollToLessonId = searchParams.get('lesson');
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
 
     const node = initialNodes.find(n => n.id === nodeId);
 
@@ -265,6 +268,13 @@ export const NodePage: React.FC = () => {
                     mode="modal"
                     onClose={() => setSettingsOpen(false)}
                 />
+            )}
+
+
+            {/* Feedback System */}
+            <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+            {feedbackOpen && (
+                <FeedbackModal onClose={() => setFeedbackOpen(false)} from="NodePage" />
             )}
         </div>
     );

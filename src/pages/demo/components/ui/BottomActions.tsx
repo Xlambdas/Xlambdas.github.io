@@ -1,4 +1,4 @@
-import { PlayIcon } from "../../constants/icons/icons";
+// import { PlayIcon } from "../../constants/icons/icons";
 import type { BottomActionsProps } from "../../types";
 
 export function BottomActions({
@@ -50,7 +50,6 @@ export function BottomActions({
                         e.currentTarget.style.boxShadow = "0 4px 16px rgba(124,106,247,0.25), 0 0 0 1px rgba(255,255,255,0.05)";
                     }}
                 >
-                    <span className="hidden sm:inline" style={{ fontSize: 16 }}>💡</span>
                     Le saviez-vous ?
                 </button>
             )}
@@ -87,7 +86,7 @@ export function BottomActions({
                         e.currentTarget.style.boxShadow = "0 4px 16px rgba(165,180,252,0.25), 0 0 0 1px rgba(255,255,255,0.05)";
                     }}
                 >
-                    <PlayIcon size={14} color="#a5b4fc" />
+                    {/* <PlayIcon size={14} color="#a5b4fc" /> */}
                     S'entraîner
                 </button>
             )}

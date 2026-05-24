@@ -24,6 +24,8 @@ import {
 } from "./pages/modals";
 
 import { NodeCard } from "./components/node/nodeCard";
+import { FeedbackModal } from './pages/modals/feedbackModal';
+import { FeedbackButton } from './components/feedbackBtn';
 
 // --- --- ---
 export function DemoHome() {
@@ -32,6 +34,7 @@ export function DemoHome() {
     const [strengthenModalOpen, setStrengthenModalOpen] = useState(false);
     const [strengthenNodeId, setStrengthenNodeId] = useState<string | undefined>();
     const [strengthenNodeName, setStrengthenNodeName] = useState<string | undefined>();
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
 
     // Expose the function to open the strengthen modal globally
     useEffect(() => {
@@ -233,6 +236,13 @@ export function DemoHome() {
                     }}
                     onClose={() => state.setShowTeacherLogin(false)}
                 />
+            )}
+
+            {/* Feedback System */}
+            <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+
+            {feedbackOpen && (
+                <FeedbackModal onClose={() => setFeedbackOpen(false)} from="DemoHome" />
             )}
         </div>
     );

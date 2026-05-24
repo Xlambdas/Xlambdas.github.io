@@ -81,7 +81,7 @@ export const FunFactModal: React.FC<FunFactModalProps> = ({ onClose, onNavigate 
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ fontSize: 16 }}>💡</span>
+                        {/* <span style={{ fontSize: 16 }}>💡</span> */}
                         <span style={{ color: "#c9d1d9", fontSize: 13, fontWeight: 500 }}>
                             Le saviez-vous ?
                         </span>

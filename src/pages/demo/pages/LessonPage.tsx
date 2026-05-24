@@ -8,6 +8,8 @@ import { BlockRenderer } from "../components/lessons/blockRenderer";
 import { ExplanationModal } from "./modals";
 import { useLessonTextSize } from "../hooks";
 import type { BlockWithMetadata, SRRating } from "../types";
+import { FeedbackModal } from "./modals/feedbackModal";
+import { FeedbackButton } from "../components/feedbackBtn";
 
 
 
@@ -26,6 +28,7 @@ export const LessonPage: React.FC = () => {
     const [currentExplanation, setCurrentExplanation] = useState<string>("");
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [showQuitModal, setShowQuitModal] = useState(false);
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
     const { textScale, updateTextScale } = useLessonTextSize();
     const SettingsButtonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -531,6 +534,11 @@ export const LessonPage: React.FC = () => {
                     />
                 )}
             </div>
+            {/* Feedback System */}
+            <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+            {feedbackOpen && (
+                <FeedbackModal onClose={() => setFeedbackOpen(false)} from="LessonPage" />
+            )}
         </div>
     );
 };

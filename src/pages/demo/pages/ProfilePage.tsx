@@ -9,6 +9,8 @@ import { getAllCards } from "../utils/srEngine";
 import type { EarnedBadge } from "../types";
 import { BANNER_COLORS, PERSONA_OPTIONS, PERSONA_BG_COLORS, STATUS_EMOJIS, HEX_CLIP } from "../constants";
 import { getProfileSettings, saveProfileSettings, getTotalLessons } from "../helpers";
+import { FeedbackModal } from "./modals/feedbackModal";
+import { FeedbackButton } from "../components/feedbackBtn";
 
 // --- Sub-components ---
 
@@ -370,6 +372,7 @@ export const ProfilePage: React.FC = () => {
     const badges = getEarnedBadges();
     // const completedNodes = getCompletedNodes();
     // const dueCards = getDueCount();
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
     const allCards = getAllCards();
     // const streak = getStudyStreak();
     const { completed: completedLessons, total: totalLessons } = getTotalLessons();
@@ -811,6 +814,13 @@ export const ProfilePage: React.FC = () => {
                     )}
                 </div>
             </div>
+
+            {/* Feedback System */}
+            <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+
+            {feedbackOpen && (
+                <FeedbackModal onClose={() => setFeedbackOpen(false)} from="ProfilePage" />
+            )}
         </div>
     );
 };
