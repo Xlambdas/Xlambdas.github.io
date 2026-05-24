@@ -11,18 +11,16 @@ export function BottomActions({
     if (!showFunFact && !showStrengthen) return null;
 
     return (
-        <div style={{
-            position: "absolute",
-            bottom: 24,
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            gap: 12,
-            zIndex: 20,
-        }}>
+        <div
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20 w-auto sm:w-auto px-4 sm:px-0"
+            style={{
+                maxWidth: "calc(100vw - 32px)",
+            }}
+        >
             {showFunFact && (
                 <button
                     onClick={onFunFact}
+                    className="flex-1 sm:flex-none"
                     style={{
                         background: "linear-gradient(135deg, rgba(124,106,247,0.2) 0%, rgba(124,106,247,0.1) 100%)",
                         border: "1px solid rgba(124,106,247,0.5)",
@@ -34,10 +32,12 @@ export function BottomActions({
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: "center",
                         gap: 8,
                         backdropFilter: "blur(12px)",
                         boxShadow: "0 4px 16px rgba(124,106,247,0.25), 0 0 0 1px rgba(255,255,255,0.05)",
                         transition: "all 0.2s ease",
+                        whiteSpace: "nowrap",
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.background = "linear-gradient(135deg, rgba(124,106,247,0.3) 0%, rgba(124,106,247,0.2) 100%)";
@@ -50,12 +50,14 @@ export function BottomActions({
                         e.currentTarget.style.boxShadow = "0 4px 16px rgba(124,106,247,0.25), 0 0 0 1px rgba(255,255,255,0.05)";
                     }}
                 >
+                    <span className="hidden sm:inline" style={{ fontSize: 16 }}>💡</span>
                     Le saviez-vous ?
                 </button>
             )}
             {showStrengthen && (
                 <button
                     onClick={onStrengthen}
+                    className="flex-1 sm:flex-none"
                     style={{
                         background: "linear-gradient(135deg, rgba(165,180,252,0.2) 0%, rgba(165,180,252,0.1) 100%)",
                         border: "1px solid rgba(165,180,252,0.5)",
@@ -67,10 +69,12 @@ export function BottomActions({
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: "center",
                         gap: 8,
                         backdropFilter: "blur(12px)",
                         boxShadow: "0 4px 16px rgba(165,180,252,0.25), 0 0 0 1px rgba(255,255,255,0.05)",
                         transition: "all 0.2s ease",
+                        whiteSpace: "nowrap",
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.background = "linear-gradient(135deg, rgba(165,180,252,0.3) 0%, rgba(165,180,252,0.2) 100%)";

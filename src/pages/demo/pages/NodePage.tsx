@@ -17,6 +17,7 @@ import {
     SettingsIcon,
 } from "../constants";
 import { Dock } from "../components/ui/dock";
+import { DockFooter } from "../components/ui/dockFooter";
 
 // --- Component ---
 
@@ -151,15 +152,26 @@ export const NodePage: React.FC = () => {
             position: "relative",
         }}>
 
+            {/* Desktop Dock */}
             <Dock
                 items={[
                     { type: 'back', onClick: handleBack },
                     { type: 'divider' },
                     { type: 'profile' },
-                    // { type: 'strengthen' },
                     { type: 'divider' },
                     { type: 'settings', onClick: () => setSettingsOpen(v => !v), active: settingsOpen },
                 ]}
+            />
+
+            {/* Mobile Footer */}
+            <DockFooter
+                items={[
+                    { type: 'back', onClick: handleBack },
+                    { type: 'home' },
+                    { type: 'profile' },
+                    { type: 'settings', onClick: () => setSettingsOpen(v => !v), active: settingsOpen },
+                ]}
+                exclude={['back', 'settings']} // These are in the mobile header
             />
 
             {/* --- Main content --- */}
@@ -220,6 +232,7 @@ export const NodePage: React.FC = () => {
                         scrollbarWidth: "thin",
                         scrollbarColor: "#21262d transparent",
                     }}
+                    className="pb-20 sm:pb-0"
                 >
                     <HoneycombPath
                         key={refreshKey}
@@ -247,36 +260,11 @@ export const NodePage: React.FC = () => {
 
             {/* path settings overlay */}
             {settingsOpen && (
-                <div
-                    onClick={() => setSettingsOpen(false)}
-                    style={{
-                        position: "absolute",
-                        inset: 0,
-                        zIndex: 60,
-                        background: "rgba(0,0,0,0.55)",
-                        backdropFilter: "blur(4px)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    <div
-                        onClick={e => e.stopPropagation()}
-                        style={{
-                            width: "min(380px, 92vw)",
-                            background: "#161b22",
-                            border: "1px solid #30363d",
-                            borderRadius: 14,
-                            overflow: "hidden",
-                            boxShadow: "0 24px 60px rgba(0,0,0,0.7)",
-                        }}
-                    >
-                        <NodePathSettings
-                            node={node}
-                            onClose={() => setSettingsOpen(false)}
-                        />
-                    </div>
-                </div>
+                <NodePathSettings
+                    node={node}
+                    mode="modal"
+                    onClose={() => setSettingsOpen(false)}
+                />
             )}
         </div>
     );

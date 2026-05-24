@@ -419,6 +419,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
                 {showNodeSettings && node && (
                     <NodePathSettings
                         node={node}
+                        mode="card"
                         onClose={() => {
                             setShowNodeSettings(false);
                             // Trigger refresh after settings close

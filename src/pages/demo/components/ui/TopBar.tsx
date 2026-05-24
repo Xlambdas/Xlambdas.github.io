@@ -1,10 +1,13 @@
+import React from "react";
 import { type TopBarProps } from '../../types';
-import { SIZE_MAP } from '../../constants';
+// import { SIZE_MAP } from '../../constants';
+import { getNodeCompletionPercent, getVisibleIds } from '../../data/graphData';
+import { useNavigate } from 'react-router-dom';
 
 export function TopBar({
     collapsed,
     onCollapse,
-    textSize,
+    // textSize,
     settingsOpen,
     onSettingsToggle,
     mobileSearch,
@@ -15,23 +18,31 @@ export function TopBar({
     onSuggestionSelect,
     searchInputRef,
 }: TopBarProps) {
-    const ts = SIZE_MAP[textSize];
+    // const ts = SIZE_MAP[textSize];
+    const navigate = useNavigate();
+    const [clickTimeout, setClickTimeout] = React.useState<ReturnType<typeof setTimeout> | null>(null);
+    const visibleIds = getVisibleIds(suggestions);
 
     return (
-        <div style={{
-            position: "fixed",
-            top: 0,
-            left: collapsed ? 0 : 240,
-            right: 0,
-            background: "#161b22",
-            borderBottom: "1px solid #21262d",
-            padding: "16px 20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            zIndex: 100,
-            transition: "left 0.3s ease",
-        }}>
+        <div
+            className="fixed top-0 right-0 bg-[#161b22] border-b border-[#21262d] flex items-center justify-between z-100 transition-all duration-300"
+            style={{
+                left: collapsed ? 0 : 240,
+                padding: "12px 16px", // Reduced padding on mobile
+                // position: "fixed",
+                // top: 0,
+                // left: collapsed ? 0 : 240,
+                // right: 0,
+                // background: "#161b22",
+                // borderBottom: "1px solid #21262d",
+                // padding: "16px 20px",
+                // display: "flex",
+                // alignItems: "center",
+                // justifyContent: "space-between",
+                // zIndex: 100,
+                // transition: "left 0.3s ease",
+            }}
+        >
             {/* Left side - Sidebar reopen */}
             <div className="flex items-center gap-3">
                 {collapsed && (
@@ -92,46 +103,101 @@ export function TopBar({
                                 style={{ fontSize: 16 }}
                             />
                         </div>
-                        {suggestions.length > 0 && (
-                            <div style={{
-                                position: "absolute", top: "calc(100% + 12px)",
-                                left: 12, right: 12,
-                                background: "#161b22", border: "1px solid #30363d",
-                                borderRadius: 8, zIndex: 50, overflow: "hidden",
-                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
-                            }}>
-                                {suggestions.map(n => (
+                        {suggestions.map(n => {
+                            const isLocked = !visibleIds.has(n.id);
+                            const pct = getNodeCompletionPercent(n.id);
+                            const color = (n as any).branchColor || "#a5b4fc";
+
+                            return (
+                                <div
+                                    key={n.id}
+                                    onClick={() => {
+                                        if (isLocked) return;
+
+                                        // Clear any existing timeout
+                                        if (clickTimeout) {
+                                            clearTimeout(clickTimeout);
+                                            setClickTimeout(null);
+                                        }
+
+                                        // Set timeout for single click (preview)
+                                        const timeout = setTimeout(() => {
+                                            onSuggestionSelect(n);
+                                            setClickTimeout(null);
+                                        }, 250);
+
+                                        setClickTimeout(timeout);
+                                    }}
+                                    onDoubleClick={() => {
+                                        if (isLocked) return;
+
+                                        // Clear single click timeout
+                                        if (clickTimeout) {
+                                            clearTimeout(clickTimeout);
+                                            setClickTimeout(null);
+                                        }
+
+                                        // Navigate to page
+                                        setMobileSearch(false);
+                                        onSearchChange("");
+                                        navigate(`/demo/node/${n.id}`);
+                                    }}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 8,
+                                        padding: "10px 12px",
+                                        cursor: isLocked ? "not-allowed" : "pointer",
+                                        borderBottom: "1px solid #21262d",
+                                        opacity: isLocked ? 0.5 : 1,
+                                        transition: "all 0.15s ease",
+                                    }}
+                                >
                                     <div
-                                        key={n.id}
-                                        onMouseDown={() => onSuggestionSelect(n)}
                                         style={{
-                                            display: "flex", alignItems: "center",
-                                            gap: 8, padding: "8px 12px",
-                                            cursor: "pointer",
-                                            borderBottom: "1px solid #21262d",
+                                            width: 6,
+                                            height: 6,
+                                            borderRadius: "50%",
+                                            background: isLocked ? "#4b5563" : color,
+                                            boxShadow: isLocked ? "none" : `0 0 8px ${color}66`,
+                                            border: isLocked ? "1px solid #6b7280" : "none",
+                                            flexShrink: 0,
                                         }}
-                                    >
-                                        <div
-                                            style={{
-                                                width: 6, height: 6, borderRadius: "50%",
-                                                background: n.isUnlocked
-                                                    ? n.type === "main" ? "#ffffff"
-                                                        : n.type === "folder" ? "#a5b4fc"
-                                                            : "#94a3b8"
-                                                    : "#4b5563",
-                                                flexShrink: 0,
-                                            }}
-                                        />
-                                        <span style={{ color: n.isUnlocked ? "#c9d1d9" : "#4b5563", fontSize: 12 }}>
+                                    />
+                                    <div style={{ flex: 1, textAlign: "left", minWidth: 0 }}>
+                                        <div style={{
+                                            color: isLocked ? "#4b5563" : "#c9d1d9",
+                                            fontSize: 12,
+                                            fontWeight: 500,
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                        }}>
                                             {n.title}
-                                        </span>
-                                        {!n.isUnlocked && (
-                                            <span style={{ color: "#30363d", fontSize: ts - 1, marginLeft: "auto" }}>🔒</span>
+                                        </div>
+                                        {!isLocked && pct > 0 && (
+                                            <div style={{
+                                                color: "#6e7681",
+                                                fontSize: 11,
+                                                marginTop: 2,
+                                            }}>
+                                                {pct}% complété
+                                            </div>
                                         )}
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                    {isLocked ? (
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                    ) : (
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#484f58" strokeWidth="2">
+                                            <path d="M9 18l6-6-6-6" />
+                                        </svg>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 ) : (
                     <button

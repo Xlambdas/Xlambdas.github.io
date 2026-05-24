@@ -25,10 +25,6 @@ import {
 
 import { NodeCard } from "./components/node/nodeCard";
 
-// --- Feature flags ---
-// const SHOW_FUN_FACT = true;
-// const SHOW_STRENGTHEN = true;
-
 // --- --- ---
 export function DemoHome() {
     const state = useDemoHomeState();
@@ -115,7 +111,13 @@ export function DemoHome() {
                 />
 
                 {/* Canvas area */}
-                <div className="flex-1 overflow-hidden relative h-0" style={{ marginTop: 58 }}>
+                <div
+                    className="flex-1 overflow-hidden relative h-0"
+                    style={{
+                        marginTop: 58,
+                        paddingBottom: "env(safe-area-inset-bottom)", // iOS safe area
+                    }}
+                >
                     <DemoGraph
                         onSelectNode={handleNodeSelect}
                         refreshKey={state.refreshKey}
@@ -128,13 +130,26 @@ export function DemoHome() {
                     </div>
 
                     {/* Bottom Actions */}
-                    <BottomActions
-                        fontSize={12}
-                        showFunFact={true}
-                        showStrengthen={true}
-                        onFunFact={() => state.setFunFactOpen(true)}
-                        onStrengthen={() => window.__openStrengthenModal?.()}
-                    />
+                    <div className="hidden sm:block">
+                        <BottomActions
+                            fontSize={12}
+                            showFunFact={true}
+                            showStrengthen={true}
+                            onFunFact={() => state.setFunFactOpen(true)}
+                            onStrengthen={() => window.__openStrengthenModal?.()}
+                        />
+                    </div>
+
+                    {/* Mobile Bottom Actions - Full Width */}
+                    <div className="sm:hidden fixed bottom-0 left-0 right-0 z-20 pb-safe">
+                        <BottomActions
+                            fontSize={11}
+                            showFunFact={true}
+                            showStrengthen={true}
+                            onFunFact={() => state.setFunFactOpen(true)}
+                            onStrengthen={() => window.__openStrengthenModal?.()}
+                        />
+                    </div>
 
                     {state.settingsOpen && (
                         <SettingsPanel

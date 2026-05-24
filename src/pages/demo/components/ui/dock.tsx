@@ -71,7 +71,7 @@ export type DockButtonType =
     | 'notifications'
     | 'divider';
 
-interface DockItem {
+export interface DockItem {
     type: DockButtonType;
     onClick?: () => void;
     active?: boolean;

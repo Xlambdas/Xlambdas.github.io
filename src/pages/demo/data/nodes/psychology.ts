@@ -221,12 +221,12 @@ export const psychologyNode: NodeType = {
                 {
                     type: "vignette",
                     title: "Genève, 1956",
-                    content: "Tu es dans une salle de conférence bondée...",
+                    content:"Tu es dans une salle de conférence bondée. Un homme s'avance vers le tableau noir et écrit une phrase qui va changer la psychologie pour toujours : *'Le cerveau humain n'est pas une machine — c'est un système de traitement de l'information.'*\n\nCet homme s'appelle George Miller. Et dans quelques minutes, il va prouver que ton cerveau a une limite précise.",
                 },
                 {
                     type: "explanation",
                     title: "La révolution cognitive",
-                    content: "La **psychologie cognitive** est née...",
+                    content: "La **psychologie cognitive** est née officiellement dans les années 1950, en réaction au béhaviorisme — qui refusait d'étudier ce qui se passait 'dans la tête'.\n\nSon idée centrale : le cerveau *traite* l'information, comme un ordinateur. Il perçoit, stocke, récupère, et transforme.",
                 },
                 {
                     type: "quiz",

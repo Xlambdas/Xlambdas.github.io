@@ -99,18 +99,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (collapsed) return null;
 
     return (
-        <div style={{
-            width: 240,
-            background: "#0d1117",
-            borderRight: "1px solid #21262d",
-            display: "flex",
-            flexDirection: "column",
-            height: "100vh",
-            position: "fixed",
-            left: 0,
-            top: 0,
-            zIndex: 50,
-        }}>
+        <div
+            className="hidden sm:flex flex-col border-r border-[#21262d] bg-[#0d1117] h-screen fixed left-0 top-0 z-50"
+            style={{
+                width: 240,
+                // background: "#0d1117",
+                // borderRight: "1px solid #21262d",
+                // display: "flex",
+                // flexDirection: "column",
+                // height: "100vh",
+                // position: "fixed",
+                // left: 0,
+                // top: 0,
+                // zIndex: 50,
+            }}
+        >
             {/* Header with collapse button */}
             <div style={{
                 padding: "16px 16px 12px",

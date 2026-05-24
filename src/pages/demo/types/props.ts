@@ -45,6 +45,7 @@ export interface BottomActionsProps {
 export interface NodePathSettingsProps {
     node: NodeType;
     onClose: () => void;
+    mode?: 'card' | 'modal';
 }
 
 export interface NodeCardProps {
