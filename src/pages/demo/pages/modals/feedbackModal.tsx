@@ -424,9 +424,20 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose, from }) =
                         .feedback-modal {
                             border-radius: 12px !important;
                         }
+
+                        /* Prevent zoom on input focus - font must be 16px minimum */
+                        .feedback-modal input,
+                        .feedback-modal textarea {
+                            font-size: 16px !important;
+                        }
+
+                        .feedback-modal label {
+                            font-size: 12px !important;
+                        }
                     }
 
                     /* Prevent autofill styling */
+                    input:-webkit-autofill,
                     input:-webkit-autofill,
                     input:-webkit-autofill:hover,
                     input:-webkit-autofill:focus {
