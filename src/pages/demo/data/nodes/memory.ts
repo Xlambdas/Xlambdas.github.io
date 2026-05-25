@@ -3,12 +3,10 @@ import type { NodeType } from "../../types";
 export const MemoryNode: NodeType = {
     id: "memoire",
     title: "Mémoire",
-    kind: "topic",
-    type: "folder",
+    type: "topic",
     links: ["memoire_travail", "memoire_semantique"],
     isUnlocked: false,
     prerequisites: ["psychologie"],
-    depth: 2,
     branchColor: "#3b82f6",
     hook: "La mémoire n'est pas un enregistreur — c'est un reconstructeur. Chaque souvenir que tu récupères est légèrement différent de la dernière fois.",
     shortDescription: "Comment le cerveau stocke, oublie, et reconstruit.",

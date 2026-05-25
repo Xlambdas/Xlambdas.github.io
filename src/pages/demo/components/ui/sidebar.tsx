@@ -14,6 +14,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     isTeacher,
     teacherName,
     onOpenFunFact,
+    // onOpenDailyMood,
 }) => {
     const navigate = useNavigate();
     const fs = SIZE_MAP[textSize];
@@ -56,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const getRecentNodes = () => {
         return initialNodes
             .filter(n => {
-                if ((n as any).kind === "profile") return false;
+                if ((n as any).type === "profile") return false;
                 const pct = getNodeCompletionPercent(n.id);
                 return pct > 0 && pct < 100;
             })
@@ -80,7 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         const normalizedQuery = normalizeString(searchQuery);
         return initialNodes
             .filter(n => {
-                if ((n as any).kind === "profile") return false;
+                if ((n as any).type === "profile") return false;
                 return normalizeString(n.title).includes(normalizedQuery);
             })
             .slice(0, 8); // Increased to show more results
@@ -670,6 +671,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         Le saviez-vous ?
                     </span>
                 </button>
+
+                {/* Daily Session */}
+                {/* <button
+                    onClick={onOpenDailyMood}
+                    style={{
+                        width: "100%",
+                        background: "linear-gradient(135deg, rgba(165,180,252,0.12) 0%, rgba(139,157,252,0.08) 100%)",
+                        border: "1px solid rgba(165,180,252,0.3)",
+                        borderRadius: 8,
+                        padding: "10px 12px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        transition: "all 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "linear-gradient(135deg, rgba(165,180,252,0.18) 0%, rgba(139,157,252,0.12) 100%)";
+                        e.currentTarget.style.borderColor = "rgba(165,180,252,0.5)";
+                        e.currentTarget.style.transform = "translateX(2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "linear-gradient(135deg, rgba(165,180,252,0.12) 0%, rgba(139,157,252,0.08) 100%)";
+                        e.currentTarget.style.borderColor = "rgba(165,180,252,0.3)";
+                        e.currentTarget.style.transform = "translateX(0)";
+                    }}
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" strokeWidth="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                    <span style={{ color: "#a5b4fc", fontSize: fs, fontWeight: 500 }}>
+                        Session du jour
+                    </span>
+                </button> */}
+
             </div>
 
             {/* --- Footer --- */}

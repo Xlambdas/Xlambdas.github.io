@@ -35,8 +35,8 @@ export const FolderIcon: React.FC<IconProps> = ({ size = 24, color = "currentCol
     </svg>
 );
 
-export const getNodeIcon = (kind: string): React.FC<IconProps> => {
-    switch (kind) {
+export const getNodeIcon = (type: string): React.FC<IconProps> => {
+    switch (type) {
         case 'domain':
             return DomainIcon;
         case 'topic':

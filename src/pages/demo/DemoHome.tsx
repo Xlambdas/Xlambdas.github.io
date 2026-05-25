@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { initialNodes, type NodeType } from './data/graphData';
+import {
+    // getNodeCompletionPercent,
+    initialNodes, type NodeType
+} from './data/graphData';
 
 // --- Hooks ---
 import {
@@ -20,21 +23,34 @@ import { Legend } from "./graphView/legend";
 import { SettingsPanel } from "./components/settings";
 import {
     FunFactModal, TeacherLoginModal,
-    ProfileNodeModal, StrengthenModal
+    ProfileNodeModal, StrengthenModal,
+    // MoodModal
 } from "./pages/modals";
 
 import { NodeCard } from "./components/node/nodeCard";
 import { FeedbackModal } from './pages/modals/feedbackModal';
 import { FeedbackButton } from './components/feedbackBtn';
+// import {
+//     // getTodayPreferences,
+//     saveDailyPreferences,
+//     // setSessionConfig,
+//     shouldShowDailyMood
+// } from './helpers/daily';
+// import type { DailyPreferences } from './pages/modals/moodModal';
+// import { useNavigate } from 'react-router-dom';
+// import { buildDailySession, storeSession } from './helpers/sessionBuilder';
 
 // --- --- ---
 export function DemoHome() {
     const state = useDemoHomeState();
+    // const navigate = useNavigate();
     // const fs = SIZE_MAP[state.textSize];
     const [strengthenModalOpen, setStrengthenModalOpen] = useState(false);
     const [strengthenNodeId, setStrengthenNodeId] = useState<string | undefined>();
     const [strengthenNodeName, setStrengthenNodeName] = useState<string | undefined>();
     const [feedbackOpen, setFeedbackOpen] = useState(false);
+    // const [showDailyMood, setShowDailyMood] = useState(shouldShowDailyMood());
+    // const [dailyPreferences, setDailyPreferences] = useState<DailyPreferences | null>(getTodayPreferences());
 
     // Expose the function to open the strengthen modal globally
     useEffect(() => {
@@ -47,6 +63,40 @@ export function DemoHome() {
             window.__openStrengthenModal = undefined;
         };
     }, []);
+
+    // const handleDailyMoodComplete = (preferences: DailyPreferences) => {
+    //     saveDailyPreferences(preferences);
+    //     // setDailyPreferences(preferences);
+    //     setShowDailyMood(false);
+
+    //     // Build the session based on preferences
+    //     const sessionBlocks = buildDailySession(preferences);
+
+    //     if (sessionBlocks.length === 0) {
+    //         // No content available, fallback to strengthen modal
+    //         setTimeout(() => {
+    //             window.__openStrengthenModal?.();
+    //         }, 300);
+    //         return;
+    //     }
+
+    //     // Store session and navigate
+    //     storeSession(sessionBlocks);
+
+    //     setTimeout(() => {
+    //         navigate('/demo/full-session');
+    //     }, 300);
+    // };
+
+    // const handleDailyMoodSkip = () => {
+    //     // Save a default preference so it doesn't show again today
+    //     saveDailyPreferences({
+    //         mood: "focused",
+    //         timeAvailable: "30min",
+    //         goal: "explore",
+    //     });
+    //     setShowDailyMood(false);
+    // };
 
     const { handleSearchChange } = useSearchSuggestions({
         setSearchQuery: state.setSearchQuery,
@@ -92,6 +142,7 @@ export function DemoHome() {
                     isTeacher={state.isTeacher}
                     teacherName={state.teacherName}
                     onOpenFunFact={() => state.setFunFactOpen(true)}
+                    // onOpenDailyMood={() => setShowDailyMood(true)}
                 />
             </div>
 
@@ -180,7 +231,7 @@ export function DemoHome() {
             {/* --- Fullscreen overlays --- */}
 
             {/* Node card or Profile modal */}
-            {state.activeNode && (state.activeNode as any).kind === "profile" ? (
+            {state.activeNode && (state.activeNode as any).type === "profile" ? (
                 <ProfileNodeModal
                     onClose={() => state.setActiveNode(null)}
                     onOpenStrengthen={() => {
@@ -244,6 +295,14 @@ export function DemoHome() {
             {feedbackOpen && (
                 <FeedbackModal onClose={() => setFeedbackOpen(false)} from="DemoHome" />
             )}
+
+            {/* Daily Mood Check */}
+            {/* {showDailyMood && (
+                <MoodModal
+                    onComplete={handleDailyMoodComplete}
+                    onSkip={handleDailyMoodSkip}
+                />
+            )} */}
         </div>
     );
 }

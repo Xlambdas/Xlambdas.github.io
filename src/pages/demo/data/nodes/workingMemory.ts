@@ -3,12 +3,10 @@ import type { NodeType } from "../../types";
 export const WorkingMemoryNode: NodeType = {
     id: "memoire_travail",
     title: "Mémoire de Travail",
-    kind: "concept",
-    type: "file",
+    type: "concept",
     links: [],
     isUnlocked: false,
     prerequisites: ["memoire"],
-    depth: 3,
     branchColor: "#3b82f6",
     hook: "En 1956, un psychologue a parié sa carrière sur le chiffre 7. Il avait à la fois raison et tort.",
     shortDescription: "La mémoire du présent — limitée, volatile, essentielle.",

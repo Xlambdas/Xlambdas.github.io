@@ -3,13 +3,11 @@ import type { NodeType } from "../../types";
 export const psychologyNode: NodeType = {
     id: "psychologie",
     title: "Psychologie Cognitive",
-    kind: "domain",
-    type: "folder",
+    type: "domain",
     links: ["memoire", "attention"],
     isUnlocked: true,
     prerequisites: [],
-    depth: 1,
-    branchColor: "#FF6B6B",
+    branchColor: "#3b82f6",
     hook: "Depuis un siècle, des chercheurs tentent de comprendre comment l'esprit humain fonctionne. Ce qu'ils ont découvert remet en question presque tout ce qu'on croit savoir sur l'apprentissage.",
     shortDescription: "L'étude scientifique des processus mentaux.",
     badge: {

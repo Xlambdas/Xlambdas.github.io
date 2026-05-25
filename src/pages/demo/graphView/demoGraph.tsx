@@ -216,9 +216,9 @@ export const DemoGraph: React.FC<DemoGraphProps> = ({
                     drawProfileNode(ctx, n, radius, color);
                     ctx.globalAlpha = 1;
                 } else {
-                    // Draw hexagon if started or completed, circle if not started
-                    if (pct > 0) {
-                        // Hexagon shape
+                    // Draw hexagon if unlocked, circle if locked
+                    if (n.isUnlocked) {
+                        // Hexagon shape for unlocked nodes
                         ctx.beginPath();
                         for (let i = 0; i < 6; i++) {
                             const angle = (Math.PI / 3) * i - Math.PI / 6;
@@ -228,7 +228,7 @@ export const DemoGraph: React.FC<DemoGraphProps> = ({
                         }
                         ctx.closePath();
                     } else {
-                        // Circle shape for not started
+                        // Circle shape for locked nodes
                         ctx.beginPath();
                         ctx.arc(n.x!, n.y!, radius, 0, Math.PI * 2);
                     }
@@ -261,29 +261,6 @@ export const DemoGraph: React.FC<DemoGraphProps> = ({
                     }
                     ctx.stroke();
                     ctx.lineWidth = 0.5;
-
-                    // // Icon for completed nodes - clean checkmark
-                    // if (pct === 100) {
-                    //     const checkSize = radius * 0.6;
-                    //     const checkX = n.x!;
-                    //     const checkY = n.y!;
-
-                    //     ctx.strokeStyle = "#0b0f14"; // Dark checkmark on bright background
-                    //     ctx.lineWidth = radius * 0.25;
-                    //     ctx.lineCap = "round";
-                    //     ctx.lineJoin = "round";
-
-                    //     // Draw clean checkmark path
-                    //     ctx.beginPath();
-                    //     ctx.moveTo(checkX - checkSize * 0.5, checkY);
-                    //     ctx.lineTo(checkX - checkSize * 0.1, checkY + checkSize * 0.4);
-                    //     ctx.lineTo(checkX + checkSize * 0.6, checkY - checkSize * 0.5);
-                    //     ctx.stroke();
-
-                    //     ctx.lineCap = "butt";
-                    //     ctx.lineJoin = "miter";
-                    //     ctx.lineWidth = 1;
-                    // }
                 }
 
                 // pulse ring (newly unlocked)

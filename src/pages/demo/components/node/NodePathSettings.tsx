@@ -27,8 +27,8 @@ export const NodePathSettings: React.FC<NodePathSettingsProps> = ({
         let currentNode: NodeType | undefined = node;
 
         while (currentNode) {
-            const currentKind = (currentNode as any)?.kind ?? "concept";
-            if (currentKind !== "profile") {
+            const currentType = (currentNode as any)?.type ?? "concept";
+            if (currentType !== "profile") {
                 linearPath.unshift(currentNode);
             }
 
@@ -52,8 +52,8 @@ export const NodePathSettings: React.FC<NodePathSettingsProps> = ({
 
                 // Get all children of this parent
                 const siblings = initialNodes.filter(n => {
-                    const nKind = (n as any)?.kind ?? "concept";
-                    return nKind !== "profile" &&
+                    const nType = (n as any)?.type ?? "concept";
+                    return nType !== "profile" &&
                         parent.links.includes(n.id) &&
                         n.id !== nextInPath.id; // Exclude the one already in path
                 });
@@ -69,8 +69,8 @@ export const NodePathSettings: React.FC<NodePathSettingsProps> = ({
     const pathNodes = mode === 'modal' ? buildPathToNode() : [];
     const selectedNode = initialNodes.find(n => n.id === selectedNodeId) || node;
     const selectedPct = getNodeCompletionPercent(selectedNode.id);
-    const selectedKind = (selectedNode as any)?.kind ?? "concept";
-    const isSelectedParent = selectedKind === "domain" || selectedKind === "topic";
+    const selectedType = (selectedNode as any)?.type ?? "concept";
+    const isSelectedParent = selectedType === "domain" || selectedType === "topic";
 
     // Get child nodes of selected node
     const childNodes = isSelectedParent

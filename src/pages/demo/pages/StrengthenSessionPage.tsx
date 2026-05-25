@@ -139,7 +139,7 @@ export const StrengthenSessionPage: React.FC = () => {
 
     const findNextLesson = () => {
         for (const node of initialNodes) {
-            if ((node as any).kind === "profile") continue;
+            if ((node as any).type === "profile") continue;
             if (!node.lessonPath) continue;
             for (let i = 0; i < node.lessonPath.length; i++) {
                 const lesson = node.lessonPath[i];
@@ -166,7 +166,7 @@ export const StrengthenSessionPage: React.FC = () => {
 
         const activeTopics = initialNodes
             .filter(node => {
-                if ((node as any).kind === "profile") return false;
+                if ((node as any).type === "profile") return false;
                 if (!node.lessonPath || node.lessonPath.length === 0) return false;
                 if (!node.isUnlocked && !arePrerequisitesMet(node.id)) return false;
                 return node.lessonPath.some(lesson =>
@@ -482,7 +482,7 @@ export const StrengthenSessionPage: React.FC = () => {
                                     const activeTopics = initialNodes
                                         .filter(node => {
                                             // Skip profile node
-                                            if ((node as any).kind === "profile") return false;
+                                            if ((node as any).type === "profile") return false;
 
                                             // Must have lessons
                                             if (!node.lessonPath || node.lessonPath.length === 0) return false;

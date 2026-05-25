@@ -63,7 +63,7 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeI
     // Get topics with cards
     const topicsWithCards = initialNodes
         .filter(n => {
-            if ((n as any).kind === "profile") return false;
+            if ((n as any).type === "profile") return false;
             const pct = getNodeCompletionPercent(n.id);
             return pct > 0;
         })
@@ -198,7 +198,8 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeI
                                     color: "#6e7681",
                                     fontSize: 12,
                                 }}>
-                                    {nodeDueCards} carte{nodeDueCards > 1 ? 's' : ''} à réviser                                </div>
+                                    {nodeDueCards} carte{nodeDueCards > 1 ? 's' : ''} à réviser
+                                </div>
                             </div>
                             <div style={{
                                 color: nodeDueCards > 0 ? "#a5b4fc" : "#484f58",
@@ -511,7 +512,7 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeI
                     </div>
 
                     {/* Debug Section */}
-                    <div style={{
+                    {/* <div style={{
                         marginTop: 32,
                         paddingTop: 24,
                         borderTop: "1px solid #30363d",
@@ -601,7 +602,7 @@ export const StrengthenModal: React.FC<StrengthenModalProps> = ({ onClose, nodeI
                                 🧹
                             </div>
                         </button>
-                    </div>
+                    </div> */}
 
                     {/* Save Button */}
                     <button

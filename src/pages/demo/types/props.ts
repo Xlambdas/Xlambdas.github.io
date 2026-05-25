@@ -63,6 +63,7 @@ export interface SidebarProps {
     isTeacher: boolean;
     teacherName: string;
     onOpenFunFact: () => void;
+    onOpenDailyMood?: () => void;
 }
 
 // -- honeyCombPath props --

@@ -149,13 +149,6 @@ export type EarnedBadge = {
 
 // --- Node ---
 
-export type NodeKind =
-    | "profile"    // the central profile node
-    | "domain"     // top level: Psychology, Neuroscience...
-    | "topic"      // mid level: Memory, Attention...
-    | "concept"    // specific: Working Memory, Semantic Memory...
-    | "subconcept"; // deep: Baddeley Model, Capacity Limits...
-
 export type NodeQuestion = {
     id: string;              // Unique question ID
     lessonId: string;        // Which lesson it belongs to
@@ -163,13 +156,20 @@ export type NodeQuestion = {
     question: QuizQuestion;  // The actual question
 };
 
+export type typesFR = {
+    profile: "profil";
+    domain: "domaine";
+    topic: "sujet";
+    concept: "concept";
+    subconcept: "sous-concept";
+};
+
 export type NodeType = {
     id: string;
     title: string;
-    kind: NodeKind;
 
     // graph visual (keep for d3)
-    type: "main" | "folder" | "file";
+    type: "profile" | "domain" | "topic" | "concept" | "subconcept";
     links: string[];
 
     // lock state — computed dynamically, don't set manually except for root nodes
@@ -177,9 +177,6 @@ export type NodeType = {
 
     // prerequisites — all must be completed before this node unlocks
     prerequisites: string[];
-
-    // depth in hierarchy (profile = 0, domain = 1, topic = 2...)
-    depth: number;
 
     branchColor: string;
 

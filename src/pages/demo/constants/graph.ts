@@ -1,9 +1,11 @@
 import type { NodeType } from "../types/types";
 
 export const NODE_RADIUS: Record<NodeType["type"], number> = {
-    main: 8,
-    folder: 6,
-    file: 5,
+    profile: 12,
+    domain: 10,
+    topic: 8,
+    concept: 6,
+    subconcept: 5,
 };
 
 export const LOCKED_COLOR = "#4b5563";

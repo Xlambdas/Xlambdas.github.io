@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getDynamicNodes, getNodeCompletionPercent, getVisibleIds } from "../../data/graphData";
+import { getDynamicNodes, getNodeCompletionPercent } from "../../data/graphData";
 import { NodePathSettings } from "./NodePathSettings";
 import type { NodeCardProps } from "../../types";
 import { KIND_LABEL, HEX_CLIP, getNodeIcon } from "../../constants";
@@ -37,9 +37,9 @@ export const NodeCard: React.FC<NodeCardProps> = ({
     if (!node && !visible) return null;
 
     // --- Derived ---
-    const kind = (node as any)?.kind ?? "concept";
+    const type = (node as any)?.type ?? "concept";
     const color = (node as any)?.branchColor ?? "#94a3b8";
-    const IconComponent = getNodeIcon(kind);
+    const IconComponent = getNodeIcon(type);
 
     // Recalculate stats when refreshKey changes (forces fresh calculation)
     const stats = node ? getStats(node) : [];
@@ -48,9 +48,12 @@ export const NodeCard: React.FC<NodeCardProps> = ({
         // Trigger re-render when localStorage changes
     }, [refreshKey]);
 
-    // Recalculate if node is locked (don't trust node.isUnlocked from other sources)
-    const visibleIds = getVisibleIds(getDynamicNodes());
-    const isLocked = node ? !visibleIds.has(node.id) : true;
+    // Get the dynamic node to check actual unlock status
+    const dynamicNodes = getDynamicNodes();
+    const dynamicNode = node ? dynamicNodes.find(n => n.id === node.id) : null;
+    const isLocked = dynamicNode ? !dynamicNode.isUnlocked : true;
+
+    console.log("NodeCard - isLocked:", isLocked, "nodeId:", node?.id, "isUnlocked:", dynamicNode?.isUnlocked);
 
     // const pct = node ? getNodeCompletionPercent(node.id) : 0;
     const isStarted = pct > 0 && pct < 100;
@@ -215,7 +218,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
                     padding: "48px 24px 24px",
                     display: "flex", flexDirection: "column", gap: 20,
                 }}>
-                    {/* kind label + title */}
+                    {/* type label + title */}
                     <div style={{
                         display: "flex", flexDirection: "column",
                         alignItems: "center", gap: 6, textAlign: "center",
@@ -243,7 +246,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
                                 textTransform: "uppercase",
                                 letterSpacing: "0.1em",
                             }}>
-                                {KIND_LABEL[kind]}
+                                {KIND_LABEL[type]}
                             </span>
                         </div>
 
@@ -330,7 +333,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
                             textAlign: "center",
                             lineHeight: 1.6,
                         }}>
-                            Complète les prérequis pour débloquer ce nœud.
+                            Complète les leçons précédentes pour débloquer ce {KIND_LABEL[type].toLowerCase()} !
                         </div>
                     )}
 

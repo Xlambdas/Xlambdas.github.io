@@ -112,7 +112,7 @@ export const saveSelectedPath = (parentNodeId: string, selectedNodeId: string) =
 
 
 export const getStats = (node: NodeType): { label: string; value: string | number }[] => {
-    const kind = (node as any).kind ?? "concept";
+    const type = (node as any).type ?? "concept";
     const pct = getNodeCompletionPercent(node.id);
 
     // Helper to check if a question's lesson is COMPLETED (not just accessible)
@@ -129,7 +129,7 @@ export const getStats = (node: NodeType): { label: string; value: string | numbe
         return isLessonCompleted(nodeId, question.lessonId);
     };
 
-    switch (kind) {
+    switch (type) {
         case "domain":
         case "topic": {
             const children = getDynamicNodes().filter(n =>
@@ -157,7 +157,7 @@ export const getStats = (node: NodeType): { label: string; value: string | numbe
 
             if (pct === 0) {
                 return [
-                    { label: kind === "domain" ? "Sujets" : "Concepts", value: children.length },
+                    { label: type === "domain" ? "Sujets" : "Concepts", value: children.length },
                     { label: "Questions", value: "--" },
                     { label: "À réviser", value: "--" },
                 ];
@@ -165,7 +165,7 @@ export const getStats = (node: NodeType): { label: string; value: string | numbe
 
             if (pct === 100) {
                 return [
-                    { label: kind === "domain" ? "Sujets" : "Concepts", value: children.length },
+                    { label: type === "domain" ? "Sujets" : "Concepts", value: children.length },
                     { label: "Questions", value: totalQuestions },
                     { label: "À réviser", value: totalDue },
                 ];
@@ -173,7 +173,7 @@ export const getStats = (node: NodeType): { label: string; value: string | numbe
 
             if (totalDue > 0) {
                 return [
-                    { label: kind === "domain" ? "Sujets" : "Concepts", value: children.length },
+                    { label: type === "domain" ? "Sujets" : "Concepts", value: children.length },
                     // { label: "Questions", value: totalQuestions },
                     { label: "À réviser", value: `${totalDue}/${totalQuestions}` },
                     { label: "Progression", value: `${pct}%` },
@@ -182,7 +182,7 @@ export const getStats = (node: NodeType): { label: string; value: string | numbe
 
 
             return [
-                { label: kind === "domain" ? "Sujets" : "Concepts", value: children.length },
+                { label: type === "domain" ? "Sujets" : "Concepts", value: children.length },
                 { label: "Leçons", value: totalLessons },
                 { label: "Progression", value: `${pct}%` },
             ];

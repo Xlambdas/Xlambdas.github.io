@@ -189,25 +189,29 @@ export const ProfileNodeModal: React.FC<ProfileNodeModalProps> = ({
                         height: 32,
                         background: "#21262d",
                         border: "1px solid #30363d",
-                        borderRadius: "50%",
+                        borderRadius: 8,
+                        color: "#6e7681",
+                        fontSize: 20,
+                        cursor: "pointer",
+                        lineHeight: 1,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        cursor: "pointer",
-                        color: "#8b949e",
-                        transition: "all 0.15s ease",
                         zIndex: 3,
+                        transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.background = "#30363d";
+                        e.currentTarget.style.borderColor = "#8b949e";
                         e.currentTarget.style.color = "#c9d1d9";
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.background = "#21262d";
-                        e.currentTarget.style.color = "#8b949e";
+                        e.currentTarget.style.borderColor = "#30363d";
+                        e.currentTarget.style.color = "#6e7681";
                     }}
                 >
-                    <CloseIcon size={18} />
+                    <CloseIcon size={20} color="#6e7681" />
                 </button>
 
                 {/* Card body */}

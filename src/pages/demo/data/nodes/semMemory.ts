@@ -3,12 +3,10 @@ import type { NodeType } from "../graphData";
 export const SemMemoryNode: NodeType = {
     id: "memoire_semantique",
     title: "Mémoire Sémantique",
-    kind: "concept",
-    type: "file",
+    type: "concept",
     links: [],
     isUnlocked: false,
     prerequisites: ["memoire"],
-    depth: 3,
     branchColor: "#3b82f6",
     hook: "Tu sais que Paris est la capitale de la France. Mais tu ne te souviens pas du moment où tu l'as appris. Pourquoi ?",
     shortDescription: "La mémoire des faits, sans le souvenir de les avoir appris.",

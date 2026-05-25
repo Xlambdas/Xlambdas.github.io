@@ -3,12 +3,10 @@ import type { NodeType } from "../../types";
 export const AttentionNode: NodeType = {
     id: "attention",
     title: "Attention",
-    kind: "topic",
-    type: "folder",
+    type: "topic",
     links: [],
     isUnlocked: false,
     prerequisites: ["psychologie"],
-    depth: 2,
     branchColor: "#3b82f6",
     hook: "Tu crois choisir où tu portes ton attention. La recherche suggère le contraire.",
     shortDescription: "Le filtre invisible qui gouverne ta perception.",

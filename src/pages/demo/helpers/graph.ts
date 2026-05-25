@@ -25,7 +25,7 @@ export const getProfileBannerColor = (): string => {
 
 // --- Helpers ---
 
-export const isProfile = (n: NodeType) => (n as any).kind === "profile";
+export const isProfile = (n: NodeType) => (n as any).type === "profile";
 
 export const getColor = (
     n: NodeType,
@@ -52,9 +52,13 @@ export const getRadius = (
 ): number => {
     // Profile node
     if (isProfile(n)) {
-        if (draggingNode?.id === n.id) return 16;
-        if (selectedNode?.id === n.id) return 14;
-        return 12;
+        if (draggingNode?.id === n.id) return NODE_RADIUS[n.type] + 2;
+        if (selectedNode?.id === n.id) return NODE_RADIUS[n.type] + 1;
+        return NODE_RADIUS[n.type];
+    } else if (n.isUnlocked) {
+        if (draggingNode?.id === n.id) return NODE_RADIUS[n.type] + 2;
+        if (selectedNode?.id === n.id) return NODE_RADIUS[n.type] + 1;
+        return NODE_RADIUS[n.type]; // Larger radius for unlocked nodes;
     }
 
     // Get completion percentage
@@ -62,14 +66,14 @@ export const getRadius = (
 
     // Started or completed nodes are bigger (hexagons)
     if (pct > 0) {
-        if (draggingNode?.id === n.id) return 12;
-        if (selectedNode?.id === n.id) return 11;
-        return 10;
+        if (draggingNode?.id === n.id) return NODE_RADIUS[n.type] + 2;
+        if (selectedNode?.id === n.id) return NODE_RADIUS[n.type] + 1;
+        return NODE_RADIUS[n.type];
     }
 
-    if (draggingNode?.id === n.id) return NODE_RADIUS[n.type] + 4;
-    if (selectedNode?.id === n.id) return NODE_RADIUS[n.type] + 2;
-    return NODE_RADIUS[n.type] ?? 6;
+    if (draggingNode?.id === n.id) return NODE_RADIUS[n.type] + 2;
+    if (selectedNode?.id === n.id) return NODE_RADIUS[n.type] + 1;
+    return NODE_RADIUS[n.type] - 2;
 };
 
 // Draw profile node with double hexagon border
