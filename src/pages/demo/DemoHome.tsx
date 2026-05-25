@@ -19,7 +19,8 @@ import { BottomActions } from "./components/ui/BottomActions";
 // --- Existing components ---
 import DemoGraph from "./graphView/demoGraph";
 import { Sidebar } from "./components/ui/sidebar";
-import { Legend } from "./graphView/legend";
+// import { Legend } from "./graphView/legend";
+import { GraphLegend } from "./graphView/graphLegend";
 import { SettingsPanel } from "./components/settings";
 import {
     FunFactModal, TeacherLoginModal,
@@ -30,6 +31,8 @@ import {
 import { NodeCard } from "./components/node/nodeCard";
 import { FeedbackModal } from './pages/modals/feedbackModal';
 import { FeedbackButton } from './components/feedbackBtn';
+import { markTutorialComplete, shouldShowTutorial } from './tutorial/tutorialHelpers';
+import { TutorialOverlay } from './tutorial/tutorialOverlay';
 // import {
 //     // getTodayPreferences,
 //     saveDailyPreferences,
@@ -49,8 +52,15 @@ export function DemoHome() {
     const [strengthenNodeId, setStrengthenNodeId] = useState<string | undefined>();
     const [strengthenNodeName, setStrengthenNodeName] = useState<string | undefined>();
     const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const [showTutorial, setShowTutorial] = useState(false);
     // const [showDailyMood, setShowDailyMood] = useState(shouldShowDailyMood());
     // const [dailyPreferences, setDailyPreferences] = useState<DailyPreferences | null>(getTodayPreferences());
+
+    useEffect(() => {
+        if (shouldShowTutorial()) {
+            setShowTutorial(true);
+        }
+    }, []);
 
     // Expose the function to open the strengthen modal globally
     useEffect(() => {
@@ -98,6 +108,16 @@ export function DemoHome() {
     //     setShowDailyMood(false);
     // };
 
+    const handleTutorialComplete = () => {
+        markTutorialComplete();
+        setShowTutorial(false);
+    };
+
+    const handleTutorialSkip = () => {
+        markTutorialComplete();
+        setShowTutorial(false);
+    };
+
     const { handleSearchChange } = useSearchSuggestions({
         setSearchQuery: state.setSearchQuery,
         setSuggestions: state.setSuggestions,
@@ -133,7 +153,7 @@ export function DemoHome() {
         <div className="flex h-screen w-screen overflow-hidden bg-[#0b0f14] font-sans fixed inset-0" style={{ height: "100dvh" }}>
 
             {/* --- Sidebar (desktop only) --- */}
-            <div className="hidden sm:block">
+            <div data-tutorial="sidebar" className="hidden sm:block">
                 <Sidebar
                     collapsed={state.collapsed}
                     onCollapse={() => handleCollapse(true)}
@@ -177,10 +197,11 @@ export function DemoHome() {
                         refreshKey={state.refreshKey}
                         newlyUnlockedIds={state.newlyUnlockedIds}
                     />
+                    <GraphLegend />
 
                     {/* Overlays inside canvas */}
                     <div className='hidden sm:block'>
-                        <Legend textSize={state.textSize} />
+                        {/* <Legend textSize={state.textSize} /> */}
                     </div>
 
                     {/* Bottom Actions */}
@@ -303,6 +324,13 @@ export function DemoHome() {
                     onSkip={handleDailyMoodSkip}
                 />
             )} */}
+            {/* Tutorial */}
+            {showTutorial && (
+                <TutorialOverlay
+                    onComplete={handleTutorialComplete}
+                    onSkip={handleTutorialSkip}
+                />
+            )}
         </div>
     );
 }

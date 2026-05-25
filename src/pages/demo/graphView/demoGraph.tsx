@@ -220,11 +220,28 @@ export const DemoGraph: React.FC<DemoGraphProps> = ({
                     if (n.isUnlocked) {
                         // Hexagon shape for unlocked nodes
                         ctx.beginPath();
-                        for (let i = 0; i < 6; i++) {
-                            const angle = (Math.PI / 3) * i - Math.PI / 6;
-                            const px = n.x! + radius * Math.cos(angle);
-                            const py = n.y! + radius * Math.sin(angle);
-                            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                        if (pct > 0 && pct < 100) {
+                            // started
+                            for (let i = 0; i < 6; i++) {
+                                const angle = (Math.PI / 3) * i - Math.PI / 6;
+                                const px = n.x! + radius * Math.cos(angle);
+                                const py = n.y! + radius * Math.sin(angle);
+                                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                            }
+                        } else if (pct === 100) {
+                            // Completed - diamond shape
+                            ctx.moveTo(n.x!, n.y! - radius);
+                            ctx.lineTo(n.x! + radius, n.y!);
+                            ctx.lineTo(n.x!, n.y! + radius);
+                            ctx.lineTo(n.x! - radius, n.y!);
+                        } else {
+                            // unlocked
+                            for (let i = 0; i < 10; i++) {
+                                const angle = (Math.PI / 5) * i - Math.PI / 10;
+                                const px = n.x! + radius * Math.cos(angle);
+                                const py = n.y! + radius * Math.sin(angle);
+                                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                            }
                         }
                         ctx.closePath();
                     } else {
@@ -289,7 +306,16 @@ export const DemoGraph: React.FC<DemoGraphProps> = ({
                     const radius = getRadius(n, selected, dragging);
                     ctx.globalAlpha = dimmed ? 0.15 : selected && !isSelected(n) ? 0.3 : 0.8;
                     ctx.fillStyle = "#cbd5e1";
-                    ctx.fillText(n.title, n.x!, n.y! + radius + 12);
+
+                    // Truncate title if too long (unless dragging or selected)
+                    const MAX_CHARS = 10;
+                    let displayText = n.title;
+                    const isDraggingOrSelected = dragging?.id === n.id || selected?.id === n.id;
+                    if (!isDraggingOrSelected && displayText.length > MAX_CHARS) {
+                        displayText = displayText.substring(0, MAX_CHARS - 3) + '...';
+                    }
+
+                    ctx.fillText(displayText, n.x!, n.y! + radius + 12);
                 });
             }
 
