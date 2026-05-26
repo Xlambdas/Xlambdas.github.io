@@ -6,31 +6,46 @@ interface TutorialStep {
     targetSelector?: string;
     position: 'center' | 'top' | 'bottom' | 'left' | 'right';
     icon: 'graduation' | 'brain' | 'lightning' | 'target' | 'graph' | 'sparkles';
+    hasProjectButton?: boolean;
 }
 
 const TUTORIAL_STEPS: TutorialStep[] = [
-    // === PART 1: Introduction ===
+    // === PART 0: Context ===
     {
-        title: "Bienvenue !",
-        description: "Ceci est ton espace d'apprentissage personnalisé. Découvre comment maîtriser la psychologie cognitive à ton rythme.",
+        title: "À propos de cette démo",
+        description: "Ceci est une démo pour rendre l'apprentissage des sciences cognitives accessible à tous, dans le plaisir et la curiosité.",
         position: 'center',
         icon: 'graduation',
     },
     {
-        title: "C'est quoi exactement ?",
-        description: "Un parcours interactif basé sur les sciences cognitives. Chaque module est conçu pour maximiser ta rétention et ta compréhension.",
+        title: "Pourquoi cette démo ?",
+        description: "Je teste une approche différente de l'apprentissage actuel : combiner la science de l'apprentissage (les principes cognitifs eux-mêmes) avec un design pensé pour maximiser ta rétention, et te donner envie d'en apprendre plus !",
         position: 'center',
         icon: 'brain',
     },
     {
-        title: "Comment ça marche ?",
-        description: "Tu explores des modules connectés. Chaque leçon débloque de nouvelles connaissances. Un système de répétition espacée te fait réviser au bon moment.",
+        title: "Mon objectif ?",
+        description: "Créer un espace où tu peux explorer les sciences cognitives à ton propre rythme, guidé par le jeux, ta curiosité, et l'expérimentation.",
         position: 'center',
         icon: 'lightning',
     },
     {
-        title: "Ton rythme, tes choix",
-        description: "Sessions personnalisées selon ton humeur et ton temps. Pas de pression — juste de la progression constante.",
+        title: "Ton feedback est donc essentiel !",
+        description: "J'aimerais ainsi obtenir un maximum de retours pour continuer à faire évoluer cette démo et pouvoir toucher un public plus large.",
+        position: 'center',
+        icon: 'sparkles',
+    },
+
+    // === PART 1: Introduction ===
+    {
+        title: "L'idée derrière",
+        description: "Un espace d'apprentissage personnalisé, où chaque session s'adapte à toi. Pour explorer les sciences cognitives à ton propre rythme.",
+        position: 'center',
+        icon: 'lightning',
+    },
+    {
+        title: "Comment ça marche ?",
+        description: "Plus tu avances, plus tu rentres en profondeur dans les sujets. Tu peux aussi revisiter les modules ou utiliser les sessions de révision pour ne rien oublier.",
         position: 'center',
         icon: 'target',
     },
@@ -43,10 +58,11 @@ const TUTORIAL_STEPS: TutorialStep[] = [
         icon: 'graph',
     },
     {
-        title: "C'est parti !",
-        description: "Tu es prêt ! Commence par cliquer sur le module Psychologie Cognitive pour démarrer ton apprentissage.",
+        title: "Prêt à explorer ?",
+        description: "Tu peux commence par cliquer sur le module \"Psychologie Cognitive\". Si tu as des questions sur le projet ou souhaite en savoir plus, clique sur le bouton ci-dessous.",
         position: 'center',
         icon: 'sparkles',
+        hasProjectButton: true,
     },
 ];
 
@@ -101,9 +117,10 @@ const TutorialIcon: React.FC<{ icon: TutorialStep['icon'] }> = ({ icon }) => {
 interface TutorialOverlayProps {
     onComplete: () => void;
     onSkip: () => void;
+    onOpenProjectInfo?: () => void;
 }
 
-export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, onSkip }) => {
+export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, onSkip, onOpenProjectInfo }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -316,7 +333,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                     </h2>
 
                     {/* Custom content for graph step */}
-                    {currentStep === 4 ? (
+                    {currentStep === 6 ? (
                         <div>
                             <p style={{
                                 color: '#8b949e',
@@ -340,7 +357,8 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                                         <circle cx="16" cy="16" r="10" fill="#1c2128" stroke="#30363d" strokeWidth="0.5" />
                                     </svg>
                                     <span style={{ color: '#8b949e', fontSize: 13 }}>
-                                        <strong style={{ color: '#c9d1d9' }}>Cercle</strong> — Module verrouillé
+                                        {/* <strong style={{ color: '#c9d1d9' }}>Cercle</strong>  */}
+                                        — Module verrouillé
                                     </span>
                                 </div>
 
@@ -348,14 +366,15 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                     <svg width="32" height="32" viewBox="0 0 32 32">
                                         <path
-                                            d="M 16 6 L 22.9 8.8 L 26 15 L 22.9 21.2 L 16 24 L 9.1 21.2 L 6 15 L 9.1 8.8 Z"
+                                            d="M 16 6 L 24.66 11 L 24.66 21 L 16 26 L 7.34 21 L 7.34 11 Z"
                                             fill="#1c2128"
                                             stroke="#30363d"
                                             strokeWidth="0.5"
                                         />
                                     </svg>
                                     <span style={{ color: '#8b949e', fontSize: 13 }}>
-                                        <strong style={{ color: '#c9d1d9' }}>Décagone gris</strong> — Débloqué, non commencé
+                                        {/* <strong style={{ color: '#c9d1d9' }}>Décagone gris</strong>  */}
+                                        — Débloqué, non commencé
                                     </span>
                                 </div>
 
@@ -370,14 +389,16 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                                         />
                                     </svg>
                                     <span style={{ color: '#8b949e', fontSize: 13 }}>
-                                        <strong style={{ color: '#c9d1d9' }}>Hexagone coloré</strong> — En cours
+                                        {/* <strong style={{ color: '#c9d1d9' }}>Hexagone coloré</strong>  */}
+                                        — En cours
                                     </span>
                                 </div>
 
                                 {/* Completed - Diamond */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                     <svg width="32" height="32" viewBox="0 0 32 32">
-                                        <defs>
+                                        {/* glow effect */}
+                                        {/* <defs>
                                             <filter id="glow">
                                                 <feGaussianBlur stdDeviation="2" result="coloredBlur" />
                                                 <feMerge>
@@ -385,7 +406,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                                                     <feMergeNode in="SourceGraphic" />
                                                 </feMerge>
                                             </filter>
-                                        </defs>
+                                        </defs> */}
                                         <path
                                             d="M 16 6 L 26 16 L 16 26 L 6 16 Z"
                                             fill="#a5b4fc"
@@ -395,7 +416,8 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                                         />
                                     </svg>
                                     <span style={{ color: '#8b949e', fontSize: 13 }}>
-                                        <strong style={{ color: '#c9d1d9' }}>Diamant brillant</strong> — Complété
+                                        {/* <strong style={{ color: '#c9d1d9' }}>Diamant brillant</strong>  */}
+                                        — Complété
                                     </span>
                                 </div>
                             </div>
@@ -417,9 +439,11 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                     display: 'flex',
                     gap: 12,
                     justifyContent: 'space-between',
+                    flexWrap: 'wrap',
                 }}>
+                    {/* Skip or Project Info button */}
                     <button
-                        onClick={onSkip}
+                        onClick={step.hasProjectButton ? onOpenProjectInfo : onSkip}
                         style={{
                             padding: '10px 16px',
                             background: 'transparent',
@@ -440,7 +464,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                             e.currentTarget.style.color = '#8b949e';
                         }}
                     >
-                        Passer
+                        {step.hasProjectButton ? "En savoir plus" : "Passer"}
                     </button>
 
                     <div style={{ display: 'flex', gap: 8 }}>
@@ -465,7 +489,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                             </button>
                         )}
 
-<button
+                        <button
                             onClick={handleNext}
                             style={{
                                 padding: '10px 20px',

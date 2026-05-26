@@ -220,7 +220,7 @@ export const DemoGraph: React.FC<DemoGraphProps> = ({
                     if (n.isUnlocked) {
                         // Hexagon shape for unlocked nodes
                         ctx.beginPath();
-                        if (pct > 0 && pct < 100) {
+                        if (pct < 100) {
                             // started
                             for (let i = 0; i < 6; i++) {
                                 const angle = (Math.PI / 3) * i - Math.PI / 6;
@@ -234,14 +234,6 @@ export const DemoGraph: React.FC<DemoGraphProps> = ({
                             ctx.lineTo(n.x! + radius, n.y!);
                             ctx.lineTo(n.x!, n.y! + radius);
                             ctx.lineTo(n.x! - radius, n.y!);
-                        } else {
-                            // unlocked
-                            for (let i = 0; i < 10; i++) {
-                                const angle = (Math.PI / 5) * i - Math.PI / 10;
-                                const px = n.x! + radius * Math.cos(angle);
-                                const py = n.y! + radius * Math.sin(angle);
-                                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-                            }
                         }
                         ctx.closePath();
                     } else {

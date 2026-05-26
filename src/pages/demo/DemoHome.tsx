@@ -40,13 +40,14 @@ import { TutorialOverlay } from './tutorial/tutorialOverlay';
 //     shouldShowDailyMood
 // } from './helpers/daily';
 // import type { DailyPreferences } from './pages/modals/moodModal';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { ProjectInfoButton } from './components';
 // import { buildDailySession, storeSession } from './helpers/sessionBuilder';
 
 // --- --- ---
 export function DemoHome() {
     const state = useDemoHomeState();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     // const fs = SIZE_MAP[state.textSize];
     const [strengthenModalOpen, setStrengthenModalOpen] = useState(false);
     const [strengthenNodeId, setStrengthenNodeId] = useState<string | undefined>();
@@ -312,6 +313,7 @@ export function DemoHome() {
 
             {/* Feedback System */}
             <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+            <ProjectInfoButton isBelow={true} />
 
             {feedbackOpen && (
                 <FeedbackModal onClose={() => setFeedbackOpen(false)} from="DemoHome" />
@@ -329,6 +331,7 @@ export function DemoHome() {
                 <TutorialOverlay
                     onComplete={handleTutorialComplete}
                     onSkip={handleTutorialSkip}
+                    onOpenProjectInfo={() => navigate('/demo/project-info')}
                 />
             )}
         </div>
