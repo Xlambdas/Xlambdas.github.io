@@ -127,7 +127,7 @@ export const ProjectInfoPage: React.FC = () => {
                                 C'est quoi ?
                             </h2>
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
-                                Un espace d'apprentissage interactif basé sur les sciences cognitives. Tu apprends comment fonctionne vraiment le cerveau en expérimentant directement ces principes dans l'interface. Les modules ne sont pas isolés — ils forment un graphe de connaissances où chaque concept construit sur les précédents.
+                                Un espace d'apprentissage interactif pour apprendre comment fonctionne vraiment le cerveau en expérimentant directement ces principes dans l'interface. Les modules ne sont pas isolés — ils forment un graphe de connaissances où chaque concept est construit sur les précédents. Ce ne sont pas simplement des lecons qui se suivent mais un moyen d´évoluer dans la complexité de l´ensemble de ces concepts petit a petit.
                             </p>
                         </section>
 
@@ -136,11 +136,11 @@ export const ProjectInfoPage: React.FC = () => {
                                 Cette démo
                             </h2>
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
-                                Ce prototype fonctionne actuellement avec les données du navigateur (localStorage). L'expérience est complète pour tester l'interface et les mécaniques d'apprentissage.
+                                Ce prototype fonctionne actuellement avec les données du navigateur (localStorage) - en d´autres termes ceci fonctionne grace aux cookies - dans l´objectif d´obtenir une première expérience complète permettant de tester l'interface et les mécaniques d'apprentissage.
                             </p>
                             <div className="bg-[rgba(165,180,252,0.05)] border border-[#a5b4fc22] rounded-lg p-4">
                                 <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Important :</strong> Les données se réinitialisent si tu vides le cache. C'est un prototype pour tester l'UX, pas une solution production.
+                                    <strong className="text-[#c9d1d9]">Important :</strong> Les données se réinitialisent en vidant le cache. C'est un prototype pour tester l'UX, pas une solution production.
                                 </p>
                             </div>
                         </section>
@@ -155,7 +155,7 @@ export const ProjectInfoPage: React.FC = () => {
                                         Court terme (prochaines semaines)
                                     </h3>
                                     <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                        Tester la démo avec des utilisateurs. Recueillir les retours des étudiants et des enseignants. Valider que l'approche fonctionne réellement.
+                                        Tester la démo avec différents types d´utilisateurs. Recueillir les retours des étudiants et des enseignants. Valider que l'approche fonctionne réellement, pour pouvoir obtenir des sponsors et réunir une éauipe de professeurs. 
                                     </p>
                                 </div>
                                 <div>
@@ -467,7 +467,7 @@ export const ProjectInfoPage: React.FC = () => {
                                 Un nouvel espace pour apprendre
                             </h2>
                             <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                Basé sur les sciences cognitives. Accessible à tous. Ludique et personnalisé. Explorez comment fonctionne vraiment votre cerveau.
+                                Basé sur les sciences cognitives. Accessible à tous. Ludique et personnalisé pour explorez comment fonctionne vraiment votre cerveau.
                             </p>
                         </div>
                         <KnowledgeGraphVisualization />
@@ -630,17 +630,17 @@ export const ProjectInfoPage: React.FC = () => {
                             <h3 className="text-sm font-semibold text-[#c9d1d9] mb-4">Rester connecté</h3>
                             <ul className="space-y-2">
                                 <li>
-                                    <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
-                                        Twitter
+                                    <a href="https://www.linkedin.com/in/corentin-gassien-1b7289261/" target="_blank" rel="noopener noreferrer" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                        Linkedin
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                    <a href="https://github.com/Xlambdas" target="_blank" rel="noopener noreferrer" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
                                         GitHub
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="mailto:contact@example.com" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                    <a href="mailto:contact@xls-studio.com" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
                                         Email
                                     </a>
                                 </li>
@@ -652,10 +652,10 @@ export const ProjectInfoPage: React.FC = () => {
                     <div className="border-t border-[#21262d] pt-8">
                         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                             <p className="text-xs text-[#6e7681]">
-                                © 2026 Cognitive Learning Platform. Tous droits réservés.
+                                © 2026 XLS.Studio - Cognitive Learning Platform. </br> Tous droits réservés.
                             </p>
                             <p className="text-xs text-[#6e7681]">
-                                Fait avec ❤️ pour l'apprentissage accessible
+                                Pour rendre l'apprentissage accessible a tous !
                             </p>
                         </div>
                     </div>
