@@ -2,8 +2,10 @@
 import { Menu, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FeedbackModal } from './modals';
+import { FeedbackButton } from '../components';
 
-type TabType = 'overview' | 'philosophy' | 'coming-soon' | 'for-teachers';
+type TabType = 'overview' | 'philosophy' | 'coming-soon' | 'for-teachers' | 'origine';
 
 const sections = {
     overview: [
@@ -29,6 +31,12 @@ const sections = {
         { id: 'why-collaborate', title: 'Pourquoi collaborer ?' },
         { id: 'how-to-help', title: 'Comment m\'aider' },
         { id: 'contact', title: 'Contact' },
+    ],
+    origine: [
+        { id: 'who-am-i', title: 'Qui suis-je ?' },
+        { id: 'why-this-project', title: 'Pourquoi ce projet' },
+        { id: 'how-its-built', title: 'Comment c\'est construit' },
+        { id: 'what-i-believe', title: 'Ce que je crois' },
     ],
 };
 
@@ -107,8 +115,14 @@ export const ProjectInfoPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('overview');
     const [activeSection, setActiveSection] = useState('what-is-it');
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
 
-    const currentSections = sections[activeTab === 'coming-soon' ? 'coming_soon' : activeTab === 'for-teachers' ? 'for_teachers' : activeTab];
+    const currentSections = sections[
+        activeTab === 'coming-soon' ? 'coming_soon' :
+            activeTab === 'for-teachers' ? 'for_teachers' :
+                activeTab === 'origine' ? 'origine' :
+                    activeTab
+    ];
 
 
     useEffect(() => {
@@ -157,7 +171,7 @@ export const ProjectInfoPage: React.FC = () => {
                                 C'est quoi ?
                             </h2>
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
-                                Un espace d'apprentissage interactif pour apprendre comment fonctionne vraiment le cerveau en expérimentant directement ces principes dans l'interface. Les modules ne sont pas isolés — ils forment un graphe de connaissances où chaque concept est construit sur les précédents. Ce ne sont pas simplement des lecons qui se suivent mais un moyen d´évoluer dans la complexité de l´ensemble de ces concepts petit a petit.
+                                Un espace d'apprentissage interactif pour comprendre comment fonctionne réellement le cerveau en expérimentant directement ces principes dans l'interface. Les modules ne sont pas isolés : ils forment un graphe de connaissances où chaque concept s'appuie sur les précédents. Ce ne sont pas simplement des leçons qui s'enchaînent, mais une manière d'évoluer progressivement dans la complexité de ces concepts.
                             </p>
                         </section>
 
@@ -166,11 +180,11 @@ export const ProjectInfoPage: React.FC = () => {
                                 Cette démo
                             </h2>
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
-                                Ce prototype fonctionne actuellement avec les données du navigateur (localStorage) - en d´autres termes ceci fonctionne grace aux cookies - dans l´objectif d´obtenir une première expérience complète permettant de tester l'interface et les mécaniques d'apprentissage.
+                                Ce prototype fonctionne actuellement avec les données du navigateur (localStorage), autrement dit grâce aux cookies, afin de proposer une première expérience complète permettant de tester l'interface et les mécaniques d'apprentissage.
                             </p>
                             <div className="bg-[rgba(165,180,252,0.05)] border border-[#a5b4fc22] rounded-lg p-4">
                                 <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Important :</strong> Les données se réinitialisent en vidant le cache. C'est un prototype pour tester l'UX, pas une solution production.
+                                    <strong className="text-[#c9d1d9]">Important :</strong> Les données sont réinitialisées lorsque le cache est vidé. Il s'agit d'un prototype conçu pour tester l'expérience utilisateur, et non d'une solution de production.
                                 </p>
                             </div>
                         </section>
@@ -185,7 +199,7 @@ export const ProjectInfoPage: React.FC = () => {
                                         Court terme (prochaines semaines)
                                     </h3>
                                     <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                        Tester la démo avec différents types d´utilisateurs. Recueillir les retours des étudiants et des enseignants. Valider que l'approche fonctionne réellement, pour pouvoir obtenir des sponsors et réunir une éauipe de professeurs. 
+                                        Tester la démo auprès de différents profils d'utilisateurs. Recueillir les retours des étudiants et des enseignants. Valider que l'approche fonctionne réellement afin d'obtenir des sponsors et de réunir une équipe d'enseignants.
                                     </p>
                                 </div>
                                 <div>
@@ -193,7 +207,7 @@ export const ProjectInfoPage: React.FC = () => {
                                         Moyen terme
                                     </h3>
                                     <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                        Développer la version complète avec comptes utilisateurs réels. Collaborer avec les enseignants pour créer le meilleur contenu possible. Lancer une beta privée.
+                                        Développer une version complète avec de véritables comptes utilisateurs. Collaborer avec des enseignants afin de créer le meilleur contenu possible. Lancer une bêta privée.
                                     </p>
                                 </div>
                                 <div>
@@ -201,7 +215,7 @@ export const ProjectInfoPage: React.FC = () => {
                                         Long terme
                                     </h3>
                                     <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                        Applications mobiles iOS/Android. Expansion à d'autres domaines. Communauté d'apprentissage basée sur les retours.
+                                        Développer des applications mobiles iOS et Android. Étendre le projet à d'autres domaines. Construire une communauté d'apprentissage basée sur les retours des utilisateurs.
                                     </p>
                                 </div>
                             </div>
@@ -214,20 +228,24 @@ export const ProjectInfoPage: React.FC = () => {
                     <div className="space-y-16">
                         <section id="science-based">
                             <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
-                                Basé sur la science
+                                Une approche fondée sur la science
                             </h2>
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
-                                Les principes cognitifs ne sont pas juste le sujet — ils structurent l'apprentissage lui-même.
+                                L’apprentissage n’est pas laissé au hasard : il est conçu à partir des principes connus de la cognition humaine. Ici, la science ne décrit pas seulement le contenu — elle guide la manière dont vous progressez.
                             </p>
+
                             <ul className="space-y-3 text-[#8b949e]">
                                 <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Répétition espacée :</strong> Les révisions sont plannifiées selon l'intervalle d'oubli optimal
+                                    <strong className="text-[#c9d1d9]">Répétition espacée :</strong> Réviser au bon moment pour renforcer durablement la mémoire, juste avant l’oubli.
                                 </li>
+
                                 <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Graphe de connaissances :</strong> Les connexions entre concepts renforcent la compréhension
+                                    <strong className="text-[#c9d1d9]">Graphe de connaissances :</strong> Apprendre en reliant les concepts entre eux, comme un réseau vivant qui structure la compréhension.
                                 </li>
+
                                 <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Entrelacement :</strong> Les sessions mélangent différents types d'apprentissage pour éviter la mémorisation superficielle
+                                    <strong className="text-[#c9d1d9]">Entrelacement :</strong> Varier les types d’exercices pour développer une compréhension plus profonde et plus flexible.
                                 </li>
                             </ul>
                         </section>
@@ -236,37 +254,43 @@ export const ProjectInfoPage: React.FC = () => {
                             <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
                                 Accessible à tous
                             </h2>
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
-                                La psychologie cognitive est fascinante, mais elle reste souvent enfermée dans les universités. Il y a des faits amusants, des découvertes surprenantes, des expériences ludiques — avant les détails académiques. Ce projet les rend accessibles à tous, gratuitement.
+                                La psychologie cognitive est souvent confinée aux milieux académiques. Pourtant, ses idées sont simples, surprenantes et profondément intuitives. Ce projet les rend accessibles à tous, sans prérequis et sans barrière financière.
                             </p>
                         </section>
 
                         <section id="personalized">
                             <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
-                                Personnalisé
+                                Apprentissage personnalisé
                             </h2>
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
-                                Nous sommes tous différents. L'apprentissage devrait l'être aussi.
+                                Chaque esprit apprend différemment. L’expérience doit s’adapter à l’utilisateur, et non l’inverse.
                             </p>
+
                             <ul className="space-y-3 text-[#8b949e]">
+                                {/* <li className="text-sm md:text-base leading-relaxed">
+                                    <strong className="text-[#c9d1d9]">Sessions adaptatives :</strong> Le contenu s’ajuste à ton énergie, ton temps disponible et ton niveau de maîtrise.
+                                </li> */}
+
                                 <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Sessions adaptées :</strong> Ton humeur et ton temps disponible changent la longueur et la difficulté
-                                </li>
-                                <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Ton rythme :</strong> Explore au rythme que tu veux. Pas de deadline, pas de pression
+                                    <strong className="text-[#c9d1d9]">Rythme libre :</strong> Tu avances à ton propre rythme, sans pression ni contrainte artificielle.
                                 </li>
                             </ul>
                         </section>
 
                         <section id="playful">
                             <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
-                                Ludique & Narratif
+                                Apprentissage narratif
                             </h2>
-                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
-                                Pourquoi arrêtons-nous de jouer en grandissant ? L'apprentissage peut être fun.
-                            </p>
+
+                            {/* <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
+                                L’humain retient mieux ce qui a du sens et une histoire. L’apprentissage devient plus naturel lorsqu’il est incarné.
+                            </p> */}
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
-                                Les histoires rendent l'apprentissage mémorable. Au lieu d'abstractions sèches, tu découvres comment les chercheurs ont trouvé chaque concept. George Miller et la limite 7±2 de la mémoire. Les expériences de Kahneman. Les découvertes d'Ebbinghaus. Des gens, des histoires, des enjeux.
+                                Chaque concept est relié à son origine : les chercheurs, les expériences et les idées qui les ont fait émerger. Miller et la mémoire de travail (7±2), Kahneman et les biais cognitifs, Ebbinghaus et l’oubli. Derrière chaque notion, il y a une histoire qui la rend vivante et mémorable.
                             </p>
                         </section>
                     </div>
@@ -276,81 +300,119 @@ export const ProjectInfoPage: React.FC = () => {
                 return (
                     <div className="space-y-16">
                         <section id="accounts">
-                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4 flex items-center gap-3">
                                 Comptes utilisateur réels
+                                <span className="text-xs font-normal text-[#6e7681] border border-[#30363d] rounded-full px-2 py-0.5 whitespace-nowrap">
+                                    Prévu Oct. 26
+                                </span>
                             </h2>
-                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
-                                La version complète utilise une vraie base de données. Tes progrès sont sauvegardés. Tu peux accéder depuis n'importe quel appareil. Données sécurisées et privées.
-                            </p>
-                        </section>
 
-                        <section id="animations">
-                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
-                                Animations & Feedback
-                            </h2>
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
-                                Une réponse correcte mérite une célébration. Des animations fluides qui renforcent le feedback positif. Chaque interaction raconte une histoire de progression.
+                                La version complète repose sur une véritable base de données. Tes progrès sont sauvegardés automatiquement, accessibles depuis n’importe quel appareil, avec des données privées et sécurisées.
                             </p>
                         </section>
 
                         <section id="social">
-                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4 flex items-center gap-3">
                                 Apprentissage social
+                                <span className="text-xs font-normal text-[#6e7681] border border-[#30363d] rounded-full px-2 py-0.5 whitespace-nowrap">
+                                    Prévu déc. 26
+                                </span>
                             </h2>
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
-                                L'apprentissage est meilleur quand tu le partages.
+                                Apprendre devient plus puissant lorsqu’il est partagé.
                             </p>
+
                             <ul className="space-y-3 text-[#8b949e]">
                                 <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Leaderboard avec amis :</strong> Voir les progrès de ta classe ou de tes amis (volontairement)
+                                    <strong className="text-[#c9d1d9]">Classement entre amis :</strong> Compare tes progrès avec tes amis ou ta classe, de manière volontaire.
                                 </li>
+
                                 <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Enseignement par les pairs :</strong> Ceux qui ont complété une leçon peuvent expliquer leurs découvertes aux autres
+                                    <strong className="text-[#c9d1d9]">Apprentissage par les pairs :</strong> Ceux qui maîtrisent un concept peuvent l’expliquer et le transmettre aux autres.
                                 </li>
+
                                 <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Groupes d'étude :</strong> Collaborer avec d'autres apprenants
+                                    <strong className="text-[#c9d1d9]">Groupes d’étude :</strong> Collabore avec d’autres apprenants pour progresser ensemble.
                                 </li>
                             </ul>
                         </section>
 
                         <section id="stories">
-                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
-                                Stories & Expériences
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4 flex items-center gap-3">
+                                Histoires & expériences
+                                <span className="text-xs font-normal text-[#6e7681] border border-[#30363d] rounded-full px-2 py-0.5 whitespace-nowrap">
+                                    Prévu Jan. 27
+                                </span>
                             </h2>
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
-                                Au-delà des leçons, plonge dans les histoires de découvertes scientifiques. Comprendre comment les chercheurs ont pensé, expérimenté, découvert.
+                                Au-delà des concepts, découvre les histoires derrière les découvertes scientifiques : comment les chercheurs ont pensé, expérimenté et construit leurs idées.
                             </p>
+
                             <ul className="space-y-3 text-[#8b949e]">
                                 <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Expériences interactives :</strong> Rejoue les expériences classiques pour comprendre les découvertes
+                                    <strong className="text-[#c9d1d9]">Expériences interactives :</strong> Rejoue les expériences fondatrices pour comprendre concrètement les découvertes.
                                 </li>
+
                                 <li className="text-sm md:text-base leading-relaxed">
-                                    <strong className="text-[#c9d1d9]">Biographies de chercheurs :</strong> Découvre les histoires fascinantes des neuroscientifiques qui ont changé le domaine
+                                    <strong className="text-[#c9d1d9]">Parcours de chercheurs :</strong> Découvre les parcours et les idées des scientifiques qui ont façonné le domaine.
                                 </li>
                             </ul>
                         </section>
 
                         <section id="mobile">
-                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4 flex items-center gap-3">
                                 Applications mobiles
+                                <span className="text-xs font-normal text-[#6e7681] border border-[#30363d] rounded-full px-2 py-0.5 whitespace-nowrap">
+                                    Prévu Juin 27
+                                </span>
                             </h2>
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
-                                iOS et Android. L'apprentissage partout, n'importe quand. Applications natives optimisées pour le mobile.
+                                iOS et Android. Un apprentissage accessible partout, à tout moment, dans une expérience mobile optimisée.
+                            </p>
+                        </section>
+
+                        <section id="animations">
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4 flex items-center gap-3">
+                                Animations & feedback
+                                <span className="text-xs font-normal text-[#6e7681] border border-[#30363d] rounded-full px-2 py-0.5 whitespace-nowrap">
+                                    Prévu déc. 27
+                                </span>
+                            </h2>
+
+                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
+                                Chaque réussite est valorisée. Des animations fluides et un feedback immédiat renforcent la sensation de progression. Chaque interaction devient une étape visible dans ton apprentissage.
                             </p>
                         </section>
 
                         <section id="domains">
-                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
-                                Autres domaines
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4 flex items-center gap-3">
+                                Ouverture vers d’autres domaines
+                                <span className="text-xs font-normal text-[#6e7681] border border-[#30363d] rounded-full px-2 py-0.5 whitespace-nowrap">
+                                    Long terme
+                                </span>
                             </h2>
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
-                                Pour l'instant, je me concentre sur la psychologie cognitive. Mais si la communauté est intéressée, je pourrais explorer :
+                                Pour l’instant, le projet se concentre sur les sciences cognitives. Mais selon l’intérêt de la communauté, d’autres domaines pourraient être explorés :
                             </p>
+
                             <ul className="space-y-3 text-[#8b949e]">
-                                <li className="text-sm md:text-base leading-relaxed">Sciences biologiques</li>
-                                <li className="text-sm md:text-base leading-relaxed">Neurosciences</li>
-                                <li className="text-sm md:text-base leading-relaxed">Domaines médicaux</li>
-                                <li className="text-sm md:text-base leading-relaxed">Compétences de vie quotidienne basées sur la psychologie</li>
+                                <li className="text-sm md:text-base leading-relaxed">
+                                    Sciences biologiques
+                                </li>
+                                <li className="text-sm md:text-base leading-relaxed">
+                                    Domaines médicaux
+                                </li>
+                                <li className="text-sm md:text-base leading-relaxed">
+                                    Compétences du quotidien basées sur la psychologie
+                                </li>
+                                <li className="text-sm md:text-base leading-relaxed">
+                                    ...
+                                </li>
                             </ul>
                         </section>
                     </div>
@@ -363,51 +425,57 @@ export const ProjectInfoPage: React.FC = () => {
                             <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
                                 Pourquoi collaborer ?
                             </h2>
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
-                                Ce projet a besoin de vous. Les enseignants comprennent comment les élèves apprennent réellement. Vous savez quelles questions poser, quels pièges éviter, quand être ludique et quand être rigoureux.
+                                Ce projet ne peut pas exister sans vous. Les enseignants comprennent comment les élèves apprennent réellement : quelles questions les font progresser, quels obstacles reviennent, et quand il faut être ludique ou rigoureux.
                             </p>
+
                             <div className="bg-[rgba(165,180,252,0.05)] border border-[#a5b4fc22] rounded-lg p-4">
                                 <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                    Ensemble, nous pouvons créer la meilleure ressource d'apprentissage basée sur les sciences cognitives. Accessible, ludique, efficace.
+                                    Ensemble, nous pouvons construire une ressource d’apprentissage fondée sur les sciences cognitives : accessible, engageante et réellement efficace.
                                 </p>
                             </div>
                         </section>
 
                         <section id="how-to-help">
                             <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-6">
-                                Comment m'aider
+                                Comment contribuer
                             </h2>
+
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="text-base md:text-lg font-semibold text-[#c9d1d9] mb-2">
                                         Tester la démo
                                     </h3>
                                     <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                        Utilisez-la avec vos élèves. Quel est leur retour ? Qu'est-ce qui marche ? Qu'est-ce qui manque ?
+                                        Utilisez-la avec vos élèves et observez leurs réactions. Qu’est-ce qui fonctionne bien ? Où rencontrent-ils des difficultés ?
                                     </p>
                                 </div>
+
                                 <div>
                                     <h3 className="text-base md:text-lg font-semibold text-[#c9d1d9] mb-2">
                                         Créer du contenu
                                     </h3>
                                     <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                        Écrire des leçons, des questions, des explications. Aider à structurer le contenu pour que les concepts s'enchaînent logiquement.
+                                        Rédiger des leçons, des questions et des explications. Aider à structurer les concepts pour qu’ils s’enchaînent naturellement.
                                     </p>
                                 </div>
+
                                 <div>
                                     <h3 className="text-base md:text-lg font-semibold text-[#c9d1d9] mb-2">
-                                        Partager vos histoires
+                                        Partager votre expertise
                                     </h3>
                                     <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                        Les expériences classiques de la psychologie cognitive. Les chercheurs qui les ont découvertes. Comment les enseigner de façon ludique ?
+                                        Apporter des expériences issues de la psychologie cognitive et les histoires derrière les découvertes. Comment les rendre plus vivantes et accessibles ?
                                     </p>
                                 </div>
+
                                 <div>
                                     <h3 className="text-base md:text-lg font-semibold text-[#c9d1d9] mb-2">
-                                        Me conseiller
+                                        Orienter le projet
                                     </h3>
                                     <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
-                                        Sur les priorités, les améliorations, la direction à prendre. Votre expertise est inestimable.
+                                        Donner un retour sur les priorités, les améliorations et la direction générale. Votre regard est essentiel pour faire évoluer le projet.
                                     </p>
                                 </div>
                             </div>
@@ -417,21 +485,106 @@ export const ProjectInfoPage: React.FC = () => {
                             <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
                                 Contact
                             </h2>
+
                             <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-6">
-                                Intéressé pour collaborer ? Avez-vous des questions sur le projet ?
+                                Intéressé pour collaborer ou simplement en savoir plus sur le projet ?
                             </p>
+
                             <button
                                 className="px-6 py-3 bg-linear-to-br from-[#a5b4fc22] to-[#a5b4fc18] border border-[#a5b4fc55] rounded-lg text-[#a5b4fc] font-bold text-sm md:text-base transition-all hover:from-[#a5b4fc33] hover:to-[#a5b4fc22] hover:border-[#a5b4fc88]"
-                                onClick={() => {
-                                    alert('Formulaire de contact à venir. Pour l\'instant, contactez-moi via email.');
-                                }}
+                                // onClick={() => {
+                                //     alert("Formulaire de contact à venir. Pour l’instant, vous pouvez me contacter par email.");
+                                // }}
+                                onClick={() => window.location.href = 'mailto:contact@xls-studio.com'}
                             >
-                                Contactez-moi
+                                Me contacter
                             </button>
                         </section>
                     </div>
                 );
 
+            case 'origine':
+                return (
+                    <div className="space-y-16">
+                        <section id="who-am-i">
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
+                                Qui suis-je ?
+                            </h2>
+
+                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
+                                Je m'appelle Corentin, étudiant en licence MIASHS à Bordeaux — un cursus à l’intersection des mathématiques, de l’informatique, de l’économie et des sciences humaines. Cette combinaison m’a naturellement conduit vers une question centrale : comprendre les systèmes complexes, qu’ils soient humains ou techniques.
+                            </p>
+
+                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
+                                En 2026, j’ai effectué un stage de cinq mois en Croatie dans un studio de développement de jeux vidéo. Cette expérience m’a appris à concevoir des interfaces qui engagent réellement les utilisateurs — pas seulement des interfaces qui fonctionnent.
+                            </p>
+                        </section>
+
+                        <section id="why-this-project">
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
+                                Pourquoi ce projet
+                            </h2>
+
+                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
+                                Tout est parti d’une frustration simple : les sciences cognitives sont passionnantes, mais restent largement inaccessibles. Les ressources existent — manuels, articles, cours en ligne — mais elles informent plus qu’elles ne font réellement apprendre. Et informer n’est pas apprendre.
+                            </p>
+
+                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
+                                Les principes comme la répétition espacée, le graphe de connaissances ou l’entrelacement sont connus depuis longtemps. Pourtant, très peu de plateformes les intègrent réellement dans leur structure d’apprentissage. J’ai voulu construire un système qui le fasse vraiment.
+                            </p>
+
+                            <div className="bg-[rgba(165,180,252,0.05)] border border-[#a5b4fc22] rounded-lg p-4">
+                                <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
+                                    <strong className="text-[#c9d1d9]">Idée centrale :</strong> apprendre comment fonctionne le cerveau, à travers une interface qui s’inspire de son fonctionnement.
+                                </p>
+                            </div>
+                        </section>
+
+                        <section id="how-its-built">
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
+                                Construction du projet
+                            </h2>
+
+                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-6">
+                                Ce projet est entièrement réalisé en solo — de la conception à l’implémentation. Chaque décision de design, chaque ligne de code et chaque choix pédagogique ont été pensés et construits indépendamment.
+                            </p>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className="text-base md:text-lg font-semibold text-[#c9d1d9] mb-2">
+                                        Stack technique
+                                    </h3>
+                                    <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
+                                        React, TypeScript, Tailwind CSS, React Router. Les données sont stockées en <strong>localStorage</strong> pour ce prototype — une base de données réelle est prévue pour la version complète.
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <h3 className="text-base md:text-lg font-semibold text-[#c9d1d9] mb-2">
+                                        Approche
+                                    </h3>
+                                    <p className="text-sm md:text-base text-[#8b949e] leading-relaxed">
+                                        Construire d’abord la mécanique d’apprentissage avant le contenu. Valider que le système fonctionne réellement avant d’investir dans la production de contenu. C’est précisément ce que permet cette démo.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="what-i-believe">
+                            <h2 className="text-2xl md:text-3xl font-semibold text-[#a5b4fc] mb-4">
+                                Ce que je crois
+                            </h2>
+
+                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed mb-4">
+                                L’apprentissage est souvent confondu avec la mémorisation. On lit, on surligne, on relit — puis on oublie. Parce que le cerveau n’est pas une éponge, mais un réseau qui se renforce par les connexions, la récupération active et l’espacement.
+                            </p>
+
+                            <p className="text-base md:text-lg text-[#8b949e] leading-relaxed">
+                                Je crois qu’une plateforme bien conçue peut changer cela. Pas en rendant l’apprentissage plus simple, mais en le rendant plus efficace, plus honnête sur ses exigences, et suffisamment engageant pour donner envie d’y revenir.
+                            </p>
+                        </section>
+                    </div>
+                );
             default:
                 return null;
         }
@@ -452,7 +605,7 @@ export const ProjectInfoPage: React.FC = () => {
 
                         <h1 className="text-xl md:text-2xl font-bold text-[#c9d1d9]">
                             <span className="md:hidden">
-                                {activeTab === 'overview' && 'Overview'}
+                                {activeTab === 'overview' && 'Aperçu'}
                                 {activeTab === 'philosophy' && 'Philosophie'}
                                 {activeTab === 'coming-soon' && 'À venir'}
                                 {activeTab === 'for-teachers' && 'Enseignants'}
@@ -473,12 +626,12 @@ export const ProjectInfoPage: React.FC = () => {
 
                     {/* Tab Navigation */}
                     <div className="hidden md:flex gap-2 overflow-x-auto border-t border-[#21262d] pt-4 -mx-2 px-2 sm:px-6 md:px-0 md:mx-0 justify-center">
-                        {(['overview', 'philosophy', 'coming-soon', 'for-teachers'] as TabType[]).map((tab) => (
+                        {(['overview', 'philosophy', 'coming-soon', 'for-teachers', 'origine'] as TabType[]).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => {
                                     setActiveTab(tab);
-                                    setActiveSection(sections[tab === 'coming-soon' ? 'coming_soon' : tab === 'for-teachers' ? 'for_teachers' : tab][0].id);
+                                    setActiveSection(sections[tab === 'coming-soon' ? 'coming_soon' : tab === 'for-teachers' ? 'for_teachers' : tab === 'origine' ? 'origine' : tab][0].id);
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                     setSidebarOpen(false);
                                 }}
@@ -487,10 +640,11 @@ export const ProjectInfoPage: React.FC = () => {
                                         : 'bg-transparent border border-transparent text-[#8b949e] hover:text-[#c9d1d9]'
                                     }`}
                             >
-                                {tab === 'overview' && 'Overview'}
+                                {tab === 'overview' && 'Aperçu'}
                                 {tab === 'philosophy' && 'Philosophie'}
                                 {tab === 'coming-soon' && 'À venir'}
                                 {tab === 'for-teachers' && 'Enseignants'}
+                                {tab === 'origine' && 'À l\'origine'}
                             </button>
                         ))}
                     </div>
@@ -521,12 +675,12 @@ export const ProjectInfoPage: React.FC = () => {
                     {sidebarOpen && (
                         <aside className="md:hidden fixed inset-0 top-17  z-40 bg-[#0b0f14] border-t border-[#21262d] overflow-y-auto">
                             <nav className="flex flex-col gap-4 p-4">
-                                {(['overview', 'philosophy', 'coming-soon', 'for-teachers'] as TabType[]).map((tab) => (
+                                {(['overview', 'philosophy', 'coming-soon', 'for-teachers', 'origine'] as TabType[]).map((tab) => (
                                     <div key={tab}>
                                         {/* Tab Header */}
                                         <button
                                             onClick={() => {
-                                                const tabKey = tab === 'coming-soon' ? 'coming_soon' : tab === 'for-teachers' ? 'for_teachers' : tab;
+                                                const tabKey = tab === 'coming-soon' ? 'coming_soon' : tab === 'for-teachers' ? 'for_teachers' : tab === 'origine' ? 'origine' : tab;
                                                 const firstSection = sections[tabKey][0];
                                                 setActiveTab(tab);
                                                 setActiveSection(firstSection.id);
@@ -538,15 +692,16 @@ export const ProjectInfoPage: React.FC = () => {
                                                     : 'bg-transparent border border-transparent text-[#c9d1d9] hover:text-[#a5b4fc]'
                                                 }`}
                                         >
-                                            {tab === 'overview' && 'Overview'}
+                                            {tab === 'overview' && 'Aperçu'}
                                             {tab === 'philosophy' && 'Philosophie'}
                                             {tab === 'coming-soon' && 'À venir'}
                                             {tab === 'for-teachers' && 'Enseignants'}
+                                            {tab === 'origine' && 'À l\'origine'}
                                         </button>
 
                                         {/* Subsections */}
                                         <div className="flex flex-col gap-1 pl-2 border-l border-[#30363d]">
-                                            {sections[tab === 'coming-soon' ? 'coming_soon' : tab === 'for-teachers' ? 'for_teachers' : tab].map((section) => (
+                                            {sections[tab === 'coming-soon' ? 'coming_soon' : tab === 'for-teachers' ? 'for_teachers' : tab === 'origine' ? 'origine' : tab].map((section) => (
                                                 <button
                                                     key={section.id}
                                                     onClick={() => {
@@ -651,6 +806,11 @@ export const ProjectInfoPage: React.FC = () => {
                                         À venir
                                     </a>
                                 </li>
+                                <li>
+                                    <button onClick={() => { setActiveTab('origine'); setActiveSection('who-am-i'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                        À l'origine
+                                    </button>
+                                </li>
                             </ul>
                         </div>
 
@@ -737,6 +897,13 @@ export const ProjectInfoPage: React.FC = () => {
                     </div>
                 </div>
             </footer>
+
+            {/* Feedback System */}
+            <FeedbackButton onClick={() => setFeedbackOpen(true)} />
+
+            {feedbackOpen && (
+                <FeedbackModal onClose={() => setFeedbackOpen(false)} from="ProfilePage" />
+            )}
         </div>
     );
 };
