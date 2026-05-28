@@ -66,7 +66,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     </div>
                 </div>
 
-                <div style={{ marginBottom: 14 }}>
+                {/* <div style={{ marginBottom: 14 }}>
                     <span style={{ color: "#8b949e", fontSize: fs - 1, display: "block", marginBottom: 8 }}>Langue</span>
                     <div style={{ display: "flex", gap: 6 }}>
                         {(["FR", "EN"] as const).map(lang => (
@@ -80,7 +80,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                             }}>{lang}</button>
                         ))}
                     </div>
-                </div>
+                </div> */}
 
                 {/* <div style={{ paddingTop: 14, borderTop: "1px solid #21262d" }}>
                     <span style={{ color: "#8b949e", fontSize: fs - 1, display: "block", marginBottom: 8 }}>

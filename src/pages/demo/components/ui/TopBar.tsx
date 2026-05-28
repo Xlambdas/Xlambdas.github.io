@@ -28,7 +28,7 @@ export function TopBar({
             className="fixed top-0 right-0 bg-[#161b22] border-b border-[#21262d] flex items-center justify-between z-100 transition-all duration-300"
             style={{
                 left: collapsed ? 0 : 240,
-                padding: "12px 16px", // Reduced padding on mobile
+                padding: "12px 16px",
                 // position: "fixed",
                 // top: 0,
                 // left: collapsed ? 0 : 240,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { markTutorialComplete } from './tutorialHelpers';
 
 interface TutorialStep {
     title: string;
@@ -150,6 +151,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
 
     const handleNext = () => {
         if (isLast) {
+            markTutorialComplete();
             onComplete();
         } else {
             setCurrentStep(s => s + 1);
@@ -443,8 +445,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onComplete, on
                 }}>
                     {/* Skip or Project Info button */}
                     <button
-                        onClick={step.hasProjectButton ? onOpenProjectInfo : onSkip}
-                        style={{
+                            onClick={step.hasProjectButton ? onOpenProjectInfo : () => { markTutorialComplete(); onSkip(); }}                        style={{
                             padding: '10px 16px',
                             background: 'transparent',
                             border: '1px solid #30363d',

@@ -2,7 +2,8 @@ import {
     getDynamicNodes,
     getNodeCompletionPercent,
 } from "../data/graphData";
-import { BANNER_COLORS, PERSONA_OPTIONS, PERSONA_BG_COLORS, STATUS_EMOJIS } from "../constants/profile";
+import { BANNER_COLORS, PERSONA_OPTIONS, PERSONA_BG_COLORS } from "../constants/profile";
+// import { STATUS_ICONS } from "../constants/icons/statusIcons";
 
 export const getTotalLessons = (): { completed: number; total: number } => {
     const nodes = getDynamicNodes();
@@ -25,17 +26,22 @@ export const getTotalLessons = (): { completed: number; total: number } => {
 // --- Profile Storage ---
 
 export const getProfileSettings = () => ({
-    bannerColor: localStorage.getItem("profile_banner_color") || BANNER_COLORS[1].color,
+    bannerColor: localStorage.getItem("profile_banner_color") || BANNER_COLORS[0].color,
     persona: localStorage.getItem("profile_persona") || PERSONA_OPTIONS[0].id,
-    personaBgColor: localStorage.getItem("profile_persona_bg") || PERSONA_BG_COLORS[0].color,
-    status: localStorage.getItem("profile_status") || STATUS_EMOJIS[0],
+    personaBgColor: localStorage.getItem("profile_persona_bg") || PERSONA_BG_COLORS[6].color,
+    statusIndex: parseInt(localStorage.getItem("profile_status_index") || "0", 10),
 });
 
-export const saveProfileSettings = (bannerColor: string, persona: string, personaBgColor: string, status: string) => {
+export const saveProfileSettings = (
+    bannerColor: string,
+    persona: string,
+    personaBgColor: string,
+    statusIndex: number,
+) => {
     localStorage.setItem("profile_banner_color", bannerColor);
     localStorage.setItem("profile_persona", persona);
     localStorage.setItem("profile_persona_bg", personaBgColor);
-    localStorage.setItem("profile_status", status);
+    localStorage.setItem("profile_status_index", String(statusIndex));
 };
 
 export const getStudyStreak = (): number => {

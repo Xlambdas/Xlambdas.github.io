@@ -94,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const currentPersona = PERSONA_OPTIONS.find(p => p.id === settings.persona) || PERSONA_OPTIONS[0];
     // const currentBannerColor = settings.bannerColor;
     const currentPersonaBgColor = settings.personaBgColor;
-    const currentStatus = settings.status;
+    // const currentStatus = settings.statusIndex;
     const userName = localStorage.getItem("user_name") || "Username";
 
     if (collapsed) return null;
@@ -209,7 +209,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             />
                         </div>
                         {/* Status badge */}
-                        <div style={{
+                        {/* <div style={{
                             position: "absolute",
                             bottom: -4,
                             right: -4,
@@ -224,7 +224,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             fontSize: 10,
                         }}>
                             {currentStatus}
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Profile Info */}

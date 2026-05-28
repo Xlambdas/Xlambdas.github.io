@@ -7,10 +7,11 @@ import {
 } from "../data/graphData";
 import { getAllCards } from "../utils/srEngine";
 import type { EarnedBadge } from "../types";
-import { BANNER_COLORS, PERSONA_OPTIONS, PERSONA_BG_COLORS, STATUS_EMOJIS, HEX_CLIP } from "../constants";
+import { BANNER_COLORS, PERSONA_OPTIONS, PERSONA_BG_COLORS, HEX_CLIP } from "../constants";
 import { getProfileSettings, saveProfileSettings, getTotalLessons } from "../helpers";
 import { FeedbackModal } from "./modals/feedbackModal";
 import { FeedbackButton } from "../components/feedbackBtn";
+import { STATUS_ICONS } from "../constants/icons/statusIcons";
 
 // --- Sub-components ---
 
@@ -383,16 +384,16 @@ export const ProfilePage: React.FC = () => {
     const [tempBannerColor, setTempBannerColor] = useState(settings.bannerColor);
     const [tempPersona, setTempPersona] = useState(settings.persona);
     const [tempPersonaBgColor, setTempPersonaBgColor] = useState(settings.personaBgColor);
-    const [tempStatus, setTempStatus] = useState(settings.status);
+    const [tempStatusIndex, setTempStatusIndex] = useState(settings.statusIndex);
 
     const currentPersona = PERSONA_OPTIONS.find(p => p.id === (editMode ? tempPersona : settings.persona)) || PERSONA_OPTIONS[0];
     const currentBannerColor = editMode ? tempBannerColor : settings.bannerColor;
     const currentPersonaBgColor = editMode ? tempPersonaBgColor : settings.personaBgColor;
-    const currentStatus = editMode ? tempStatus : settings.status;
+    const currentStatus = editMode ? tempStatusIndex : settings.statusIndex;
 
     const handleSave = () => {
         localStorage.setItem("user_name", tempName);
-        saveProfileSettings(tempBannerColor, tempPersona, tempPersonaBgColor, tempStatus);
+        saveProfileSettings(tempBannerColor, tempPersona, tempPersonaBgColor, tempStatusIndex);
         setEditMode(false);
     };
 
@@ -401,7 +402,7 @@ export const ProfilePage: React.FC = () => {
         setTempBannerColor(settings.bannerColor);
         setTempPersona(settings.persona);
         setTempPersonaBgColor(settings.personaBgColor);
-        setTempStatus(settings.status);
+        setTempStatusIndex(settings.statusIndex);
         setEditMode(false);
     };
 
@@ -679,22 +680,22 @@ export const ProfilePage: React.FC = () => {
                             Statut
                         </div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                            {STATUS_EMOJIS.map(emoji => (
+                            {STATUS_ICONS.map((Icon, i) => (
                                 <button
-                                    key={emoji}
-                                    onClick={() => setTempStatus(emoji)}
+                                    key={i}
+                                    onClick={() => setTempStatusIndex(i)}
                                     style={{
                                         width: 48,
                                         height: 48,
                                         fontSize: 24,
-                                        background: tempStatus === emoji ? "#a5b4fc22" : "#21262d",
-                                        border: `2px solid ${tempStatus === emoji ? "#a5b4fc" : "#30363d"}`,
+                                        background: tempStatusIndex === i ? "#a5b4fc22" : "#21262d",
+                                        border: `2px solid ${tempStatusIndex === i ? "#a5b4fc" : "#30363d"}`,
                                         borderRadius: 12,
                                         cursor: "pointer",
                                         transition: "all 0.2s ease",
                                     }}
                                 >
-                                    {emoji}
+                                    <Icon size={20} color={tempStatusIndex === i ? "#a5b4fc" : "#8b949e"} />
                                 </button>
                             ))}
                         </div>
