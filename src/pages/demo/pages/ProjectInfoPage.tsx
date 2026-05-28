@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+// import { active } from 'd3';
+import { Menu, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type TabType = 'overview' | 'philosophy' | 'coming-soon' | 'for-teachers';
@@ -108,13 +110,41 @@ export const ProjectInfoPage: React.FC = () => {
 
     const currentSections = sections[activeTab === 'coming-soon' ? 'coming_soon' : activeTab === 'for-teachers' ? 'for_teachers' : activeTab];
 
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const offset = 320;
+
+            for (const section of currentSections) {
+                const el = document.getElementById(section.id);
+                if (!el) continue;
+
+                const top = el.getBoundingClientRect().top;
+                if (top <= offset + 10) {
+                    setActiveSection(section.id);
+                }
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [currentSections]);
+
     const handleSectionClick = (id: string) => {
         setActiveSection(id);
         setSidebarOpen(false);
         const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        if (!element) return;
+
+        const isMobile = window.innerWidth < 768;
+        const headerOffset = isMobile ? 90 : 150;
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
     };
 
     const renderContent = () => {
@@ -412,35 +442,44 @@ export const ProjectInfoPage: React.FC = () => {
             {/* Header */}
             <header className="sticky top-0 z-100 border-b border-[#21262d] bg-[#161b22]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-0 md:mb-2">
                         <button
-                            onClick={() => navigate('/demoHome')}
+                            onClick={() => navigate(-1)}
                             className="px-4 py-2 bg-transparent border border-[#30363d] rounded-lg text-[#8b949e] text-xs md:text-sm font-semibold hover:border-[#8b949e] hover:text-[#c9d1d9] transition-all flex items-center gap-2"
                         >
                             ← Retour
                         </button>
 
                         <h1 className="text-xl md:text-2xl font-bold text-[#c9d1d9]">
-                            À propos du projet
+                            <span className="md:hidden">
+                                {activeTab === 'overview' && 'Overview'}
+                                {activeTab === 'philosophy' && 'Philosophie'}
+                                {activeTab === 'coming-soon' && 'À venir'}
+                                {activeTab === 'for-teachers' && 'Enseignants'}
+                            </span>
+                            <span className="hidden md:inline">
+                                À propos du projet
+                            </span>
                         </h1>
 
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                             className="md:hidden px-4 py-2 bg-transparent border border-[#30363d] rounded-lg text-[#8b949e]"
                         >
-                            ☰
+                            {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
                         </button>
                         <div className="hidden md:block w-40" />
                     </div>
 
                     {/* Tab Navigation */}
-                    <div className="flex gap-2 overflow-x-auto pb-4 border-t border-[#21262d] pt-4 -mx-4 px-4 sm:px-6 md:px-0 md:mx-0 justify-center md:justify-start">
+                    <div className="hidden md:flex gap-2 overflow-x-auto border-t border-[#21262d] pt-4 -mx-2 px-2 sm:px-6 md:px-0 md:mx-0 justify-center">
                         {(['overview', 'philosophy', 'coming-soon', 'for-teachers'] as TabType[]).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => {
                                     setActiveTab(tab);
                                     setActiveSection(sections[tab === 'coming-soon' ? 'coming_soon' : tab === 'for-teachers' ? 'for_teachers' : tab][0].id);
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
                                     setSidebarOpen(false);
                                 }}
                                 className={`px-4 py-2 rounded-lg text-xs md:text-sm font-semibold whitespace-nowrap transition-all ${activeTab === tab
@@ -449,7 +488,7 @@ export const ProjectInfoPage: React.FC = () => {
                                     }`}
                             >
                                 {tab === 'overview' && 'Overview'}
-                                {tab === 'philosophy' && 'Philosophy'}
+                                {tab === 'philosophy' && 'Philosophie'}
                                 {tab === 'coming-soon' && 'À venir'}
                                 {tab === 'for-teachers' && 'Enseignants'}
                             </button>
@@ -480,26 +519,60 @@ export const ProjectInfoPage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
                     {/* Sidebar Navigation - Mobile */}
                     {sidebarOpen && (
-                        <aside className="md:hidden fixed inset-0 top-32 z-40 bg-[#0b0f14] border-t border-[#21262d]">
-                            <nav className="flex flex-col gap-2 p-4">
-                                {currentSections.map((section) => (
-                                    <button
-                                        key={section.id}
-                                        onClick={() => handleSectionClick(section.id)}
-                                        className={`px-3 py-2 rounded-md text-left text-sm font-medium transition-all ${activeSection === section.id
-                                                ? 'bg-[#a5b4fc15] border border-[#a5b4fc33] text-[#a5b4fc]'
-                                                : 'bg-transparent border border-transparent text-[#8b949e] hover:text-[#c9d1d9]'
-                                            }`}
-                                    >
-                                        {section.title}
-                                    </button>
+                        <aside className="md:hidden fixed inset-0 top-17  z-40 bg-[#0b0f14] border-t border-[#21262d] overflow-y-auto">
+                            <nav className="flex flex-col gap-4 p-4">
+                                {(['overview', 'philosophy', 'coming-soon', 'for-teachers'] as TabType[]).map((tab) => (
+                                    <div key={tab}>
+                                        {/* Tab Header */}
+                                        <button
+                                            onClick={() => {
+                                                const tabKey = tab === 'coming-soon' ? 'coming_soon' : tab === 'for-teachers' ? 'for_teachers' : tab;
+                                                const firstSection = sections[tabKey][0];
+                                                setActiveTab(tab);
+                                                setActiveSection(firstSection.id);
+                                                setSidebarOpen(false);
+                                                setTimeout(() => handleSectionClick(firstSection.id), 50);
+                                            }}
+                                            className={`w-full px-3 py-2 rounded-md text-left text-sm font-semibold transition-all mb-2 ${activeTab === tab
+                                                    ? 'bg-[#a5b4fc22] border border-[#a5b4fc55] text-[#a5b4fc]'
+                                                    : 'bg-transparent border border-transparent text-[#c9d1d9] hover:text-[#a5b4fc]'
+                                                }`}
+                                        >
+                                            {tab === 'overview' && 'Overview'}
+                                            {tab === 'philosophy' && 'Philosophie'}
+                                            {tab === 'coming-soon' && 'À venir'}
+                                            {tab === 'for-teachers' && 'Enseignants'}
+                                        </button>
+
+                                        {/* Subsections */}
+                                        <div className="flex flex-col gap-1 pl-2 border-l border-[#30363d]">
+                                            {sections[tab === 'coming-soon' ? 'coming_soon' : tab === 'for-teachers' ? 'for_teachers' : tab].map((section) => (
+                                                <button
+                                                    key={section.id}
+                                                    onClick={() => {
+                                                        setActiveTab(tab);
+                                                        setActiveSection(section.id);
+                                                        setSidebarOpen(false);
+
+                                                        setTimeout(() => handleSectionClick(section.id), 50); // wait for tab content to render
+                                                    }}
+                                                    className={`px-3 py-2 rounded-md text-left text-xs font-medium transition-all ${activeSection === section.id
+                                                            ? 'bg-[#a5b4fc15] border border-[#a5b4fc33] text-[#a5b4fc]'
+                                                            : 'bg-transparent border border-transparent text-[#8b949e] hover:text-[#c9d1d9]'
+                                                        }`}
+                                                >
+                                                    {section.title}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                 ))}
                             </nav>
                         </aside>
                     )}
 
                     {/* Sidebar Navigation - Desktop */}
-                    <aside className="hidden md:block sticky top-32 h-fit">
+                    <aside className="hidden md:block sticky top-38 h-fit">
                         <nav className="flex flex-col gap-2">
                             {currentSections.map((section) => (
                                 <button
@@ -556,25 +629,25 @@ export const ProjectInfoPage: React.FC = () => {
             </section>
 
             {/* Footer */}
-            <footer className="bg-[#161b22] border-t border-[#21262d] px-4 sm:px-6 md:px-8 py-12">
+            <footer className="bg-[#161b22] border-t border-[#21262d] px-4 sm:px-6 md:px-8 py-6 md:py-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                    <div className="flex flex-wrap justify-center gap-x-[10%] gap-y-6 mb-4 md:mb-8">
                         {/* About */}
-                        <div>
+                        <div className="w-32 md:w-40">
                             <h3 className="text-sm font-semibold text-[#c9d1d9] mb-4">À propos</h3>
-                            <ul className="space-y-2">
+                            <ul className="space-y-1 md:space-y-2">
                                 <li>
-                                    <a href="#" onClick={() => { setActiveTab('overview'); window.scrollTo(0, 0); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
-                                        Overview
+                                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('overview'); setActiveSection('overview'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                        Aperçu
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={() => { setActiveTab('philosophy'); window.scrollTo(0, 0); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
-                                        Philosophy
+                                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('philosophy'); setActiveSection('philosophy'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                        Philosophie
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={() => { setActiveTab('coming-soon'); window.scrollTo(0, 0); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('coming-soon'); setActiveSection('coming-soon'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
                                         À venir
                                     </a>
                                 </li>
@@ -582,53 +655,32 @@ export const ProjectInfoPage: React.FC = () => {
                         </div>
 
                         {/* Collaboration */}
-                        <div>
+                        <div className="w-32 md:w-40">
                             <h3 className="text-sm font-semibold text-[#c9d1d9] mb-4">Collaboration</h3>
-                            <ul className="space-y-2">
+                            <ul className="space-y-1 md:space-y-2">
                                 <li>
-                                    <a href="#" onClick={() => { setActiveTab('for-teachers'); setActiveSection('why-collaborate'); window.scrollTo(0, 0); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('for-teachers'); setActiveSection('why-collaborate'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
                                         Pourquoi collaborer
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={() => { setActiveTab('for-teachers'); setActiveSection('how-to-help'); window.scrollTo(0, 0); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('for-teachers'); setActiveSection('how-to-help'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
                                         Comment m'aider
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={() => { setActiveTab('for-teachers'); setActiveSection('contact'); window.scrollTo(0, 0); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('for-teachers'); setActiveSection('contact'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
                                         Contact
                                     </a>
                                 </li>
                             </ul>
                         </div>
 
-                        {/* Legal */}
-                        <div>
-                            <h3 className="text-sm font-semibold text-[#c9d1d9] mb-4">Légal</h3>
-                            <ul className="space-y-2">
-                                <li>
-                                    <a href="#" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
-                                        Conditions d'utilisation
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
-                                        Politique de confidentialité
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
-                                        Mentions légales
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
 
                         {/* Connect */}
-                        <div>
+                        <div className="w-32 md:w-40">
                             <h3 className="text-sm font-semibold text-[#c9d1d9] mb-4">Rester connecté</h3>
-                            <ul className="space-y-2">
+                            <ul className="space-y-1 md:space-y-2">
                                 <li>
                                     <a href="https://www.linkedin.com/in/corentin-gassien-1b7289261/" target="_blank" rel="noopener noreferrer" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
                                         Linkedin
@@ -646,14 +698,38 @@ export const ProjectInfoPage: React.FC = () => {
                                 </li>
                             </ul>
                         </div>
+
+
+                        {/* Legal */}
+                        <div className="md:hidden w-32 md:w-40">
+                            {/* <h3 className="text-sm font-semibold text-[#c9d1d9] mb-4">Légal</h3>
+                        <ul className="space-y-1 md:space-y-2">
+                            <li>
+                                <a href="#" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                    Conditions d'utilisation
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                    Politique de confidentialité
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" className="text-xs text-[#8b949e] hover:text-[#a5b4fc] transition-colors">
+                                    Mentions légales
+                                </a>
+                            </li>
+                        </ul> */}
+                        </div>
                     </div>
 
+
                     {/* Footer Bottom */}
-                    <div className="border-t border-[#21262d] pt-8">
+                    <div className="border-t border-[#21262d] pt-4 md:pt-8">
                         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                            <p className="text-xs text-[#6e7681]">
-                                © 2026 XLS.Studio - Cognitive Learning Platform. </br> Tous droits réservés.
-                            </p>
+                            <a href="#" className="text-xs text-[#6e7681]">
+                                © 2026 XLS.Studio - Cognitive Learning Platform. <br /> Tous droits réservés.
+                            </a>
                             <p className="text-xs text-[#6e7681]">
                                 Pour rendre l'apprentissage accessible a tous !
                             </p>
