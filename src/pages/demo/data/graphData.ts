@@ -3,7 +3,8 @@ import { computeBadgeLevel } from "../utils/srEngine";
 
 // Import individual nodes
 import {
-    ProfileNode, psychologyNode, MemoryNode, AttentionNode, WorkingMemoryNode, SemMemoryNode
+    ProfileNode, PsychologyNode, MemoryNode, AttentionNode, WorkingMemoryNode, LongTermMemoryNode,
+    NeuroscienceNode
 } from "./nodes";
 import { isLessonCompleted, getCompletedLessons, getCompletedNodes, awardBadge } from "./dataHelpers";
 
@@ -18,11 +19,12 @@ export * from "./dataHelpers";
 // --- Main node array ---
 export const initialNodes: NodeType[] = [
     ProfileNode,
-    psychologyNode,
+    PsychologyNode,
     MemoryNode,
     AttentionNode,
     WorkingMemoryNode,
-    SemMemoryNode,
+    LongTermMemoryNode,
+    NeuroscienceNode,
 ];
 
 // --- Links derived from nodes ---

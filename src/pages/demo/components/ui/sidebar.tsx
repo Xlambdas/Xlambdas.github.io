@@ -95,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     // const currentBannerColor = settings.bannerColor;
     const currentPersonaBgColor = settings.personaBgColor;
     const currentStatus = settings.status;
-    const userName = localStorage.getItem("user_name") || "Étudiant";
+    const userName = localStorage.getItem("user_name") || "Username";
 
     if (collapsed) return null;
 

@@ -4,7 +4,7 @@ export const ProfileNode: NodeType = {
     id: "profile",
     title: "Mon Profil",
     type: "profile",
-    links: ["psychologie"],
+    links: ["psychologie", "neurosciences"],
     isUnlocked: true,
     prerequisites: [],
     branchColor: "#3b82f6",

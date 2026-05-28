@@ -156,13 +156,13 @@ export type NodeQuestion = {
     question: QuizQuestion;  // The actual question
 };
 
-export type typesFR = {
-    profile: "profil";
-    domain: "domaine";
-    topic: "sujet";
-    concept: "concept";
-    subconcept: "sous-concept";
-};
+// export type typesFR = {
+//     profile: "profil";
+//     domain: "domaine";
+//     topic: "sujet";
+//     concept: "concept";
+//     subconcept: "sous-concept";
+// };
 
 export type NodeType = {
     id: string;
@@ -216,23 +216,23 @@ export type UserProfile = {
 
 export type LessonStatus = "completed" | "current" | "locked";
 export type ConfirmState = "idle" | "confirming" | "done";
-export type Phase = "playing" | "completed";
+// export type Phase = "playing" | "completed";
 
 
 // --- Helper types for working with questions ---
 
-export type QuestionReference = {
-    nodeId: string;
-    questionId: string;
-};
+// export type QuestionReference = {
+//     nodeId: string;
+//     questionId: string;
+// };
 
-export type QuestionWithMetadata = {
-    id: string;              // Full ID: "nodeId::questionId"
-    nodeId: string;
-    lessonId: string;
-    blockIndex: number;
-    question: QuizQuestion;
-    // Derived fields for display
-    questionText: string;
-    answerText: string;
-};
+// export type QuestionWithMetadata = {
+//     id: string;              // Full ID: "nodeId::questionId"
+//     nodeId: string;
+//     lessonId: string;
+//     blockIndex: number;
+//     question: QuizQuestion;
+//     // Derived fields for display
+//     questionText: string;
+//     answerText: string;
+// };

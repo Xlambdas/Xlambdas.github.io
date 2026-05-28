@@ -8,10 +8,15 @@ import {
     DemoHome
 } from './pages';
 import DemoGraph from './pages/demo/graphView/demoGraph';
-import { LessonPage, NodePage, ProfilePage, StrengthenSessionPage } from './pages/demo/pages';
-import { FullSessionPage } from './pages/demo/pages/fullSessionPage';
-import { ProjectInfoPage } from './pages/demo/pages/ProjectInfoPage';
-
+import {
+    LessonPage,
+    NodePage,
+    // ProfilePage,
+    StrengthenSessionPage,
+    FullSessionPage,
+    ProjectInfoPage,
+    ConstructionPage
+} from './pages/demo/pages';
 
 function App() {
     return (
@@ -26,10 +31,11 @@ function App() {
                 <Route path="/demoGraph" element={<DemoGraph />} />
                 <Route path="/demo/node/:nodeId" element={<NodePage />} />
                 <Route path="/demo/lesson/:nodeId/:lessonId" element={<LessonPage />} />
-                <Route path="/demo/profile" element={<ProfilePage />} />
+                {/* <Route path="/demo/profile" element={<ProfilePage />} /> */}
                 <Route path="/demo/strengthen" element={<StrengthenSessionPage />} />
                 <Route path="/demo/full-session" element={<FullSessionPage />} />
                 <Route path="/demo/project-info" element={<ProjectInfoPage />} />
+                <Route path="*" element={<ConstructionPage />} />
             </Routes>
         </Router>
     )
