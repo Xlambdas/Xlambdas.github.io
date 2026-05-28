@@ -62,7 +62,7 @@ export const ProfileNodeModal: React.FC<ProfileNodeModalProps> = ({
 
     const currentPersona = PERSONA_OPTIONS.find(p => p.id === settings.persona) || PERSONA_OPTIONS[0];
     const currentPersonaBgColor = settings.personaBgColor;
-    const currentStatus = settings.status;
+    const currentStatus = settings.statusIndex;
 
     useEffect(() => {
         setVisible(false);
