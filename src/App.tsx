@@ -29,6 +29,7 @@ function App() {
                 <Route path="/projects" element={<ProjectsPage />} />
                 <Route path="/portfolio" element={<PortfolioPage />} />
                 <Route path="/demoHome" element={<DemoHome />} />
+                {/* sandbox */}
                 <Route path="/p/nt8k2" element={<TrombiPage />} />
                 {/* demo routes */}
                 <Route path="/demoGraph" element={<DemoGraph />} />
