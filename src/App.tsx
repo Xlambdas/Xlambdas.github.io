@@ -18,6 +18,8 @@ import {
     ConstructionPage
 } from './pages/demo/pages';
 
+import TrombiPage from './pages/trombi/TrombiPage';
+
 function App() {
     return (
         <Router>
@@ -27,6 +29,7 @@ function App() {
                 <Route path="/projects" element={<ProjectsPage />} />
                 <Route path="/portfolio" element={<PortfolioPage />} />
                 <Route path="/demoHome" element={<DemoHome />} />
+                <Route path="/p/nt8k2" element={<TrombiPage />} />
                 {/* demo routes */}
                 <Route path="/demoGraph" element={<DemoGraph />} />
                 <Route path="/demo/node/:nodeId" element={<NodePage />} />

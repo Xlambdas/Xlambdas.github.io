@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# files
+src/pages/trombi/encrypt.mjs
+src/pages/trombi/trombi.json
+src/pages/trombi/addPhotos.mjs
