@@ -76,39 +76,11 @@ src/
 │   │   │   └── Carousel.tsx
 │   │   └── LoadingIndicator/
 │   │       └── LoadingIndicator.tsx
-│   ├── Header/
-│   │   ├── Header.tsx
-│   │   ├── index.ts
-│   │   ├── MenuIcon.tsx
-│   │   └── types.ts
-│   └── Home/
-│       ├── Home.tsx
+│   └── Header/
+│       ├── Header.tsx
 │       ├── index.ts
-│       ├── components/
-│       │   ├── index.ts
-│       │   ├── ScrollContainer.tsx
-│       │   └── Section.tsx
-│       ├── constants/
-│       │   ├── index.ts
-│       │   └── types.ts
-│       ├── hooks/
-│       │   ├── index.ts
-│       │   ├── usePerformanceMonitor.ts
-│       │   ├── useScrollNavigation.ts
-│       │   ├── useSnapScroll.ts
-│       │   ├── useSplineSetup.ts
-│       │   └── useTouchNavigation.ts
-│       ├── sections/
-│       │   ├── AboutSection.tsx
-│       │   ├── index.ts
-│       │   ├── SandboxSection.tsx
-│       │   └── WelcomeSection.tsx
-│       └── utils/
-│           ├── canvas.ts
-│           ├── dpr.ts
-│           ├── index.ts
-│           ├── spline.ts
-│           └── splineColors.ts
+│       ├── MenuIcon.tsx
+│       └── types.ts
 ├── constants/
 │   └── home.config.ts
 ├── context/
@@ -124,60 +96,139 @@ src/
 │   ├── projects.ts
 │   └── settings.ts
 ├── pages/
+│   ├── index.ts
 │   ├── demo/
 │   │   ├── DemoHome.tsx
 │   │   ├── index.ts
 │   │   ├── components/
-│   │   │   ├── BottomActions.tsx
-│   │   │   ├── honeyCombPath.tsx
-│   │   │   ├── legend.tsx
-│   │   │   ├── lessonPlayer.tsx
-│   │   │   ├── nodePanel.tsx
-│   │   │   ├── nodePreviewPanel.tsx
-│   │   │   ├── quizPlayer.tsx
+│   │   │   ├── feedbackBtn.tsx
+│   │   │   ├── index.ts
+│   │   │   ├── projectInfoBtn.tsx
 │   │   │   ├── settings.tsx
-│   │   │   ├── sidebar.tsx
-│   │   │   ├── stat.tsx
-│   │   │   ├── TopBar.tsx
 │   │   │   ├── lessons/
 │   │   │   │   ├── blockRenderer.tsx
-│   │   │   │   ├── explanationModal.tsx
-│   │   │   │   ├── lessonPage.tsx
+│   │   │   │   ├── index.ts
 │   │   │   │   ├── lessonProgressBar.tsx
 │   │   │   │   ├── quizBlockPlayer.tsx
-│   │   │   │   └── quizInteraction.tsx
-│   │   │   └── node/
-│   │   │       ├── nodeCard.tsx
-│   │   │       ├── NodePage.tsx
-│   │   │       └── NodePathSettings.tsx
+│   │   │   │   ├── quizInteraction.tsx
+│   │   │   │   └── quizPlayer.tsx
+│   │   │   ├── node/
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── nodeCard.tsx
+│   │   │   │   └── NodePathSettings.tsx
+│   │   │   └── ui/
+│   │   │       ├── BottomActions.tsx
+│   │   │       ├── dock.tsx
+│   │   │       ├── dockFooter.tsx
+│   │   │       ├── honeyCombPath.tsx
+│   │   │       ├── sidebar.tsx
+│   │   │       └── TopBar.tsx
 │   │   ├── constants/
-│   │   │   ├── types.ts
-│   │   │   └── window.d.ts
+│   │   │   ├── config.ts
+│   │   │   ├── graph.ts
+│   │   │   ├── index.ts
+│   │   │   ├── lessons.ts
+│   │   │   ├── nodes.ts
+│   │   │   ├── profile.ts
+│   │   │   ├── quiz.ts
+│   │   │   └── icons/
+│   │   │       ├── icons.tsx
+│   │   │       ├── nodeIcons.tsx
+│   │   │       ├── profileIcons.tsx
+│   │   │       └── statusIcons.tsx
 │   │   ├── data/
+│   │   │   ├── dataHelpers.ts
 │   │   │   ├── funFacts.ts
 │   │   │   ├── graphData.ts
-│   │   │   ├── practiceQuestions.ts
-│   │   │   └── teacherNotes.ts
+│   │   │   ├── index.ts
+│   │   │   ├── teacherNotes.ts
+│   │   │   └── nodes/
+│   │   │       ├── attention.ts
+│   │   │       ├── index.ts
+│   │   │       ├── longTermMemory.ts
+│   │   │       ├── memory.ts
+│   │   │       ├── neurosciences.ts
+│   │   │       ├── profile.ts
+│   │   │       ├── psychology.ts
+│   │   │       └── workingMemory.ts
 │   │   ├── graphView/
-│   │   │   └── demoGraph.tsx
+│   │   │   ├── demoGraph.tsx
+│   │   │   ├── graphLegend.tsx
+│   │   │   └── legend.tsx
 │   │   ├── helpers/
-│   │   │   └── srEngine.ts
+│   │   │   ├── daily.ts
+│   │   │   ├── graph.ts
+│   │   │   ├── index.ts
+│   │   │   ├── nodes.ts
+│   │   │   ├── profile.ts
+│   │   │   ├── quiz.ts
+│   │   │   └── sessionBuilder.ts
 │   │   ├── hooks/
 │   │   │   ├── index.ts
 │   │   │   ├── useDemoHomeState.ts
 │   │   │   ├── useLessonFlow.ts
+│   │   │   ├── useLessonTextSize.ts
 │   │   │   └── useSearchSuggestion.ts
-│   │   └── section/
-│   │       ├── funFactModal.tsx
-│   │       ├── learningSession.tsx
-│   │       ├── lessonPathView.tsx
-│   │       ├── practiceModal.tsx
-│   │       ├── profileView.tsx
-│   │       ├── strengthenPage.tsx
-│   │       ├── strengthenSession.tsx
-│   │       ├── teacherLoginModal.tsx
-│   │       ├── teacherNoteCard.tsx
-│   │       └── teacherNoteEditor.tsx
+│   │   ├── pages/
+│   │   │   ├── constructionPage.tsx
+│   │   │   ├── fullSessionPage.tsx
+│   │   │   ├── index.ts
+│   │   │   ├── LessonPage.tsx
+│   │   │   ├── NodePage.tsx
+│   │   │   ├── ProfilePage.tsx
+│   │   │   ├── ProjectInfoPage.tsx
+│   │   │   ├── StrengthenSessionPage.tsx
+│   │   │   └── modals/
+│   │   │       ├── explanationModal.tsx
+│   │   │       ├── feedbackModal.tsx
+│   │   │       ├── funFactModal.tsx
+│   │   │       ├── index.ts
+│   │   │       ├── moodModal.tsx
+│   │   │       ├── ProfileNodeModal.tsx
+│   │   │       ├── strengthenModal.tsx
+│   │   │       └── teacherLoginModal.tsx
+│   │   ├── sections/
+│   │   │   ├── teacherNoteCard.tsx
+│   │   │   └── teacherNoteEditor.tsx
+│   │   ├── tutorial/
+│   │   │   ├── tutorialHelpers.ts
+│   │   │   └── tutorialOverlay.tsx
+│   │   ├── types/
+│   │   │   ├── index.ts
+│   │   │   ├── nodes.ts
+│   │   │   ├── props.ts
+│   │   │   ├── types.ts
+│   │   │   └── window.d.ts
+│   │   └── utils/
+│   │       └── srEngine.ts
+│   ├── home/
+│   │   ├── Home.tsx
+│   │   ├── index.ts
+│   │   ├── components/
+│   │   │   ├── index.ts
+│   │   │   ├── ScrollContainer.tsx
+│   │   │   └── Section.tsx
+│   │   ├── constants/
+│   │   │   ├── index.ts
+│   │   │   └── types.ts
+│   │   ├── hooks/
+│   │   │   ├── index.ts
+│   │   │   ├── usePerformanceMonitor.ts
+│   │   │   ├── useScrollNavigation.ts
+│   │   │   ├── useSnapScroll.ts
+│   │   │   ├── useSplineSetup.ts
+│   │   │   └── useTouchNavigation.ts
+│   │   ├── sections/
+│   │   │   ├── AboutSection.tsx
+│   │   │   ├── index.ts
+│   │   │   ├── SandboxSection.tsx
+│   │   │   └── WelcomeSection.tsx
+│   │   └── utils/
+│   │       ├── canvas.ts
+│   │       ├── dpr.ts
+│   │       ├── index.ts
+│   │       ├── spline.ts
+│   │       └── splineColors.ts
 │   ├── portfolio/
 │   │   ├── index.ts
 │   │   ├── PortfolioPage.tsx
@@ -189,7 +240,7 @@ src/
 │   │   │   └── types.ts
 │   │   ├── helpers/
 │   │   │   └── timelineHelpers.ts
-│   │   └── section/
+│   │   └── sections/
 │   │       ├── About.tsx
 │   │       ├── Contact.tsx
 │   │       ├── Hero.tsx
