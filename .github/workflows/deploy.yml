@@ -25,6 +25,9 @@ jobs:
 
       - run: npm install
       - run: npm run build
+        env:
+          VITE_TROMBI_BIN_URL: ${{ secrets.VITE_TROMBI_BIN_URL }}
+          VITE_TROMBI_API_KEY: ${{ secrets.VITE_TROMBI_API_KEY }}
       - run: echo "xls-studio.com" > ./dist/CNAME
 
       - uses: actions/upload-pages-artifact@v3

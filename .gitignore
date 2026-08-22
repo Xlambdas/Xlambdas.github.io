@@ -26,4 +26,3 @@ dist-ssr
 # files
 src/pages/trombi/encrypt.mjs
 src/pages/trombi/trombi.json
-src/pages/trombi/addPhotos.mjs
