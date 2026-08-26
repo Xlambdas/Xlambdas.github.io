@@ -97,6 +97,8 @@ src/
 │   └── settings.ts
 ├── pages/
 │   ├── index.ts
+│   ├── bivouac/
+│   │   └── BivouacPage.tsx
 │   ├── demo/
 │   │   ├── DemoHome.tsx
 │   │   ├── index.ts
@@ -258,28 +260,35 @@ src/
 │   │   │   └── types.ts
 │   │   └── data/
 │   │       └── projectsData.ts
-│   └── settings/
+│   ├── settings/
+│   │   ├── index.ts
+│   │   ├── SettingPage.tsx
+│   │   ├── components/
+│   │   │   ├── index.ts
+│   │   │   └── LivePreview.tsx
+│   │   ├── constants/
+│   │   │   ├── constants.ts
+│   │   │   ├── index.ts
+│   │   │   └── types.ts
+│   │   ├── hooks/
+│   │   │   └── useSettingsHandlers.ts
+│   │   ├── panels/
+│   │   │   ├── ColorsPanel.tsx
+│   │   │   ├── index.ts
+│   │   │   ├── LanguagePanel.tsx
+│   │   │   ├── MotionPanel.tsx
+│   │   │   ├── SizesPanel.tsx
+│   │   │   └── TypographyPanel.tsx
+│   │   └── utils/
+│   │       ├── index.ts
+│   │       └── panelHelpers.ts
+│   └── trombi/
+│       ├── encrypt.mjs
 │       ├── index.ts
-│       ├── SettingPage.tsx
+│       ├── trombi.json
+│       ├── TrombiPage.tsx
 │       ├── components/
-│       │   ├── index.ts
-│       │   └── LivePreview.tsx
-│       ├── constants/
-│       │   ├── constants.ts
-│       │   ├── index.ts
-│       │   └── types.ts
-│       ├── hooks/
-│       │   └── useSettingsHandlers.ts
-│       ├── panels/
-│       │   ├── ColorsPanel.tsx
-│       │   ├── index.ts
-│       │   ├── LanguagePanel.tsx
-│       │   ├── MotionPanel.tsx
-│       │   ├── SizesPanel.tsx
-│       │   └── TypographyPanel.tsx
-│       └── utils/
-│           ├── index.ts
-│           └── panelHelpers.ts
+│       └── types/
 ├── styles/
 │   ├── components.css
 │   ├── globals.css

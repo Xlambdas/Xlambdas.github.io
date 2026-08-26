@@ -3,8 +3,10 @@ import React from 'react';
 import { type AppTheme } from '../../../theme';
 import { PrimaryButton } from '../../../components';
 import { HOME_TRANSLATIONS } from '../../../locales';
+import { useNavigate } from 'react-router-dom';
 
 export const SandboxSection: React.FC<{ theme: AppTheme, t: typeof HOME_TRANSLATIONS['en'] }> = ({ t }) => {
+    const navigate = useNavigate();
 
     return (
         <div
@@ -54,7 +56,7 @@ export const SandboxSection: React.FC<{ theme: AppTheme, t: typeof HOME_TRANSLAT
                 </p>
 
                 <div className="pointer-events-auto">
-                    <PrimaryButton variant="cta" disabled={true}>
+                    <PrimaryButton variant="cta" onClick={() => navigate('/sandbox')}>
                         {t.discoverMore}
                     </PrimaryButton>
                 </div>
