@@ -69,6 +69,63 @@ function seedExportPlugin() {
     }
 }
 
+
+// --- PWA ---
+
+import { VitePWA } from 'vite-plugin-pwa'
+
+// Inside defineConfig plugins array, add:
+VitePWA({
+    registerType: 'autoUpdate',
+    scope: '/sandbox/poise/',
+    base: '/sandbox/poise/',
+    manifest: {
+        name: 'Poise',
+        short_name: 'Poise',
+        description: 'Personal fitness training — sessions, routines, calendar',
+        start_url: '/sandbox/poise/',
+        scope: '/sandbox/poise/',
+        display: 'standalone',
+        background_color: '#0D0D0D',
+        theme_color: '#0D0D0D',
+        orientation: 'portrait',
+        icons: [
+            {
+                src: '/sandbox/poise/icons/icon-192.png',
+                sizes: '192x192',
+                type: 'image/png',
+                purpose: 'any maskable',
+            },
+            {
+                src: '/sandbox/poise/icons/icon-512.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'any maskable',
+            },
+        ],
+    },
+    workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallback: null,
+        // Only cache requests under /sandbox/poise/
+        navigateFallbackAllowlist: [/^\/sandbox\/poise/],
+        runtimeCaching: [
+            {
+                urlPattern: /^\/sandbox\/poise\/.*/,
+                handler: 'NetworkFirst',
+                options: {
+                    cacheName: 'poise-runtime',
+                    expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 7 },
+                },
+            },
+        ],
+    },
+})
+
+
+
+// --- general ---
+
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [react(), tailwindcss(), seedExportPlugin()],

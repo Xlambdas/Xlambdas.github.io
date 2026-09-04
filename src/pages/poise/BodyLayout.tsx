@@ -4,6 +4,7 @@ import { db } from './storage/db'
 import { SEED_EXERCISES } from './data/exercises'
 import { SEED_SESSIONS } from './data/sessions'
 import { SEED_ROUTINES } from './data/routines'
+import { usePWAInstall } from './hooks/usePWAInstall'
 
 const NAV_ITEMS = [
   { to: '/sandbox/poise/today', label: 'Today', icon: Sun },
@@ -77,6 +78,7 @@ async function exportAllData() {
 
 export default function BodyLayout() {
   const navigate = useNavigate()
+  const { canInstall, triggerInstall } = usePWAInstall()
   return (
     <div className="poise-root">
       {/* Top bar */}
@@ -91,6 +93,15 @@ export default function BodyLayout() {
               style={{ color: '#5BA8A0' }}
             >
               <Download size={17} strokeWidth={1.5} />
+            </button>
+          )}
+          {canInstall && (
+            <button
+              className="bl-topbar-btn"
+              onClick={triggerInstall}
+              title="Install Poise"
+            >
+              <Download size={16} />
             </button>
           )}
           <button className="poise-settings-btn" onClick={() => navigate('/sandbox/poise/preferences')}>
