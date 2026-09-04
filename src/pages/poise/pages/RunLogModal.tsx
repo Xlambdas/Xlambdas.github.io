@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { X, Check } from 'lucide-react'
-import { useRunConfigs } from '../hooks/useRunConfigs'
 import type { RunConfig } from '../types/runConfig'
 
 interface RunLogModalProps {

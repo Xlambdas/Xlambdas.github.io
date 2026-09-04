@@ -10,6 +10,7 @@ const CATEGORY_LABELS: Record<SessionCategory | 'all', string> = {
     strength: 'Strength',
     mobility: 'Mobility',
     endurance: 'Endurance',
+    running: 'Running',
     hiit: 'HIIT',
     recovery: 'Recovery',
     hiking: 'Hiking',
@@ -23,7 +24,7 @@ const CATEGORY_LABELS: Record<SessionCategory | 'all', string> = {
 
 const CATEGORY_FILTER: (SessionCategory | 'all')[] = [
     'all', 'calisthenics', 'strength', 'mobility', 'endurance',
-    'recovery', 'hiking', 'cycling', 'swimming', 'climbing',
+    'running', 'recovery', 'hiking', 'cycling', 'swimming', 'climbing',
     'morning-routine', 'evening-routine',
 ]
 

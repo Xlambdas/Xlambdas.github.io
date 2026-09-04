@@ -30,9 +30,6 @@ export function exertionToIntensity(e: PerceivedExertion): Intensity {
 
 export default function CompletionModal({
     sessionName,
-    eventId,
-    date,
-    windowId,
     defaultIntensity,
     onSave,
     onClose,

@@ -10,7 +10,7 @@ import { useRunConfigs } from '../hooks/useRunConfigs'
 import RunLogModal from './RunLogModal'
 import { usePlanner } from '../hooks/usePlanner'
 import type { CalendarEvent } from '../types/calendarEvent'
-import CompletionModal, { exertionToIntensity } from './CompletionModal'
+import CompletionModal from './CompletionModal'
 import { useSessionFeedbacks } from '../hooks/useSessionFeedbacks'
 import type { PerceivedExertion } from '../types/sessionFeedback'
 

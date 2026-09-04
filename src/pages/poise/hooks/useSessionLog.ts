@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { db } from '../storage/db'
-import type { SessionLog, ExerciseLog, SetLog } from '../types/sessionLog'
+import type { SessionLog, SetLog } from '../types/sessionLog'
 import type { Session } from '../types/session'
 
 function generateLogId(): string {
