@@ -33,7 +33,7 @@ const MONTH_NAMES = [
     'July', 'August', 'September', 'October', 'November', 'December',
 ]
 const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-const SLOT_ORDER: Record<string, number> = { morning: 0, midday: 1, evening: 2 }
+// const SLOT_ORDER: Record<string, number> = { morning: 0, midday: 1, evening: 2 }
 
 function EventDot({ type, status, isRecurring }: {
     type: CalendarEvent['type']
@@ -393,7 +393,7 @@ export default function CalendarPage() {
     const [showAddSheet, setShowAddSheet] = useState(false)
     const [showDailySheet, setShowDailySheet] = useState(false)
 
-    const { events, loading, eventsForDate, addEvent, updateStatus, removeEvent } = useCalendarEvents()
+    const { loading, eventsForDate, addEvent, updateStatus, removeEvent } = useCalendarEvents()
     const { configs, loading: drLoading, createConfig, deleteConfig, toggleConfig, virtualEventsForDate } = useDailyRoutines()
     const { replan } = usePlanner()
     const [replanning, setReplanning] = useState(false)

@@ -4,15 +4,13 @@ import { ArrowLeft, Plus, Trash2, Check, Pencil, X } from 'lucide-react'
 import { usePreferences } from '../hooks/usePreferences'
 import { usePlanner } from '../hooks/usePlanner'
 import { useRunConfigs } from '../hooks/useRunConfigs'
-import type { RunConfig, ProgressionType } from '../types/runConfig'
+import type { ProgressionType } from '../types/runConfig'
 import type {
     UserPreferences,
     DayAvailability,
     PreferredTime,
-    RecoveryRule,
     ActivityWindow,
     Intensity,
-    MuscleLoad,
 } from '../types/preferences'
 import type { SessionCategory } from '../types/session'
 import type { BodyArea } from '../types/exercise'
@@ -125,42 +123,42 @@ function DayRow({ dayIdx, avail, onChange }: {
 
 // ── Recovery rule row ─────────────────────────────────────────────────────────
 
-function RecoveryRuleRow({ rule, onChange, onRemove }: {
-    rule: RecoveryRule
-    onChange: (next: RecoveryRule) => void
-    onRemove: () => void
-}) {
-    return (
-        <div className="pr-rule-row">
-            <div className="pr-rule-row__top">
-                <input
-                    className="pr-input pr-input--flex"
-                    value={rule.label}
-                    onChange={e => onChange({ ...rule, label: e.target.value })}
-                    placeholder="e.g. Hard lower body"
-                />
-                <div className="pr-inline-field">
-                    <input
-                        type="number" min={12} max={168} step={12}
-                        className="pr-input pr-input--num"
-                        value={rule.minHoursBetween}
-                        onChange={e => onChange({ ...rule, minHoursBetween: Number(e.target.value) || 48 })}
-                    />
-                    <span className="pr-inline-label">h min</span>
-                </div>
-                <button type="button" className="pr-icon-btn pr-icon-btn--danger" onClick={onRemove}>
-                    <Trash2 size={14} />
-                </button>
-            </div>
-            <input
-                className="pr-input pr-input--note"
-                value={rule.tags.join(', ')}
-                onChange={e => onChange({ ...rule, tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
-                placeholder="Session tags this applies to (comma separated)"
-            />
-        </div>
-    )
-}
+// function RecoveryRuleRow({ rule, onChange, onRemove }: {
+//     rule: RecoveryRule
+//     onChange: (next: RecoveryRule) => void
+//     onRemove: () => void
+// }) {
+//     return (
+//         <div className="pr-rule-row">
+//             <div className="pr-rule-row__top">
+//                 <input
+//                     className="pr-input pr-input--flex"
+//                     value={rule.label}
+//                     onChange={e => onChange({ ...rule, label: e.target.value })}
+//                     placeholder="e.g. Hard lower body"
+//                 />
+//                 <div className="pr-inline-field">
+//                     <input
+//                         type="number" min={12} max={168} step={12}
+//                         className="pr-input pr-input--num"
+//                         value={rule.minHoursBetween}
+//                         onChange={e => onChange({ ...rule, minHoursBetween: Number(e.target.value) || 48 })}
+//                     />
+//                     <span className="pr-inline-label">h min</span>
+//                 </div>
+//                 <button type="button" className="pr-icon-btn pr-icon-btn--danger" onClick={onRemove}>
+//                     <Trash2 size={14} />
+//                 </button>
+//             </div>
+//             <input
+//                 className="pr-input pr-input--note"
+//                 value={rule.tags.join(', ')}
+//                 onChange={e => onChange({ ...rule, tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+//                 placeholder="Session tags this applies to (comma separated)"
+//             />
+//         </div>
+//     )
+// }
 
 // ── Activity window form ──────────────────────────────────────────────────────
 
