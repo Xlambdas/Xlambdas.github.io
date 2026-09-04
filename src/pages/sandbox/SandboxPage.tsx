@@ -19,6 +19,13 @@ const SANDBOX_PROJECTS: SandboxProject[] = [
         path: '/sandbox/bivouac',
         status: 'wip',
     },
+    {
+        id: 'poise',
+        title: 'Poise',
+        description: 'Personal fitness and wellness management.',
+        path: '/sandbox/poise',
+        status: 'wip',
+    },
 ];
 
 export const SandboxPage: React.FC = () => {

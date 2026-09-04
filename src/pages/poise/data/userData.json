@@ -1,0 +1,314 @@
+{
+  "exportedAt": "2026-09-04T08:27:34.792Z",
+  "calendarEvents": [
+    {
+      "date": "2026-09-08",
+      "type": "session",
+      "refId": "calisthenics-lower",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-0cil4",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-17",
+      "type": "activity",
+      "refId": "id-1788507353915-ujx",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-3x7sc",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-13",
+      "type": "session",
+      "refId": "recovery-mobility",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-3ybxs",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-06",
+      "type": "session",
+      "refId": "recovery-mobility",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-4egfr",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-12",
+      "type": "activity",
+      "refId": "id-1788507641707-bbc",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-9lpzz",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-07",
+      "type": "activity",
+      "refId": "id-1788507353915-ujx",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-dco3f",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-14",
+      "type": "activity",
+      "refId": "id-1788507353915-ujx",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-ejgvs",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-05",
+      "type": "activity",
+      "refId": "id-1788507641707-bbc",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-fveg9",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-09",
+      "type": "session",
+      "refId": "calisthenics-upper-a",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-l2yek",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-16",
+      "type": "session",
+      "refId": "calisthenics-upper-b",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-l3uru",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-10",
+      "type": "activity",
+      "refId": "id-1788507353915-ujx",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-pe8mt",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-15",
+      "type": "session",
+      "refId": "calisthenics-upper-b",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-pzqcx",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-11",
+      "type": "session",
+      "refId": "calisthenics-upper-b",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-q9oyt",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-18",
+      "type": "session",
+      "refId": "calisthenics-upper-b",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-u8qxq",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    },
+    {
+      "date": "2026-09-04",
+      "type": "session",
+      "refId": "calisthenics-upper-b",
+      "source": "planner",
+      "status": "planned",
+      "id": "evt-1788508675131-yanj7",
+      "createdAt": "2026-09-04T07:57:55.131Z"
+    }
+  ],
+  "dailyRoutineConfigs": [
+    {
+      "slot": "morning",
+      "routineId": "morning-routine",
+      "variantId": "short",
+      "activeDays": [],
+      "active": false,
+      "id": "drc-1788507733989-i46v",
+      "createdAt": "2026-09-04T07:42:13.989Z"
+    },
+    {
+      "slot": "evening",
+      "routineId": "evening-routine",
+      "variantId": "short",
+      "activeDays": [],
+      "active": false,
+      "id": "drc-1788507741846-tqz5",
+      "createdAt": "2026-09-04T07:42:21.846Z"
+    }
+  ],
+  "runConfigs": [
+    {
+      "name": "chill run",
+      "currentTargetKm": 5,
+      "progressionType": "fixed",
+      "progressionValue": 0.5,
+      "id": "run-1788507523484-152z",
+      "history": [],
+      "createdAt": "2026-09-04T07:38:43.484Z",
+      "updatedAt": "2026-09-04T07:38:43.484Z"
+    }
+  ],
+  "sessionFeedbacks": [],
+  "preferences": {
+    "availability": {
+      "0": {
+        "available": true,
+        "maxMinutes": 45
+      },
+      "1": {
+        "available": true,
+        "maxMinutes": 60
+      },
+      "2": {
+        "available": true,
+        "maxMinutes": 60
+      },
+      "3": {
+        "available": true,
+        "maxMinutes": 30
+      },
+      "4": {
+        "available": true,
+        "maxMinutes": 45
+      },
+      "5": {
+        "available": true,
+        "maxMinutes": 180
+      },
+      "6": {
+        "available": true
+      }
+    },
+    "recoveryRules": [],
+    "activityWindows": [
+      {
+        "id": "id-1788507353915-ujx",
+        "name": "Pool",
+        "category": "swimming",
+        "allowedDays": [
+          0,
+          3
+        ],
+        "preferredDuration": 60,
+        "targetAreas": [],
+        "active": true,
+        "muscleLoad": {
+          "areas": [
+            "full-body"
+          ],
+          "defaultIntensity": "medium",
+          "recoveryHours": {
+            "light": 12,
+            "medium": 24,
+            "hard": 48
+          }
+        }
+      },
+      {
+        "id": "id-1788507370988-995",
+        "name": "Calis",
+        "category": "calisthenics",
+        "allowedDays": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "preferredDuration": 40,
+        "targetAreas": [],
+        "active": true,
+        "muscleLoad": {
+          "areas": [
+            "full-body",
+            "upper-body"
+          ],
+          "defaultIntensity": "medium",
+          "recoveryHours": {
+            "light": 12,
+            "medium": 24,
+            "hard": 48
+          }
+        }
+      },
+      {
+        "id": "id-1788507412256-6vg",
+        "name": "Run",
+        "category": "running",
+        "allowedDays": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "preferredDuration": 30,
+        "targetAreas": [],
+        "active": true,
+        "muscleLoad": {
+          "areas": [
+            "lower-body"
+          ],
+          "defaultIntensity": "medium",
+          "recoveryHours": {
+            "light": 12,
+            "medium": 24,
+            "hard": 48
+          }
+        }
+      },
+      {
+        "id": "id-1788507641707-bbc",
+        "name": "Bike",
+        "category": "cycling",
+        "allowedDays": [
+          5,
+          6
+        ],
+        "preferredDuration": 120,
+        "targetAreas": [],
+        "active": true,
+        "muscleLoad": {
+          "areas": [
+            "lower-body"
+          ],
+          "defaultIntensity": "medium",
+          "recoveryHours": {
+            "light": 12,
+            "medium": 48,
+            "hard": 78
+          }
+        }
+      }
+    ],
+    "constraints": {
+      "sensitivities": [],
+      "preferredRestDay": 6
+    }
+  }
+}

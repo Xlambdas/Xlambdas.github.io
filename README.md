@@ -39,11 +39,11 @@ The site is fully translated into **5 languages** (EN, FR, ES, DE, IT) via a typ
 
 | Layer | Technology |
 |---|---|
-| Framework | React 18 |
+| Framework | React 19 |
 | Language | TypeScript 5 |
-| Styling | Tailwind CSS 3 + CSS Variables |
+| Styling | Tailwind CSS v4 + CSS Variables |
 | Build tool | Vite 5 |
-| Routing | React Router v6 |
+| Routing | React Router v7 |
 | Icons | Lucide React |
 | State | React Hooks — `useState`, `useRef`, `useEffect`, `useMemo`, `useCallback` |
 | Persistence | `localStorage` (sidebar preferences) |
