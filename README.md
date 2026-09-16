@@ -38,7 +38,7 @@ The site is fully translated into **5 languages** (EN, FR, ES, DE, IT) via a typ
 ## Tech Stack
 
 | Layer | Technology |
-|---|---|
+| --- | --- |
 | Framework | React 19 |
 | Language | TypeScript 5 |
 | Styling | Tailwind CSS v4 + CSS Variables |
@@ -59,7 +59,7 @@ The site is fully translated into **5 languages** (EN, FR, ES, DE, IT) via a typ
 npm run docs:structure
 ``` -->
 
-```
+```text
 src/
 ├── App.tsx
 ├── main.tsx
@@ -334,7 +334,7 @@ const ABOVE_TYPES = new Set<EntryType>(['education']);
 All visual tokens are CSS variables, making theme changes a single-file edit:
 
 | Variable | Role |
-|---|---|
+| --- | --- |
 | `--color-primary` | Text, borders, SVG strokes |
 | `--color-primary-transparent` | Subtle borders, dividers |
 | `--color-background` | Page and tooltip backgrounds |
