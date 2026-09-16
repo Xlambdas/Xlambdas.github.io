@@ -175,8 +175,34 @@ async function requestNotifPermission() {
 // Send a message to the SW to schedule a notification
 async function scheduleNotif({ title, body, delayMs, tag }) {
     if (Notification.permission !== "granted") return;
-    const reg = await navigator.serviceWorker.ready;
-    reg.active?.postMessage({ type: "SCHEDULE_NOTIF", title, body, delayMs, tag });
+
+    try {
+        const reg = await navigator.serviceWorker.ready;
+
+        setTimeout(async () => {
+            try {
+                await reg.showNotification(title, {
+                    body,
+                    tag,
+                    renotify: false,
+                    icon: generateIconDataUrl(),
+                    badge: generateIconDataUrl(),
+                    vibrate: [200, 100, 200],
+                    data: { url: "/px/" },
+                });
+            } catch (err) {
+                console.warn("showNotification failed:", err);
+                // Fallback: plain Notification API
+                new Notification(title, { body, tag, icon: generateIconDataUrl() });
+            }
+        }, delayMs);
+    } catch (err) {
+        console.warn("SW not ready:", err);
+        // Fallback if SW unavailable
+        setTimeout(() => {
+            try { new Notification(title, { body, tag }); } catch { }
+        }, delayMs);
+    }
 }
 
 // Schedule a notification at a specific time today (or tomorrow if past)
@@ -313,6 +339,12 @@ async function showOpeningNotif() {
 }
 
 async function testNotif() {
+    // Step 1: check/request permission
+    if (Notification.permission === "denied") {
+        showToast("Blocked — enable in phone Settings → Safari → Notifications");
+        return;
+    }
+
     if (Notification.permission !== "granted") {
         const granted = await requestNotifPermission();
         if (!granted) {
@@ -320,52 +352,35 @@ async function testNotif() {
             return;
         }
     }
-    const reg = await navigator.serviceWorker.ready;
-    reg.active?.postMessage({
-        type: "SCHEDULE_NOTIF",
-        title: "PX test",
-        body: "Notifications are working ✓",
-        delayMs: 2000,
-        tag: "px-test",
-    });
-    showToast("Notification in 2 seconds…");
+
+    showToast("Notification in 3 seconds…");
+
+    // Step 2: try SW showNotification (most reliable)
+    try {
+        const reg = await navigator.serviceWorker.ready;
+        setTimeout(async () => {
+            try {
+                await reg.showNotification("PX test ✓", {
+                    body: "Notifications are working",
+                    tag: "px-test",
+                    icon: generateIconDataUrl(),
+                    vibrate: [200, 100, 200],
+                });
+            } catch (e) {
+                console.error("SW showNotification error:", e);
+                // Step 3: plain fallback
+                try { new Notification("PX test ✓", { body: "Notifications are working" }); }
+                catch (e2) { console.error("Notification fallback error:", e2); showToast("✗ " + e2.message); }
+            }
+        }, 3000);
+    } catch (e) {
+        console.error("SW ready error:", e);
+        showToast("✗ SW not available: " + e.message);
+    }
 }
 
 function generateIconDataUrl() {
-    const cached = localStorage.getItem("px-icon");
-    if (cached) return cached;
-
-    const canvas = document.createElement("canvas");
-    canvas.width = 192;
-    canvas.height = 192;
-    const ctx = canvas.getContext("2d");
-
-    // Background
-    ctx.fillStyle = "#7c6af7";
-    const r = 36;
-    ctx.beginPath();
-    ctx.moveTo(r, 0);
-    ctx.lineTo(192 - r, 0);
-    ctx.quadraticCurveTo(192, 0, 192, r);
-    ctx.lineTo(192, 192 - r);
-    ctx.quadraticCurveTo(192, 192, 192 - r, 192);
-    ctx.lineTo(r, 192);
-    ctx.quadraticCurveTo(0, 192, 0, 192 - r);
-    ctx.lineTo(0, r);
-    ctx.quadraticCurveTo(0, 0, r, 0);
-    ctx.closePath();
-    ctx.fill();
-
-    // Text
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 80px -apple-system, sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("PX", 96, 100);
-
-    const dataUrl = canvas.toDataURL("image/png");
-    localStorage.setItem("px-icon", dataUrl);
-    return dataUrl;
+    return "/px/icon.svg";
 }
 
 // In showOpeningNotif():
@@ -858,8 +873,11 @@ function showToast(msg) {
     const el = document.getElementById("toast");
     el.textContent = msg;
     el.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove("show"), 2500);
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        el.classList.remove("show");
+        toastTimer = null;
+    }, 2500);
 }
 
 // ── Boot ───────────────────────────────────────────────────

@@ -56,8 +56,8 @@ self.addEventListener("message", (e) => {
                 body,
                 tag,
                 renotify: false,
-                icon: icon || "./icon.svg",   // ← use passed icon, fallback to SVG
-                badge: icon || "./icon.svg",
+                icon: icon || "./px/icon.svg",   // ← use passed icon, fallback to SVG
+                badge: icon || "./px/icon.svg",
                 vibrate: [200, 100, 200],
                 data: { url: "/px/" },
             });
