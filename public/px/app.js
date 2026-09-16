@@ -275,7 +275,42 @@ function loadNotifSettingsIntoUI() {
     document.getElementById("notif-morning").value = s.morningTime;
     document.getElementById("notif-evening").value = s.eveningTime;
     document.getElementById("notif-deadline").checked = s.deadlineWarning;
-  }
+}
+
+async function showOpeningNotif() {
+    if (Notification.permission !== "granted") return;
+
+    const d = state.data;
+    const today = new Date().toISOString().slice(0, 10);
+
+    const todayDue = d.tasks.filter(
+        (t) => t.status === "todo" && t.deadline === today
+    ).length;
+
+    const focusCount = d.tasks.filter(
+        (t) => t.projectIds.some((pid) => d.focus.includes(pid)) &&
+            t.status === "todo" && !t.parentId
+    ).length;
+
+    const todayCount = d.todayTasks.filter((t) => t.status === "todo").length;
+
+    // Build message lines
+    const lines = [];
+    if (focusCount > 0) lines.push(`${focusCount} focus task${focusCount > 1 ? "s" : ""}`);
+    if (todayCount > 0) lines.push(`${todayCount} today task${todayCount > 1 ? "s" : ""}`);
+    if (todayDue > 0) lines.push(`⚠ ${todayDue} due today`);
+
+    if (!lines.length) return; // nothing to report — no notif
+
+    const reg = await navigator.serviceWorker.ready;
+    reg.active?.postMessage({
+        type: "SCHEDULE_NOTIF",
+        title: "PX — " + new Date().toLocaleDateString("en", { weekday: "long" }),
+        body: lines.join("  ·  "),
+        delayMs: 1500,   // small delay so it feels like a push, not instant
+        tag: "px-open",
+    });
+}
 
 // ── Boot ───────────────────────────────────────────────────
 
@@ -297,6 +332,7 @@ async function boot() {
 
     render();
     loadNotifSettingsIntoUI();
+    await showOpeningNotif();
     await setupNotifications();
 
     // Register service worker
