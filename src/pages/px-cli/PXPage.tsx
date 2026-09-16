@@ -10,7 +10,7 @@ import { SettingsView } from './views/SettingsView';
 import { shortId, nowISO } from './utils';
 
 // CSS variables injected once — PX has its own design system
-const PX_STYLE = `
+export const PX_STYLE = `
   .px-dark {
     --px-bg:         #0f0f0f;
     --px-surface:    #1a1a1a;

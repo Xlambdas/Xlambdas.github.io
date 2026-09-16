@@ -1,12 +1,8 @@
-import { useEffect, useRef, useCallback } from 'react';
-
 const DB_NAME = 'px-pwa';
 const DB_VERSION = 1;
 
-export function useDB() {
-    const dbRef = useRef<IDBDatabase | null>(null);
-
-    useEffect(() => {
+function openDB(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
         const req = indexedDB.open(DB_NAME, DB_VERSION);
         req.onupgradeneeded = (e) => {
             const db = (e.target as IDBOpenDBRequest).result;
@@ -14,29 +10,27 @@ export function useDB() {
                 db.createObjectStore('store');
             }
         };
-        req.onsuccess = (e) => {
-            dbRef.current = (e.target as IDBOpenDBRequest).result;
-        };
-    }, []);
+        req.onsuccess = (e) => resolve((e.target as IDBOpenDBRequest).result);
+        req.onerror = () => reject(req.error);
+    });
+}
 
-    const get = useCallback(<T>(key: string): Promise<T | null> => {
-        return new Promise((resolve) => {
-            if (!dbRef.current) { resolve(null); return; }
-            const tx = dbRef.current.transaction('store', 'readonly');
-            const req = tx.objectStore('store').get(key);
-            req.onsuccess = () => resolve(req.result ?? null);
-            req.onerror = () => resolve(null);
-        });
-    }, []);
+export async function dbGet<T>(key: string): Promise<T | null> {
+    const db = await openDB();
+    return new Promise((resolve) => {
+        const tx = db.transaction('store', 'readonly');
+        const req = tx.objectStore('store').get(key);
+        req.onsuccess = () => resolve((req.result as T) ?? null);
+        req.onerror = () => resolve(null);
+    });
+}
 
-    const set = useCallback(<T>(key: string, value: T): Promise<void> => {
-        return new Promise((resolve) => {
-            if (!dbRef.current) { resolve(); return; }
-            const tx = dbRef.current.transaction('store', 'readwrite');
-            tx.objectStore('store').put(value, key);
-            tx.oncomplete = () => resolve();
-        });
-    }, []);
-
-    return { get, set };
+export async function dbSet<T>(key: string, value: T): Promise<void> {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('store', 'readwrite');
+        tx.objectStore('store').put(value, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
 }

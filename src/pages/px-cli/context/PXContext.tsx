@@ -4,7 +4,7 @@ import {
 } from 'react';
 import type { AppData, GitHubConfig, TabId } from '../types';
 import { emptyData } from '../utils';
-import { useDB } from '../hooks/useDB';
+import { dbGet, dbSet } from '../hooks/useDB';
 import { useGitHub } from '../hooks/useGitHub';
 import { mergeData } from '../hooks/useSync';
 
@@ -29,7 +29,7 @@ interface PXContextValue {
 const PXContext = createContext<PXContextValue | null>(null);
 
 export function PXProvider({ children }: { children: ReactNode }) {
-    const { get, set } = useDB();
+    // const { get, set } = useDB();
     const { ghRead, ghWrite } = useGitHub();
 
     const [data, setDataState] = useState<AppData>(emptyData());
@@ -45,26 +45,25 @@ export function PXProvider({ children }: { children: ReactNode }) {
     // Boot
     useEffect(() => {
         async function boot() {
-            // Load config
             try {
                 const saved = localStorage.getItem('px-cfg');
                 if (saved) setCfgState(JSON.parse(saved));
             } catch { }
 
-            // Load theme
             const savedTheme = localStorage.getItem('px-theme') as 'dark' | 'light' | null;
             if (savedTheme) setTheme(savedTheme);
 
-            // Load data from IndexedDB
-            const stored = await get<AppData>('data');
+            // IndexedDB — always resolves, returns null if empty
+            const stored = await dbGet<AppData>('data');
             if (stored) {
                 setDataState(stored);
                 updateSyncLabel(stored.syncMeta?.lastSyncAt ?? '');
             }
+
             setReady(true);
         }
         boot();
-    }, [get]);
+    }, []);
 
     function updateSyncLabel(lastSyncAt: string) {
         if (!lastSyncAt) { setSyncLabel('never synced'); return; }
@@ -76,9 +75,9 @@ export function PXProvider({ children }: { children: ReactNode }) {
 
     const saveData = useCallback(async (d: AppData) => {
         setDataState(d);
-        await set('data', d);
+        await dbSet('data', d);
         updateSyncLabel(d.syncMeta?.lastSyncAt ?? '');
-    }, [set]);
+    }, []);
 
     const setCfg = useCallback((c: GitHubConfig) => {
         setCfgState(c);
@@ -109,7 +108,9 @@ export function PXProvider({ children }: { children: ReactNode }) {
                 showToast('✓ Initial sync done');
             } else {
                 const { merged, added, updated } = mergeData(data, remote.data);
-                await saveData(merged);
+                await dbSet('data', merged);
+                setDataState(merged);
+                updateSyncLabel(merged.syncMeta?.lastSyncAt ?? '');
                 await ghWrite(cfg, merged, remote.sha, 'px sync (pwa)');
                 showToast(added + updated > 0 ? `✓ ↓${added} received` : '✓ Up to date');
             }
