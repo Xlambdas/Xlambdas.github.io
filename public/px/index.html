@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>PX</title>
     <link rel="manifest" href="/px/manifest.json">
-    <link rel="apple-touch-icon" href="/px/icon.svg">
+    <link rel="apple-touch-icon" href="/px/icon_x3.pnglari">
     <style>
         :root {
             --bg: #0f0f0f;
@@ -622,6 +622,14 @@
     <div class="toast" id="toast"></div>
 
     <script src="/px/app.js"></script>
+    <script>
+        (function () {
+            var s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/eruda';
+            document.body.appendChild(s);
+            s.onload = function () { eruda.init(); };
+        })();
+    </script>
 </body>
 
 </html>
