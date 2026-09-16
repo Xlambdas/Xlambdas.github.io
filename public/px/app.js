@@ -81,7 +81,7 @@ async function ghWrite(cfg, data, sha, message = "px sync (pwa)") {
     }
 }
 
-// ── Merge (mirrors syncService.ts) ─────────────────────────
+// ── Merge ──────────────────────────────────────────────────
 
 function mergeEntities(localArr, remoteArr) {
     const result = new Map();
@@ -103,8 +103,6 @@ function mergeData(local, remote) {
     const projects = mergeEntities(local.projects, remote.projects);
     const archT = mergeEntities(local.archivedTasks, remote.archivedTasks);
     const archP = mergeEntities(local.archivedProjects, remote.archivedProjects);
-    const added = tasks.added + today.added + projects.added;
-    const updated = tasks.updated + today.updated + projects.updated;
     return {
         merged: {
             ...local,
@@ -115,32 +113,31 @@ function mergeData(local, remote) {
             archivedProjects: archP.items,
             syncMeta: { ...local.syncMeta, lastSyncAt: new Date().toISOString() },
         },
-        added,
-        updated,
+        added: tasks.added + today.added + projects.added,
+        updated: tasks.updated + today.updated + projects.updated,
     };
 }
 
 // ── State ──────────────────────────────────────────────────
 
 let state = {
-    data: null,         // AppData
-    cfg: null,          // GitHub config
-    remoteSha: null,    // current SHA of remote file
+    data: null,
+    cfg: null,
+    remoteSha: null,
     currentTab: "today",
-    modal: null,        // { task, isToday }
+    modal: null,
 };
 
 // ── Notifications ──────────────────────────────────────────
 
-const NOTIF_PERMISSION_KEY = "px-notif-permission";
 const NOTIF_SETTINGS_KEY = "px-notif-settings";
 
 function defaultNotifSettings() {
     return {
         enabled: false,
-        morningTime: "09:00",    // daily focus reminder
-        eveningTime: "19:00",    // daily sync reminder
-        deadlineWarning: true,   // warn on tasks due today
+        morningTime: "09:00",
+        eveningTime: "19:00",
+        deadlineWarning: true,
     };
 }
 
@@ -157,7 +154,6 @@ function saveNotifSettings(settings) {
     localStorage.setItem(NOTIF_SETTINGS_KEY, JSON.stringify(settings));
 }
 
-// Ask for notification permission
 async function requestNotifPermission() {
     if (!("Notification" in window)) {
         showToast("Notifications not supported on this browser");
@@ -165,69 +161,55 @@ async function requestNotifPermission() {
     }
     if (Notification.permission === "granted") return true;
     if (Notification.permission === "denied") {
-        showToast("Notifications blocked — enable in browser settings");
+        showToast("Notifications blocked — enable in phone Settings");
         return false;
     }
     const result = await Notification.requestPermission();
     return result === "granted";
 }
 
-// Send a message to the SW to schedule a notification
+// Core notification sender — always uses SW registration
 async function scheduleNotif({ title, body, delayMs, tag }) {
     if (Notification.permission !== "granted") return;
 
-    try {
-        const reg = await navigator.serviceWorker.ready;
-
-        setTimeout(async () => {
+    setTimeout(async () => {
+        try {
+            const reg = await navigator.serviceWorker.ready;
+            await reg.showNotification(title, {
+                body,
+                tag,
+                renotify: false,
+                icon: "/px/icon.svg",
+                vibrate: [200, 100, 200],
+                data: { url: "/px/" },
+            });
+        } catch (err) {
+            // Fallback: plain Notification API
             try {
-                await reg.showNotification(title, {
-                    body,
-                    tag,
-                    renotify: false,
-                    icon: generateIconDataUrl(),
-                    badge: generateIconDataUrl(),
-                    vibrate: [200, 100, 200],
-                    data: { url: "/px/" },
-                });
-            } catch (err) {
-                console.warn("showNotification failed:", err);
-                // Fallback: plain Notification API
-                new Notification(title, { body, tag, icon: generateIconDataUrl() });
+                new Notification(title, { body, tag });
+            } catch (e2) {
+                console.warn("Notification fallback failed:", e2);
             }
-        }, delayMs);
-    } catch (err) {
-        console.warn("SW not ready:", err);
-        // Fallback if SW unavailable
-        setTimeout(() => {
-            try { new Notification(title, { body, tag }); } catch { }
-        }, delayMs);
-    }
+        }
+    }, delayMs);
 }
 
-// Schedule a notification at a specific time today (or tomorrow if past)
 async function scheduleAt(timeStr, title, body, tag) {
     const [h, m] = timeStr.split(":").map(Number);
-    const now = new Date();
     const target = new Date();
     target.setHours(h, m, 0, 0);
-    if (target <= now) target.setDate(target.getDate() + 1);
-    const delayMs = target - now;
-    await scheduleNotif({ title, body, delayMs, tag });
+    if (target <= new Date()) target.setDate(target.getDate() + 1);
+    await scheduleNotif({ title, body, delayMs: target - new Date(), tag });
 }
 
-// Check for tasks due today and notify
 async function scheduleDeadlineNotifs() {
     const today = new Date().toISOString().slice(0, 10);
     const due = state.data.tasks.filter(
         (t) => t.status === "todo" && t.deadline === today
     );
     if (!due.length) return;
-
     const names = due.slice(0, 3).map((t) => t.title).join(", ");
     const extra = due.length > 3 ? ` +${due.length - 3} more` : "";
-
-    // Fire in 5 seconds so it doesn't feel instant on open
     await scheduleNotif({
         title: `PX — ${due.length} task${due.length > 1 ? "s" : ""} due today`,
         body: names + extra,
@@ -236,7 +218,6 @@ async function scheduleDeadlineNotifs() {
     });
 }
 
-// Main entry point — call on boot and after settings save
 async function setupNotifications() {
     const settings = loadNotifSettings();
     if (!settings.enabled) return;
@@ -262,24 +243,70 @@ async function setupNotifications() {
         "px-evening"
     );
 
-    if (settings.deadlineWarning) {
-        await scheduleDeadlineNotifs();
+    if (settings.deadlineWarning) await scheduleDeadlineNotifs();
+}
+
+async function showOpeningNotif() {
+    if (Notification.permission !== "granted") return;
+
+    const d = state.data;
+    const today = new Date().toISOString().slice(0, 10);
+
+    const todayDue = d.tasks.filter(
+        (t) => t.status === "todo" && t.deadline === today
+    ).length;
+
+    const focusCount = d.tasks.filter(
+        (t) => t.projectIds.some((pid) => d.focus.includes(pid)) &&
+            t.status === "todo" && !t.parentId
+    ).length;
+
+    const todayCount = d.todayTasks.filter((t) => t.status === "todo").length;
+
+    const lines = [];
+    if (focusCount > 0) lines.push(`${focusCount} focus task${focusCount > 1 ? "s" : ""}`);
+    if (todayCount > 0) lines.push(`${todayCount} today task${todayCount > 1 ? "s" : ""}`);
+    if (todayDue > 0) lines.push(`⚠ ${todayDue} due today`);
+    if (!lines.length) return;
+
+    await scheduleNotif({
+        title: "PX — " + new Date().toLocaleDateString("en", { weekday: "long" }),
+        body: lines.join("  ·  "),
+        delayMs: 1500,
+        tag: "px-open",
+    });
+}
+
+async function testNotif() {
+    if (Notification.permission === "denied") {
+        showToast("Blocked — enable in phone Settings → Notifications");
+        return;
     }
+    if (Notification.permission !== "granted") {
+        const granted = await requestNotifPermission();
+        if (!granted) { showToast("Permission denied"); return; }
+    }
+    showToast("Notification in 3 seconds…");
+    await scheduleNotif({
+        title: "PX test ✓",
+        body: "Notifications are working",
+        delayMs: 3000,
+        tag: "px-test",
+    });
 }
 
 async function onNotifToggle() {
     const enabled = document.getElementById("notif-enabled").checked;
     document.getElementById("notif-settings").style.display = enabled ? "block" : "none";
+    if (!enabled) return;
 
-    if (enabled) {
-        const granted = await requestNotifPermission();
-        if (!granted) {
-            document.getElementById("notif-enabled").checked = false;
-            document.getElementById("notif-settings").style.display = "none";
-            return;
-        }
-        showToast("✓ Notifications enabled");
+    const granted = await requestNotifPermission();
+    if (!granted) {
+        document.getElementById("notif-enabled").checked = false;
+        document.getElementById("notif-settings").style.display = "none";
+        return;
     }
+    showToast("✓ Notifications enabled");
 }
 
 async function saveNotifSettingsUI() {
@@ -303,120 +330,6 @@ function loadNotifSettingsIntoUI() {
     document.getElementById("notif-deadline").checked = s.deadlineWarning;
 }
 
-async function showOpeningNotif() {
-    if (Notification.permission !== "granted") return;
-
-    const d = state.data;
-    const today = new Date().toISOString().slice(0, 10);
-
-    const todayDue = d.tasks.filter(
-        (t) => t.status === "todo" && t.deadline === today
-    ).length;
-
-    const focusCount = d.tasks.filter(
-        (t) => t.projectIds.some((pid) => d.focus.includes(pid)) &&
-            t.status === "todo" && !t.parentId
-    ).length;
-
-    const todayCount = d.todayTasks.filter((t) => t.status === "todo").length;
-
-    // Build message lines
-    const lines = [];
-    if (focusCount > 0) lines.push(`${focusCount} focus task${focusCount > 1 ? "s" : ""}`);
-    if (todayCount > 0) lines.push(`${todayCount} today task${todayCount > 1 ? "s" : ""}`);
-    if (todayDue > 0) lines.push(`⚠ ${todayDue} due today`);
-
-    if (!lines.length) return; // nothing to report — no notif
-
-    const reg = await navigator.serviceWorker.ready;
-    reg.active?.postMessage({
-        type: "SCHEDULE_NOTIF",
-        title: "PX — " + new Date().toLocaleDateString("en", { weekday: "long" }),
-        body: lines.join("  ·  "),
-        delayMs: 1500,   // small delay so it feels like a push, not instant
-        tag: "px-open",
-    });
-}
-
-async function testNotif() {
-    // Step 1: check/request permission
-    if (Notification.permission === "denied") {
-        showToast("Blocked — enable in phone Settings → Safari → Notifications");
-        return;
-    }
-
-    if (Notification.permission !== "granted") {
-        const granted = await requestNotifPermission();
-        if (!granted) {
-            showToast("Permission denied");
-            return;
-        }
-    }
-
-    showToast("Notification in 3 seconds…");
-
-    // Step 2: try SW showNotification (most reliable)
-    try {
-        const reg = await navigator.serviceWorker.ready;
-        setTimeout(async () => {
-            try {
-                await reg.showNotification("PX test ✓", {
-                    body: "Notifications are working",
-                    tag: "px-test",
-                    icon: generateIconDataUrl(),
-                    vibrate: [200, 100, 200],
-                });
-            } catch (e) {
-                console.error("SW showNotification error:", e);
-                // Step 3: plain fallback
-                try { new Notification("PX test ✓", { body: "Notifications are working" }); }
-                catch (e2) { console.error("Notification fallback error:", e2); showToast("✗ " + e2.message); }
-            }
-        }, 3000);
-    } catch (e) {
-        console.error("SW ready error:", e);
-        showToast("✗ SW not available: " + e.message);
-    }
-}
-
-function generateIconDataUrl() {
-    return "/px/icon.svg";
-}
-
-// In showOpeningNotif():
-reg.active?.postMessage({
-    type: "SCHEDULE_NOTIF",
-    title: "PX — " + new Date().toLocaleDateString("en", { weekday: "long" }),
-    body: lines.join("  ·  "),
-    delayMs: 1500,
-    tag: "px-open",
-    icon: generateIconDataUrl(),   // ← add this
-});
-
-// In scheduleNotif():
-async function scheduleNotif({ title, body, delayMs, tag }) {
-    if (Notification.permission !== "granted") return;
-    const reg = await navigator.serviceWorker.ready;
-    reg.active?.postMessage({
-        type: "SCHEDULE_NOTIF",
-        title,
-        body,
-        delayMs,
-        tag,
-        icon: generateIconDataUrl(),   // ← add this
-    });
-}
-
-// In testNotif():
-reg.active?.postMessage({
-    type: "SCHEDULE_NOTIF",
-    title: "PX test",
-    body: "Notifications are working ✓",
-    delayMs: 2000,
-    tag: "px-test",
-    icon: generateIconDataUrl(),   // ← add this
-});
-
 // ── Boot ───────────────────────────────────────────────────
 
 async function boot() {
@@ -434,11 +347,9 @@ async function boot() {
     loadNotifSettingsIntoUI();
     updateSyncLabel();
 
-    // Register SW first, THEN schedule notifications
     if ("serviceWorker" in navigator) {
         try {
             await navigator.serviceWorker.register("/px/sw.js");
-            // Wait for SW to be active before sending messages
             const reg = await navigator.serviceWorker.ready;
             if (reg.active) {
                 await showOpeningNotif();
@@ -460,7 +371,10 @@ function emptyData() {
         projectProfiles: {},
         archivedTasks: [],
         archivedProjects: [],
-        syncMeta: { lastSyncAt: "", deviceId: "pwa-" + Math.random().toString(36).slice(2, 8) },
+        syncMeta: {
+            lastSyncAt: "",
+            deviceId: "pwa-" + Math.random().toString(36).slice(2, 8),
+        },
     };
 }
 
@@ -479,25 +393,16 @@ async function triggerSync() {
 
     try {
         const remote = await ghRead(state.cfg);
-
         if (!remote) {
-            // First sync — push local
             await ghWrite(state.cfg, state.data, null, "px sync: initial push (pwa)");
-            state.remoteSha = null;
             showToast("✓ Initial sync done");
         } else {
             const { merged, added, updated } = mergeData(state.data, remote.data);
             state.data = merged;
             await dbSet("data", state.data);
-
             await ghWrite(state.cfg, state.data, remote.sha, "px sync (pwa)");
-
-            const msg = added + updated > 0
-                ? `✓ ↓${added} received  ↑ pushed`
-                : "✓ Up to date";
-            showToast(msg);
+            showToast(added + updated > 0 ? `✓ ↓${added} received  ↑ pushed` : "✓ Up to date");
         }
-
         render();
         updateSyncLabel();
     } catch (e) {
@@ -513,8 +418,7 @@ function updateSyncLabel() {
     const last = state.data?.syncMeta?.lastSyncAt;
     if (!last) { el.textContent = "never synced"; return; }
     const d = new Date(last);
-    const now = new Date();
-    const diff = Math.floor((now - d) / 60000);
+    const diff = Math.floor((new Date() - d) / 60000);
     if (diff < 1) el.textContent = "synced now";
     else if (diff < 60) el.textContent = `${diff}m ago`;
     else el.textContent = d.toLocaleDateString();
@@ -537,35 +441,26 @@ function render() {
 
 function renderToday() {
     const d = state.data;
-
-    // todayTasks
     const todayList = document.getElementById("today-list");
-    if (!d.todayTasks?.length) {
-        todayList.innerHTML = '<div class="empty">No tasks for today.<br>Add one below.</div>';
-    } else {
-        todayList.innerHTML = d.todayTasks.map((t, i) => taskItemHTML(t, true)).join("");
-    }
+    todayList.innerHTML = d.todayTasks?.length
+        ? d.todayTasks.map((t) => taskItemHTML(t, true)).join("")
+        : '<div class="empty">No tasks for today.<br>Add one below.</div>';
 
-    // focus tasks
-    const focusList = document.getElementById("focus-list");
     const focusTasks = d.tasks.filter(
         (t) => t.projectIds.some((pid) => d.focus.includes(pid)) &&
-            t.status === "todo" &&
-            !t.parentId
+            t.status === "todo" && !t.parentId
     );
-    if (!focusTasks.length) {
-        focusList.innerHTML = '<div class="empty" style="padding:16px">No focus tasks.</div>';
-    } else {
-        focusList.innerHTML = focusTasks.map((t) => taskItemHTML(t, false)).join("");
-    }
+    const focusList = document.getElementById("focus-list");
+    focusList.innerHTML = focusTasks.length
+        ? focusTasks.map((t) => taskItemHTML(t, false)).join("")
+        : '<div class="empty" style="padding:16px">No focus tasks.</div>';
 }
 
 function renderInbox() {
     const inbox = state.data.tasks.filter(
         (t) => t.projectIds.length === 0 && !t.parentId
     );
-    const el = document.getElementById("inbox-list");
-    el.innerHTML = inbox.length
+    document.getElementById("inbox-list").innerHTML = inbox.length
         ? inbox.map((t) => taskItemHTML(t, false)).join("")
         : '<div class="empty">Inbox is empty.</div>';
 }
@@ -583,15 +478,17 @@ function renderFocus() {
             (t) => t.projectIds.includes(p.id) && !t.parentId && t.status === "todo"
         );
         return `
-      <div class="project-item" onclick="toggleFocus('${p.id}')">
-        <div class="project-header">
-          <span class="project-name">⭐ ${esc(p.title)}</span>
-          <span class="project-pct">${projectPct(p.id)}%</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${projectPct(p.id)}%"></div></div>
-      </div>
-      ${tasks.map((t) => taskItemHTML(t, false)).join("")}
-    `;
+            <div class="project-item" onclick="toggleFocus('${p.id}')">
+                <div class="project-header">
+                    <span class="project-name">⭐ ${esc(p.title)}</span>
+                    <span class="project-pct">${projectPct(p.id)}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:${projectPct(p.id)}%"></div>
+                </div>
+            </div>
+            ${tasks.map((t) => taskItemHTML(t, false)).join("")}
+        `;
     }).join("");
 }
 
@@ -610,15 +507,17 @@ function renderProjects() {
             (t) => t.projectIds.includes(p.id) && !t.parentId && t.status === "todo"
         ).length;
         return `
-      <div class="project-item" onclick="toggleFocus('${p.id}')">
-        <div class="project-header">
-          <span class="project-name">${isFocused ? "⭐ " : ""}${esc(p.title)}</span>
-          <span class="project-pct">${pct}%</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-        <div class="project-meta">${taskCount} task${taskCount !== 1 ? "s" : ""} remaining</div>
-      </div>
-    `;
+            <div class="project-item" onclick="toggleFocus('${p.id}')">
+                <div class="project-header">
+                    <span class="project-name">${isFocused ? "⭐ " : ""}${esc(p.title)}</span>
+                    <span class="project-pct">${pct}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:${pct}%"></div>
+                </div>
+                <div class="project-meta">${taskCount} task${taskCount !== 1 ? "s" : ""} remaining</div>
+            </div>
+        `;
     }).join("");
 }
 
@@ -639,15 +538,15 @@ function taskItemHTML(t, isToday) {
         : "";
 
     return `
-    <div class="task-item ${doneClass} ${blockedClass}"
-         onclick="openTask('${t.id}', ${isToday})">
-      <div class="task-check">${check}</div>
-      <div class="task-body">
-        <div class="task-title">${esc(t.title)}</div>
-        <div class="task-meta">${dur}${dl}${blk}${rec}${proj}</div>
-      </div>
-    </div>
-  `;
+        <div class="task-item ${doneClass} ${blockedClass}"
+             onclick="openTask('${t.id}', ${isToday})">
+            <div class="task-check">${check}</div>
+            <div class="task-body">
+                <div class="task-title">${esc(t.title)}</div>
+                <div class="task-meta">${dur}${dl}${blk}${rec}${proj}</div>
+            </div>
+        </div>
+    `;
 }
 
 // ── Helpers ────────────────────────────────────────────────
@@ -690,9 +589,7 @@ async function quickAdd() {
     const title = input.value.trim();
     if (!title) return;
 
-    const tab = state.currentTab;
     const n = now();
-
     const task = {
         id: shortId(),
         displayId: "",
@@ -706,7 +603,7 @@ async function quickAdd() {
         updatedAt: n,
     };
 
-    if (tab === "today") {
+    if (state.currentTab === "today") {
         state.data.todayTasks.push(task);
     } else {
         state.data.tasks.push(task);
@@ -715,7 +612,7 @@ async function quickAdd() {
     input.value = "";
     await saveLocal();
     render();
-    showToast(`✓ Added`);
+    showToast("✓ Added");
 }
 
 document.getElementById("addInput").addEventListener("keydown", (e) => {
@@ -731,18 +628,17 @@ function showTab(tab) {
     const tabs = ["today", "inbox", "focus", "projects", "settings"];
     document.querySelectorAll(".tab")[tabs.indexOf(tab)]?.classList.add("active");
     document.getElementById(`view-${tab}`)?.classList.add("active");
-
-    // Hide add bar on settings
     document.getElementById("addBar").style.display = tab === "settings" ? "none" : "flex";
 
-    // Load settings values
-    if (tab === "settings" && state.cfg) {
-        document.getElementById("cfg-token").value = state.cfg.token ?? "";
-        document.getElementById("cfg-owner").value = state.cfg.owner ?? "";
-        document.getElementById("cfg-repo").value = state.cfg.repo ?? "";
-        document.getElementById("cfg-branch").value = state.cfg.branch ?? "main";
+    if (tab === "settings") {
+        if (state.cfg) {
+            document.getElementById("cfg-token").value = state.cfg.token ?? "";
+            document.getElementById("cfg-owner").value = state.cfg.owner ?? "";
+            document.getElementById("cfg-repo").value = state.cfg.repo ?? "";
+            document.getElementById("cfg-branch").value = state.cfg.branch ?? "main";
+        }
+        loadNotifSettingsIntoUI();
     }
-    loadNotifSettingsIntoUI();
 }
 
 // ── Task modal ─────────────────────────────────────────────
@@ -781,13 +677,11 @@ function closeModalDirect() {
 
 async function saveModal() {
     if (!state.modal) return;
-    const { task, isToday } = state.modal;
+    const { task } = state.modal;
     const newTitle = document.getElementById("modalTitleInput").value.trim();
     if (!newTitle) return;
-
     task.title = newTitle;
     task.updatedAt = now();
-
     await saveLocal();
     render();
     closeModalDirect();
@@ -796,9 +690,8 @@ async function saveModal() {
 
 async function modalToggleDone() {
     if (!state.modal) return;
-    const { task, isToday } = state.modal;
+    const { task } = state.modal;
     const n = now();
-
     if (task.status === "done") {
         task.status = "todo";
         task.completedAt = undefined;
@@ -807,7 +700,6 @@ async function modalToggleDone() {
         task.completedAt = n;
     }
     task.updatedAt = n;
-
     await saveLocal();
     render();
     closeModalDirect();
