@@ -312,36 +312,127 @@ async function showOpeningNotif() {
     });
 }
 
+async function testNotif() {
+    if (Notification.permission !== "granted") {
+        const granted = await requestNotifPermission();
+        if (!granted) {
+            showToast("Permission denied");
+            return;
+        }
+    }
+    const reg = await navigator.serviceWorker.ready;
+    reg.active?.postMessage({
+        type: "SCHEDULE_NOTIF",
+        title: "PX test",
+        body: "Notifications are working ✓",
+        delayMs: 2000,
+        tag: "px-test",
+    });
+    showToast("Notification in 2 seconds…");
+}
+
+function generateIconDataUrl() {
+    const cached = localStorage.getItem("px-icon");
+    if (cached) return cached;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 192;
+    canvas.height = 192;
+    const ctx = canvas.getContext("2d");
+
+    // Background
+    ctx.fillStyle = "#7c6af7";
+    const r = 36;
+    ctx.beginPath();
+    ctx.moveTo(r, 0);
+    ctx.lineTo(192 - r, 0);
+    ctx.quadraticCurveTo(192, 0, 192, r);
+    ctx.lineTo(192, 192 - r);
+    ctx.quadraticCurveTo(192, 192, 192 - r, 192);
+    ctx.lineTo(r, 192);
+    ctx.quadraticCurveTo(0, 192, 0, 192 - r);
+    ctx.lineTo(0, r);
+    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    // Text
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 80px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("PX", 96, 100);
+
+    const dataUrl = canvas.toDataURL("image/png");
+    localStorage.setItem("px-icon", dataUrl);
+    return dataUrl;
+}
+
+// In showOpeningNotif():
+reg.active?.postMessage({
+    type: "SCHEDULE_NOTIF",
+    title: "PX — " + new Date().toLocaleDateString("en", { weekday: "long" }),
+    body: lines.join("  ·  "),
+    delayMs: 1500,
+    tag: "px-open",
+    icon: generateIconDataUrl(),   // ← add this
+});
+
+// In scheduleNotif():
+async function scheduleNotif({ title, body, delayMs, tag }) {
+    if (Notification.permission !== "granted") return;
+    const reg = await navigator.serviceWorker.ready;
+    reg.active?.postMessage({
+        type: "SCHEDULE_NOTIF",
+        title,
+        body,
+        delayMs,
+        tag,
+        icon: generateIconDataUrl(),   // ← add this
+    });
+}
+
+// In testNotif():
+reg.active?.postMessage({
+    type: "SCHEDULE_NOTIF",
+    title: "PX test",
+    body: "Notifications are working ✓",
+    delayMs: 2000,
+    tag: "px-test",
+    icon: generateIconDataUrl(),   // ← add this
+});
+
 // ── Boot ───────────────────────────────────────────────────
 
 async function boot() {
     db = await openDB();
 
-    // Load config from localStorage
     try {
         const saved = localStorage.getItem("px-cfg");
         if (saved) state.cfg = JSON.parse(saved);
     } catch { }
 
-    // Load data from IndexedDB
     state.data = await dbGet("data");
-
-    if (!state.data) {
-        state.data = emptyData();
-    }
+    if (!state.data) state.data = emptyData();
 
     render();
     loadNotifSettingsIntoUI();
-    await showOpeningNotif();
-    await setupNotifications();
-
-    // Register service worker
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/px/sw.js").catch(() => { });
-    }
-
-    // Update sync status label
     updateSyncLabel();
+
+    // Register SW first, THEN schedule notifications
+    if ("serviceWorker" in navigator) {
+        try {
+            await navigator.serviceWorker.register("/px/sw.js");
+            // Wait for SW to be active before sending messages
+            const reg = await navigator.serviceWorker.ready;
+            if (reg.active) {
+                await showOpeningNotif();
+                await setupNotifications();
+            }
+        } catch (e) {
+            console.warn("SW registration failed:", e);
+        }
+    }
 }
 
 function emptyData() {

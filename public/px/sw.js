@@ -50,14 +50,14 @@ self.addEventListener("notificationclick", (e) => {
 // Handle background sync message from the page
 self.addEventListener("message", (e) => {
     if (e.data?.type === "SCHEDULE_NOTIF") {
-        const { title, body, delayMs, tag } = e.data;
+        const { title, body, delayMs, tag, icon } = e.data;
         setTimeout(() => {
             self.registration.showNotification(title, {
                 body,
-                tag,                          // prevents duplicate notifs with same tag
+                tag,
                 renotify: false,
-                icon: "/px/icon-192.png",
-                badge: "/px/icon-192.png",
+                icon: icon || "./icon.svg",   // ← use passed icon, fallback to SVG
+                badge: icon || "./icon.svg",
                 vibrate: [200, 100, 200],
                 data: { url: "/px/" },
             });
