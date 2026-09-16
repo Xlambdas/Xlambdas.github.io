@@ -12,7 +12,7 @@ export function emptyData(): AppData {
     return {
         version: 2,
         tasks: [],
-        todayTasks: [],
+        todayIds: [],
         projects: [],
         focus: [],
         projectProfiles: {},

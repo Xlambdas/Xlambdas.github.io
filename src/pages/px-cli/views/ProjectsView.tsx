@@ -54,18 +54,11 @@ export function ProjectsView() {
     }
 
     async function addToToday(task: Task) {
-        const already = data.todayTasks.some((t) => t.id === task.id);
-        if (already) { showToast('Already in today'); return; }
-        const n = nowISO();
-        const todayTask = {
-            ...task,
-            id: shortId(),
-            createdAt: n,
-            updatedAt: n,
-            status: 'todo' as const,
-            completedAt: undefined,
-        };
-        await saveData({ ...data, todayTasks: [...data.todayTasks, todayTask] });
+        if (data.todayIds.includes(task.id)) {
+            showToast('Already in today');
+            return;
+        }
+        await saveData({ ...data, todayIds: [...data.todayIds, task.id] });
         showToast(`✓ "${task.title}" added to today`);
     }
 

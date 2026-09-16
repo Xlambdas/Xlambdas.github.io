@@ -35,7 +35,7 @@ export interface SyncMeta {
 export interface AppData {
     version: 2;
     tasks: Task[];
-    todayTasks: Task[];
+    todayIds: string[];
     projects: Project[];
     focus: string[];
     projectProfiles: Record<string, unknown>;

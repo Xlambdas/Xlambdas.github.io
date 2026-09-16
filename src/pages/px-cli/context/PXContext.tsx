@@ -53,17 +53,33 @@ export function PXProvider({ children }: { children: ReactNode }) {
             const savedTheme = localStorage.getItem('px-theme') as 'dark' | 'light' | null;
             if (savedTheme) setTheme(savedTheme);
 
-            // IndexedDB — always resolves, returns null if empty
             const stored = await dbGet<AppData>('data');
             if (stored) {
-                setDataState(stored);
-                updateSyncLabel(stored.syncMeta?.lastSyncAt ?? '');
+                const migrated = migrateTodayTasks(stored);
+                setDataState(migrated);
+                updateSyncLabel(migrated.syncMeta?.lastSyncAt ?? '');
             }
 
             setReady(true);
         }
         boot();
     }, []);
+
+    function migrateTodayTasks(data: any): AppData {
+        // Old format had todayTasks: Task[] — convert to todayIds
+        if (data.todayTasks && !data.todayIds) {
+            const todayIds = (data.todayTasks as any[]).map((t: any) => t.id);
+            // Move todayTasks into main tasks array if not already there
+            const existingIds = new Set((data.tasks as any[]).map((t: any) => t.id));
+            const newTasks = [...(data.tasks as any[])];
+            for (const t of data.todayTasks as any[]) {
+                if (!existingIds.has(t.id)) newTasks.push(t);
+            }
+            return { ...data, tasks: newTasks, todayIds, todayTasks: undefined };
+        }
+        if (!data.todayIds) return { ...data, todayIds: [] };
+        return data;
+    }
 
     function updateSyncLabel(lastSyncAt: string) {
         if (!lastSyncAt) { setSyncLabel('never synced'); return; }

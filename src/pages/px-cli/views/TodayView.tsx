@@ -7,41 +7,57 @@ import type { Task } from '../types';
 
 export function TodayView() {
     const { data, saveData } = usePX();
-    const [modal, setModal] = useState<{ task: Task; isToday: boolean } | null>(null);
+    const [modal, setModal] = useState<{ task: Task } | null>(null);
+
+    // Resolve today tasks by ID from the single tasks array
+    const todayTasks = data.todayIds
+        .map((id) => data.tasks.find((t) => t.id === id))
+        .filter((t): t is Task => t !== undefined);
 
     const focusTasks = data.tasks.filter(
-        (t) => t.projectIds.some((pid) => data.focus.includes(pid)) &&
-            t.status === 'todo' && !t.parentId
+        (t) =>
+            t.projectIds.some((pid) => data.focus.includes(pid)) &&
+            t.status === 'todo' &&
+            !t.parentId &&
+            !data.todayIds.includes(t.id) // avoid duplicate if already in today
     );
 
-    async function toggleDone(task: Task, isToday: boolean) {
-        const arr = isToday ? data.todayTasks : data.tasks;
-        const idx = arr.findIndex((t) => t.id === task.id);
+    async function toggleDone(task: Task) {
+        const idx = data.tasks.findIndex((t) => t.id === task.id);
         if (idx === -1) return;
         const n = nowISO();
-        const isDone = arr[idx].status === 'done';
-        const updated = [...arr];
+        const isDone = data.tasks[idx].status === 'done';
+        const updated = [...data.tasks];
         updated[idx] = {
             ...updated[idx],
             status: isDone ? 'todo' : 'done',
             completedAt: isDone ? undefined : n,
             updatedAt: n,
         };
-        await saveData(isToday
-            ? { ...data, todayTasks: updated }
-            : { ...data, tasks: updated });
+        await saveData({ ...data, tasks: updated });
+    }
+
+    async function removeFromToday(task: Task) {
+        await saveData({
+            ...data,
+            todayIds: data.todayIds.filter((id) => id !== task.id),
+        });
     }
 
     return (
         <>
             <SectionTitle>Today</SectionTitle>
-            {data.todayTasks.length === 0
-                ? <Empty>No tasks for today. Add one above.</Empty>
-                : data.todayTasks.map((t) => (
+            {todayTasks.length === 0
+                ? <Empty>No tasks for today. Add one above or use + on a project task.</Empty>
+                : todayTasks.map((t) => (
                     <TaskItem
-                        key={t.id} task={t} isToday data={data}
-                        onToggleDone={() => toggleDone(t, true)}
-                        onOpenModal={() => setModal({ task: t, isToday: true })}
+                        key={t.id}
+                        task={t}
+                        isToday
+                        data={data}
+                        onToggleDone={() => toggleDone(t)}
+                        onOpenModal={() => setModal({ task: t, isToday: true } as any)}
+                        onRemoveFromToday={() => removeFromToday(t)}
                     />
                 ))
             }
@@ -51,21 +67,31 @@ export function TodayView() {
                 ? <Empty>No focus tasks.</Empty>
                 : focusTasks.map((t) => (
                     <TaskItem
-                        key={t.id} task={t} isToday={false} data={data}
-                        onToggleDone={() => toggleDone(t, false)}
-                        onOpenModal={() => setModal({ task: t, isToday: false })}
+                        key={t.id}
+                        task={t}
+                        isToday={false}
+                        data={data}
+                        onToggleDone={() => toggleDone(t)}
+                        onOpenModal={() => setModal({ task: t, isToday: false } as any)}
+                        onAddToToday={() => addToToday(t)}
                     />
                 ))
             }
 
             {modal && (
                 <TaskModal
-                    task={modal.task} isToday={modal.isToday}
+                    task={(modal as any).task}
+                    isToday={(modal as any).isToday}
                     onClose={() => setModal(null)}
                 />
             )}
         </>
     );
+
+    async function addToToday(task: Task) {
+        if (data.todayIds.includes(task.id)) return;
+        await saveData({ ...data, todayIds: [...data.todayIds, task.id] });
+    }
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {

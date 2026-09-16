@@ -19,10 +19,16 @@ function PXInner() {
             projectIds: [], subtaskIds: [], conditionIds: [],
             status: 'todo' as const, createdAt: n, updatedAt: n,
         };
-        const newData = tab === 'today'
-            ? { ...data, todayTasks: [...data.todayTasks, task] }
-            : { ...data, tasks: [...data.tasks, task] };
-        await saveData(newData);
+
+        if (tab === 'today') {
+            await saveData({
+                ...data,
+                tasks: [...data.tasks, task],
+                todayIds: [...data.todayIds, task.id],
+            });
+        } else {
+            await saveData({ ...data, tasks: [...data.tasks, task] });
+        }
     }
 
     const view = {

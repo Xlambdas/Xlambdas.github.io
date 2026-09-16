@@ -1,4 +1,4 @@
-import { MoreHorizontal, CalendarPlus } from 'lucide-react';
+import { MoreHorizontal, CalendarPlus, X } from 'lucide-react';
 import type { Task, AppData } from '../types';
 import { isBlocked } from '../utils';
 
@@ -9,12 +9,16 @@ interface Props {
     onToggleDone: () => void;
     onOpenModal: () => void;
     onAddToToday?: () => void;
+    onRemoveFromToday?: () => void;
 }
 
-export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal, onAddToToday }: Props) {
+export function TaskItem({
+    task, isToday, data,
+    onToggleDone, onOpenModal, onAddToToday, onRemoveFromToday,
+}: Props) {
     const blocked = isBlocked(data, task);
     const done = task.status === 'done';
-    const project = !isToday && task.projectIds.length
+    const project = task.projectIds.length
         ? data.projects.find((p) => p.id === task.projectIds[0])
         : null;
 
@@ -39,7 +43,6 @@ export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal, onAdd
                     minWidth: 0,
                 }}
             >
-                {/* Circle */}
                 <div style={{
                     width: '22px',
                     height: '22px',
@@ -61,7 +64,6 @@ export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal, onAdd
                     {done ? '✓' : ''}
                 </div>
 
-                {/* Text */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
                         fontSize: '15px',
@@ -77,31 +79,31 @@ export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal, onAdd
                         {task.deadline && <Tag>📅 {task.deadline}</Tag>}
                         {blocked && <Tag red>blocked</Tag>}
                         {task.recurrence && <Tag>🔁 {task.recurrence}</Tag>}
-                        {project && <Tag accent>{project.title}</Tag>}
+                        {project && !isToday && <Tag accent>{project.title}</Tag>}
                     </div>
                 </div>
             </div>
 
-            {/* Right side buttons */}
+            {/* Right buttons */}
             <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
 
-                {/* Add to today — only shown for project tasks */}
+                {/* Remove from today */}
+                {onRemoveFromToday && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onRemoveFromToday(); }}
+                        title="Remove from today"
+                        style={btnStyle}
+                    >
+                        <X size={14} />
+                    </button>
+                )}
+
+                {/* Add to today */}
                 {onAddToToday && !isToday && (
                     <button
                         onClick={(e) => { e.stopPropagation(); onAddToToday(); }}
                         title="Add to today"
-                        style={{
-                            width: '40px',
-                            alignSelf: 'stretch',
-                            background: 'none',
-                            border: 'none',
-                            borderLeft: '1px solid var(--px-border)',
-                            color: 'var(--px-muted)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
+                        style={btnStyle}
                     >
                         <CalendarPlus size={15} />
                     </button>
@@ -110,19 +112,8 @@ export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal, onAdd
                 {/* Edit */}
                 <button
                     onClick={(e) => { e.stopPropagation(); onOpenModal(); }}
-                    title="Edit task"
-                    style={{
-                        width: '40px',
-                        alignSelf: 'stretch',
-                        background: 'none',
-                        border: 'none',
-                        borderLeft: '1px solid var(--px-border)',
-                        color: 'var(--px-muted)',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
+                    title="Edit"
+                    style={btnStyle}
                 >
                     <MoreHorizontal size={15} />
                 </button>
@@ -130,6 +121,19 @@ export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal, onAdd
         </div>
     );
 }
+
+const btnStyle: React.CSSProperties = {
+    width: '40px',
+    alignSelf: 'stretch',
+    background: 'none',
+    border: 'none',
+    borderLeft: '1px solid var(--px-border)',
+    color: 'var(--px-muted)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+};
 
 function Tag({ children, red, accent }: {
     children: React.ReactNode;

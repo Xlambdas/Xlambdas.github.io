@@ -3,7 +3,7 @@ import { usePX } from '../context/PXContext';
 import { ProjectItem } from '../components/ProjectItem';
 import { TaskItem } from '../components/TaskItem';
 import { TaskModal } from '../components/Modal';
-import { nowISO, shortId } from '../utils';
+import { nowISO } from '../utils';
 import type { Task } from '../types';
 
 export function FocusView() {
@@ -35,18 +35,11 @@ export function FocusView() {
     }
 
     async function addToToday(task: Task) {
-        const already = data.todayTasks.some((t) => t.id === task.id);
-        if (already) { showToast('Already in today'); return; }
-        const n = nowISO();
-        const todayTask = {
-            ...task,
-            id: shortId(),
-            createdAt: n,
-            updatedAt: n,
-            status: 'todo' as const,
-            completedAt: undefined,
-        };
-        await saveData({ ...data, todayTasks: [...data.todayTasks, todayTask] });
+        if (data.todayIds.includes(task.id)) {
+            showToast('Already in today');
+            return;
+        }
+        await saveData({ ...data, todayIds: [...data.todayIds, task.id] });
         showToast(`✓ "${task.title}" added to today`);
     }
 

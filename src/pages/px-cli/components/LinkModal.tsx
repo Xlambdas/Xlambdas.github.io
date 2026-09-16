@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePX } from '../context/PXContext';
 import { nowISO } from '../utils';
 import type { Task } from '../types';
@@ -11,10 +11,22 @@ interface Props {
 
 type LinkTab = 'project' | 'task';
 
-export function LinkModal({ task, isToday, onClose }: Props) {
+export function LinkModal({ task, onClose }: Props) {
     const { data, saveData, showToast } = usePX();
     const [linkTab, setLinkTab] = useState<LinkTab>('project');
     const [search, setSearch] = useState('');
+
+    useEffect(() => {
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        return () => {
+            document.body.style.overflow = prev;
+            document.body.style.position = '';
+            document.body.style.width = '';
+        };
+    }, []);
 
     const activeProjects = data.projects.filter((p) => p.status === 'active');
     const availableTasks = data.tasks.filter(
@@ -29,11 +41,11 @@ export function LinkModal({ task, isToday, onClose }: Props) {
     );
 
     async function linkToProject(pid: string) {
-        const arr = isToday ? data.todayTasks : data.tasks;
-        const idx = arr.findIndex((t) => t.id === task.id);
+        const idx = data.tasks.findIndex((t) => t.id === task.id);
         if (idx === -1) return;
-        const updated = [...arr];
-        const already = updated[idx].projectIds.includes(pid);
+
+        const already = data.tasks[idx].projectIds.includes(pid);
+        const updated = [...data.tasks];
         updated[idx] = {
             ...updated[idx],
             projectIds: already
@@ -42,21 +54,7 @@ export function LinkModal({ task, isToday, onClose }: Props) {
             updatedAt: nowISO(),
         };
 
-        // If it was a todayTask, move it to tasks so it shows under the project
-        if (isToday && !already) {
-            const newTask = { ...updated[idx] };
-            const newTodayTasks = updated.filter((_, i) => i !== idx);
-            await saveData({
-                ...data,
-                todayTasks: newTodayTasks,
-                tasks: [...data.tasks, newTask],
-            });
-        } else {
-            const newData = isToday
-                ? { ...data, todayTasks: updated }
-                : { ...data, tasks: updated };
-            await saveData(newData);
-        }
+        await saveData({ ...data, tasks: updated });
 
         const proj = data.projects.find((p) => p.id === pid);
         showToast(already ? `Unlinked from ${proj?.title}` : `✓ Linked to ${proj?.title}`);
@@ -64,36 +62,23 @@ export function LinkModal({ task, isToday, onClose }: Props) {
     }
 
     async function linkToTask(parentId: string) {
-        const tasks = [...data.tasks];
-        const idx = tasks.findIndex((t) => t.id === task.id);
+        const idx = data.tasks.findIndex((t) => t.id === task.id);
+        if (idx === -1) return;
 
-        // If task is in todayTasks, move it to tasks first
-        let workingTasks = tasks;
-        let workingToday = [...data.todayTasks];
-
-        if (isToday) {
-            const todayIdx = workingToday.findIndex((t) => t.id === task.id);
-            if (todayIdx === -1) return;
-            const moved = { ...workingToday[todayIdx], parentId, updatedAt: nowISO() };
-            workingToday = workingToday.filter((_, i) => i !== todayIdx);
-            workingTasks = [...tasks, moved];
-        } else {
-            if (idx === -1) return;
-            workingTasks = [...tasks];
-            workingTasks[idx] = { ...workingTasks[idx], parentId, updatedAt: nowISO() };
-        }
+        const updated = [...data.tasks];
+        updated[idx] = { ...updated[idx], parentId, updatedAt: nowISO() };
 
         // Add to parent's subtaskIds
-        const parentIdx = workingTasks.findIndex((t) => t.id === parentId);
-        if (parentIdx !== -1 && !workingTasks[parentIdx].subtaskIds.includes(task.id)) {
-            workingTasks[parentIdx] = {
-                ...workingTasks[parentIdx],
-                subtaskIds: [...workingTasks[parentIdx].subtaskIds, task.id],
+        const parentIdx = updated.findIndex((t) => t.id === parentId);
+        if (parentIdx !== -1 && !updated[parentIdx].subtaskIds.includes(task.id)) {
+            updated[parentIdx] = {
+                ...updated[parentIdx],
+                subtaskIds: [...updated[parentIdx].subtaskIds, task.id],
                 updatedAt: nowISO(),
             };
         }
 
-        await saveData({ ...data, tasks: workingTasks, todayTasks: workingToday });
+        await saveData({ ...data, tasks: updated });
         const parent = data.tasks.find((t) => t.id === parentId);
         showToast(`✓ Linked as subtask of "${parent?.title}"`);
         onClose();

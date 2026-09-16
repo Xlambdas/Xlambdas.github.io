@@ -20,17 +20,27 @@ export function TaskModal({ task, isToday, onClose }: Props) {
 
     useEffect(() => { titleRef.current?.focus(); }, []);
 
-    function getArr() {
-        return isToday ? data.todayTasks : data.tasks;
-    }
+    useEffect(() => {
+        // Lock background scroll
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        return () => {
+            document.body.style.overflow = prev;
+            document.body.style.position = '';
+            document.body.style.width = '';
+        };
+    }, []);
 
     async function handleSave() {
         const title = titleRef.current?.value.trim();
         if (!title) return;
-        const arr = getArr();
-        const idx = arr.findIndex((t) => t.id === task.id);
+
+        const idx = data.tasks.findIndex((t) => t.id === task.id);
         if (idx === -1) return;
-        const updated = [...arr];
+
+        const updated = [...data.tasks];
         updated[idx] = {
             ...updated[idx],
             title,
@@ -38,9 +48,8 @@ export function TaskModal({ task, isToday, onClose }: Props) {
             deadline: deadline || undefined,
             updatedAt: nowISO(),
         };
-        await saveData(isToday
-            ? { ...data, todayTasks: updated }
-            : { ...data, tasks: updated });
+
+        await saveData({ ...data, tasks: updated });
         showToast('✓ Saved');
         onClose();
     }
