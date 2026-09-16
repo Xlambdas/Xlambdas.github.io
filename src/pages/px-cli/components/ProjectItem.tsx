@@ -1,3 +1,4 @@
+import { Star } from 'lucide-react';
 import type { Project, AppData } from '../types';
 import { projectPct } from '../utils';
 
@@ -24,9 +25,16 @@ export function ProjectItem({ project, data, focused, onClick }: Props) {
             }}
         >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '15px', fontWeight: 500 }}>
-                    {focused ? '⭐ ' : ''}{project.title}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {focused && (
+                        <Star
+                            size={14}
+                            fill="var(--px-accent)"
+                            color="var(--px-accent)"
+                        />
+                    )}
+                    <span style={{ fontSize: '15px', fontWeight: 500 }}>{project.title}</span>
+                </div>
                 <span style={{ fontSize: '13px', color: 'var(--px-muted)' }}>{pct}%</span>
             </div>
             <div style={{

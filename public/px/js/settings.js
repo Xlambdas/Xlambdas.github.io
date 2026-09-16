@@ -21,6 +21,9 @@ async function saveSettings() {
     } catch (e) {
         showToast("✗ " + e.message);
     }
+
+    const theme = localStorage.getItem('px-theme') || 'dark';
+    applyTheme(theme);
 }
 
 function exportData() {

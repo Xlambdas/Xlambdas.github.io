@@ -3,11 +3,11 @@ import { usePX } from '../context/PXContext';
 import { ProjectItem } from '../components/ProjectItem';
 import { TaskItem } from '../components/TaskItem';
 import { TaskModal } from '../components/Modal';
-import { nowISO } from '../utils';
+import { nowISO, shortId } from '../utils';
 import type { Task } from '../types';
 
 export function FocusView() {
-    const { data, saveData } = usePX();
+    const { data, saveData, showToast } = usePX();
     const [modal, setModal] = useState<{ task: Task } | null>(null);
 
     const focused = data.projects.filter((p) => data.focus.includes(p.id));
@@ -34,6 +34,22 @@ export function FocusView() {
         await saveData({ ...data, tasks: updated });
     }
 
+    async function addToToday(task: Task) {
+        const already = data.todayTasks.some((t) => t.id === task.id);
+        if (already) { showToast('Already in today'); return; }
+        const n = nowISO();
+        const todayTask = {
+            ...task,
+            id: shortId(),
+            createdAt: n,
+            updatedAt: n,
+            status: 'todo' as const,
+            completedAt: undefined,
+        };
+        await saveData({ ...data, todayTasks: [...data.todayTasks, todayTask] });
+        showToast(`✓ "${task.title}" added to today`);
+    }
+
     return (
         <>
             <SectionTitle>Focused projects</SectionTitle>
@@ -54,6 +70,7 @@ export function FocusView() {
                                     key={t.id} task={t} isToday={false} data={data}
                                     onToggleDone={() => toggleDone(t)}
                                     onOpenModal={() => setModal({ task: t })}
+                                    onAddToToday={() => addToToday(t)}
                                 />
                             ))}
                         </div>

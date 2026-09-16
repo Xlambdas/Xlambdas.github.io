@@ -1,13 +1,18 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import { usePX } from '../context/PXContext';
 import { ProjectItem } from '../components/ProjectItem';
+import { TaskItem } from '../components/TaskItem';
+import { TaskModal } from '../components/Modal';
 import { shortId, nowISO } from '../utils';
+import type { Task } from '../types';
 
 export function ProjectsView() {
     const { data, saveData, showToast } = usePX();
     const [creating, setCreating] = useState(false);
     const [name, setName] = useState('');
+    const [expanded, setExpanded] = useState<string | null>(null);
+    const [modal, setModal] = useState<{ task: Task } | null>(null);
 
     const active = data.projects.filter((p) => p.status === 'active');
 
@@ -33,9 +38,40 @@ export function ProjectsView() {
         setCreating(false);
     }
 
+    async function toggleDone(task: Task) {
+        const idx = data.tasks.findIndex((t) => t.id === task.id);
+        if (idx === -1) return;
+        const n = nowISO();
+        const isDone = data.tasks[idx].status === 'done';
+        const updated = [...data.tasks];
+        updated[idx] = {
+            ...updated[idx],
+            status: isDone ? 'todo' : 'done',
+            completedAt: isDone ? undefined : n,
+            updatedAt: n,
+        };
+        await saveData({ ...data, tasks: updated });
+    }
+
+    async function addToToday(task: Task) {
+        const already = data.todayTasks.some((t) => t.id === task.id);
+        if (already) { showToast('Already in today'); return; }
+        const n = nowISO();
+        const todayTask = {
+            ...task,
+            id: shortId(),
+            createdAt: n,
+            updatedAt: n,
+            status: 'todo' as const,
+            completedAt: undefined,
+        };
+        await saveData({ ...data, todayTasks: [...data.todayTasks, todayTask] });
+        showToast(`✓ "${task.title}" added to today`);
+    }
+
     return (
         <>
-            {/* Section header with create button */}
+            {/* Header */}
             <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '16px 16px 6px',
@@ -61,10 +97,7 @@ export function ProjectsView() {
 
             {/* Create form */}
             {creating && (
-                <div style={{
-                    margin: '0 16px 12px',
-                    display: 'flex', gap: '8px',
-                }}>
+                <div style={{ margin: '0 16px 12px', display: 'flex', gap: '8px' }}>
                     <input
                         autoFocus
                         placeholder="Project name…"
@@ -100,14 +133,75 @@ export function ProjectsView() {
 
             {active.length === 0
                 ? <Empty>No projects yet.<br />Tap + to create one.</Empty>
-                : active.map((p) => (
-                    <ProjectItem
-                        key={p.id} project={p} data={data}
-                        focused={data.focus.includes(p.id)}
-                        onClick={() => toggleFocus(p.id)}
-                    />
-                ))
+                : active.map((p) => {
+                    const isExpanded = expanded === p.id;
+                    const tasks = data.tasks.filter(
+                        (t) => t.projectIds.includes(p.id) && !t.parentId && t.status === 'todo'
+                    );
+                    return (
+                        <div key={p.id}>
+                            {/* Project row — left side toggles focus, right chevron expands */}
+                            <div style={{ display: 'flex', alignItems: 'stretch' }}>
+                                <div style={{ flex: 1 }}>
+                                    <ProjectItem
+                                        project={p} data={data}
+                                        focused={data.focus.includes(p.id)}
+                                        onClick={() => toggleFocus(p.id)}
+                                    />
+                                </div>
+                                <button
+                                    onClick={() => setExpanded(isExpanded ? null : p.id)}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        borderLeft: '1px solid var(--px-border)',
+                                        borderBottom: '1px solid var(--px-border)',
+                                        color: 'var(--px-muted)',
+                                        cursor: 'pointer',
+                                        padding: '0 14px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    {isExpanded
+                                        ? <ChevronDown size={16} />
+                                        : <ChevronRight size={16} />
+                                    }
+                                </button>
+                            </div>
+
+                            {/* Tasks */}
+                            {isExpanded && (
+                                <div style={{ background: 'var(--px-surface)' }}>
+                                    {tasks.length === 0
+                                        ? <div style={{
+                                            fontSize: '13px', color: 'var(--px-muted)',
+                                            padding: '10px 16px 10px 32px',
+                                        }}>
+                                            No tasks yet.
+                                        </div>
+                                        : tasks.map((t) => (
+                                            <TaskItem
+                                                key={t.id} task={t} isToday={false} data={data}
+                                                onToggleDone={() => toggleDone(t)}
+                                                onOpenModal={() => setModal({ task: t })}
+                                                onAddToToday={() => addToToday(t)}
+                                            />
+                                        ))
+                                    }
+                                </div>
+                            )}
+                        </div>
+                    );
+                })
             }
+
+            {modal && (
+                <TaskModal
+                    task={modal.task} isToday={false}
+                    onClose={() => setModal(null)}
+                />
+            )}
         </>
     );
 }

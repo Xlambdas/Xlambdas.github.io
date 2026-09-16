@@ -44,13 +44,9 @@ self.addEventListener("notificationclick", (e) => {
     e.notification.close();
     e.waitUntil(
         clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
-            // If PWA already open, focus it
             for (const client of list) {
-                if (client.url.includes("/px/") && "focus" in client) {
-                    return client.focus();
-                }
+                if (client.url.includes("/px/") && "focus" in client) return client.focus();
             }
-            // Otherwise open it
             return clients.openWindow("/px/");
         })
     );

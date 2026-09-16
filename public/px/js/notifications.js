@@ -38,9 +38,14 @@ async function requestNotifPermission() {
 
 async function scheduleNotif({ title, body, delayMs, tag }) {
     if (Notification.permission !== "granted") return;
+
     setTimeout(async () => {
         try {
-            const reg = await navigator.serviceWorker.ready;
+            // Wait up to 3 seconds for SW to be ready
+            const reg = await Promise.race([
+                navigator.serviceWorker.ready,
+                new Promise((_, reject) => setTimeout(() => reject(new Error('SW timeout')), 3000))
+            ]);
             await reg.showNotification(title, {
                 body,
                 tag,
@@ -50,10 +55,11 @@ async function scheduleNotif({ title, body, delayMs, tag }) {
                 data: { url: "/px/" },
             });
         } catch {
+            // Fallback: plain Notification API
             try { new Notification(title, { body, tag }); } catch { }
         }
     }, delayMs);
-}
+  }
 
 async function scheduleAt(timeStr, title, body, tag) {
     const [h, m] = timeStr.split(":").map(Number);

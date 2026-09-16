@@ -1,4 +1,4 @@
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, CalendarPlus } from 'lucide-react';
 import type { Task, AppData } from '../types';
 import { isBlocked } from '../utils';
 
@@ -8,9 +8,10 @@ interface Props {
     data: AppData;
     onToggleDone: () => void;
     onOpenModal: () => void;
+    onAddToToday?: () => void;
 }
 
-export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal }: Props) {
+export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal, onAddToToday }: Props) {
     const blocked = isBlocked(data, task);
     const done = task.status === 'done';
     const project = !isToday && task.projectIds.length
@@ -21,30 +22,9 @@ export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal }: Pro
         <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0',
             borderBottom: '1px solid var(--px-border)',
             opacity: done ? 0.45 : 1,
         }}>
-
-            {/* Edit button — left side */}
-            <button
-                onClick={(e) => { e.stopPropagation(); onOpenModal(); }}
-                style={{
-                    flexShrink: 0,
-                    width: '44px',
-                    alignSelf: 'stretch',
-                    background: 'none',
-                    border: 'none',
-                    borderRight: '1px solid var(--px-border)',
-                    color: 'var(--px-muted)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <MoreHorizontal size={16} />
-            </button>
 
             {/* Row — tap to toggle done */}
             <div
@@ -54,7 +34,7 @@ export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal }: Pro
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: '12px',
-                    padding: '12px 16px 12px 12px',
+                    padding: '12px 12px 12px 16px',
                     cursor: 'pointer',
                     minWidth: 0,
                 }}
@@ -100,6 +80,52 @@ export function TaskItem({ task, isToday, data, onToggleDone, onOpenModal }: Pro
                         {project && <Tag accent>{project.title}</Tag>}
                     </div>
                 </div>
+            </div>
+
+            {/* Right side buttons */}
+            <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
+
+                {/* Add to today — only shown for project tasks */}
+                {onAddToToday && !isToday && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onAddToToday(); }}
+                        title="Add to today"
+                        style={{
+                            width: '40px',
+                            alignSelf: 'stretch',
+                            background: 'none',
+                            border: 'none',
+                            borderLeft: '1px solid var(--px-border)',
+                            color: 'var(--px-muted)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <CalendarPlus size={15} />
+                    </button>
+                )}
+
+                {/* Edit */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); onOpenModal(); }}
+                    title="Edit task"
+                    style={{
+                        width: '40px',
+                        alignSelf: 'stretch',
+                        background: 'none',
+                        border: 'none',
+                        borderLeft: '1px solid var(--px-border)',
+                        color: 'var(--px-muted)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <MoreHorizontal size={15} />
+                </button>
             </div>
         </div>
     );

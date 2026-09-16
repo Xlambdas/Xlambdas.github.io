@@ -2,7 +2,6 @@ import { type ReactNode, useRef } from 'react';
 import { CheckSquare, Inbox, Star, FolderOpen, RefreshCw, Settings, Plus } from 'lucide-react';
 import { usePX } from '../context/PXContext';
 import type { TabId } from '../types';
-import { PX_STYLE } from '../PXPage';
 
 type NavEntry = { id: TabId | 'sync'; label: string; icon: ReactNode };
 
@@ -13,6 +12,33 @@ const TABS: NavEntry[] = [
     { id: 'projects', label: 'Projects', icon: <FolderOpen size={20} /> },
     { id: 'sync', label: 'Sync', icon: <RefreshCw size={20} /> },
 ];
+
+// CSS variables injected once — PX has its own design system
+export const PX_STYLE = `
+  .px-dark {
+    --px-bg:         #0f0f0f;
+    --px-surface:    #1a1a1a;
+    --px-border:     #2a2a2a;
+    --px-text:       #e8e8e8;
+    --px-muted:      #666;
+    --px-accent:     #ffffff;
+    --px-accent-dim: #2a2a2a;
+    --px-red:        #e05555;
+  }
+  .px-light {
+    --px-bg:         #ffffff;
+    --px-surface:    #f5f5f5;
+    --px-border:     #e0e0e0;
+    --px-text:       #111111;
+    --px-muted:      #999;
+    --px-accent:     #000000;
+    --px-accent-dim: #f0f0f0;
+    --px-red:        #cc3333;
+  }
+  @keyframes px-spin {
+    to { transform: rotate(360deg); }
+  }
+`;
 
 export function Layout({
     children,
