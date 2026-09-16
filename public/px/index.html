@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0f0f0f">
@@ -621,12 +623,7 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script src="/px/app.js">(function () {
-            var s = document.createElement('script');
-            s.src = 'https://cdn.jsdelivr.net/npm/eruda';
-            document.body.appendChild(s);
-            s.onload = function () { eruda.init(); };
-        })();</script>
+    <script src="/px/app.js"></script>
 
 </body>
 
