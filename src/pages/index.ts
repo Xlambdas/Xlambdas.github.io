@@ -6,3 +6,4 @@ export { SandboxPage } from './sandbox';
 export { DemoHome } from './demo';
 
 export * from './poise';
+export * from './px-cli';

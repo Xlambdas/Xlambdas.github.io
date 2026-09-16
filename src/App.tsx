@@ -26,6 +26,7 @@ import {
     TripsPage, TemplatesPage,
     TemplateEditorPage, CategoryTemplatePage
 } from './pages/bivouac';
+import { PXPage } from './pages/px-cli';
 import {
     BodyLayout, TodayPage,
     CalendarPage, ExercisesPage,
@@ -52,7 +53,7 @@ function App() {
                 {/* -- sandbox -- */}
                 <Route path="/sandbox" element={<SandboxPage />} />
                 <Route path="/p/nt8k2" element={<TrombiPage />} />
-                {/* <Route path="/sandbox/px" element={<DemoGraph />} /> */}
+                <Route path="/sandbox/px" element={<PXPage />} />
                 {/* Bivouac */}
                 <Route path="/sandbox/bivouac" element={<BivouacPage />} />
                 <Route path="/sandbox/bivouac/trip" element={<TripPage />} />
