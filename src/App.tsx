@@ -52,6 +52,7 @@ function App() {
                 {/* -- sandbox -- */}
                 <Route path="/sandbox" element={<SandboxPage />} />
                 <Route path="/p/nt8k2" element={<TrombiPage />} />
+                {/* <Route path="/sandbox/px" element={<DemoGraph />} /> */}
                 {/* Bivouac */}
                 <Route path="/sandbox/bivouac" element={<BivouacPage />} />
                 <Route path="/sandbox/bivouac/trip" element={<TripPage />} />
