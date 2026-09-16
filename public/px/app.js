@@ -130,6 +130,153 @@ let state = {
     modal: null,        // { task, isToday }
 };
 
+// ── Notifications ──────────────────────────────────────────
+
+const NOTIF_PERMISSION_KEY = "px-notif-permission";
+const NOTIF_SETTINGS_KEY = "px-notif-settings";
+
+function defaultNotifSettings() {
+    return {
+        enabled: false,
+        morningTime: "09:00",    // daily focus reminder
+        eveningTime: "19:00",    // daily sync reminder
+        deadlineWarning: true,   // warn on tasks due today
+    };
+}
+
+function loadNotifSettings() {
+    try {
+        const s = localStorage.getItem(NOTIF_SETTINGS_KEY);
+        return s ? { ...defaultNotifSettings(), ...JSON.parse(s) } : defaultNotifSettings();
+    } catch {
+        return defaultNotifSettings();
+    }
+}
+
+function saveNotifSettings(settings) {
+    localStorage.setItem(NOTIF_SETTINGS_KEY, JSON.stringify(settings));
+}
+
+// Ask for notification permission
+async function requestNotifPermission() {
+    if (!("Notification" in window)) {
+        showToast("Notifications not supported on this browser");
+        return false;
+    }
+    if (Notification.permission === "granted") return true;
+    if (Notification.permission === "denied") {
+        showToast("Notifications blocked — enable in browser settings");
+        return false;
+    }
+    const result = await Notification.requestPermission();
+    return result === "granted";
+}
+
+// Send a message to the SW to schedule a notification
+async function scheduleNotif({ title, body, delayMs, tag }) {
+    if (Notification.permission !== "granted") return;
+    const reg = await navigator.serviceWorker.ready;
+    reg.active?.postMessage({ type: "SCHEDULE_NOTIF", title, body, delayMs, tag });
+}
+
+// Schedule a notification at a specific time today (or tomorrow if past)
+async function scheduleAt(timeStr, title, body, tag) {
+    const [h, m] = timeStr.split(":").map(Number);
+    const now = new Date();
+    const target = new Date();
+    target.setHours(h, m, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 1);
+    const delayMs = target - now;
+    await scheduleNotif({ title, body, delayMs, tag });
+}
+
+// Check for tasks due today and notify
+async function scheduleDeadlineNotifs() {
+    const today = new Date().toISOString().slice(0, 10);
+    const due = state.data.tasks.filter(
+        (t) => t.status === "todo" && t.deadline === today
+    );
+    if (!due.length) return;
+
+    const names = due.slice(0, 3).map((t) => t.title).join(", ");
+    const extra = due.length > 3 ? ` +${due.length - 3} more` : "";
+
+    // Fire in 5 seconds so it doesn't feel instant on open
+    await scheduleNotif({
+        title: `PX — ${due.length} task${due.length > 1 ? "s" : ""} due today`,
+        body: names + extra,
+        delayMs: 5000,
+        tag: "px-deadline",
+    });
+}
+
+// Main entry point — call on boot and after settings save
+async function setupNotifications() {
+    const settings = loadNotifSettings();
+    if (!settings.enabled) return;
+    if (Notification.permission !== "granted") return;
+
+    const focusCount = state.data.tasks.filter(
+        (t) => t.projectIds.some((pid) => state.data.focus.includes(pid)) && t.status === "todo"
+    ).length;
+
+    await scheduleAt(
+        settings.morningTime,
+        "PX — Good morning",
+        focusCount > 0
+            ? `You have ${focusCount} focus task${focusCount > 1 ? "s" : ""} today`
+            : "What are you focusing on today?",
+        "px-morning"
+    );
+
+    await scheduleAt(
+        settings.eveningTime,
+        "PX — End of day",
+        "Don't forget to sync your tasks",
+        "px-evening"
+    );
+
+    if (settings.deadlineWarning) {
+        await scheduleDeadlineNotifs();
+    }
+}
+
+async function onNotifToggle() {
+    const enabled = document.getElementById("notif-enabled").checked;
+    document.getElementById("notif-settings").style.display = enabled ? "block" : "none";
+
+    if (enabled) {
+        const granted = await requestNotifPermission();
+        if (!granted) {
+            document.getElementById("notif-enabled").checked = false;
+            document.getElementById("notif-settings").style.display = "none";
+            return;
+        }
+        showToast("✓ Notifications enabled");
+    }
+}
+
+async function saveNotifSettingsUI() {
+    const settings = {
+        enabled: document.getElementById("notif-enabled").checked,
+        morningTime: document.getElementById("notif-morning").value || "09:00",
+        eveningTime: document.getElementById("notif-evening").value || "19:00",
+        deadlineWarning: document.getElementById("notif-deadline").checked,
+    };
+    saveNotifSettings(settings);
+    await setupNotifications();
+    showToast("✓ Notification settings saved");
+}
+
+function loadNotifSettingsIntoUI() {
+    const s = loadNotifSettings();
+    document.getElementById("notif-enabled").checked = s.enabled;
+    document.getElementById("notif-settings").style.display = s.enabled ? "block" : "none";
+    document.getElementById("notif-morning").value = s.morningTime;
+    document.getElementById("notif-evening").value = s.eveningTime;
+    document.getElementById("notif-deadline").checked = s.deadlineWarning;
+  }
+
 // ── Boot ───────────────────────────────────────────────────
 
 async function boot() {
@@ -149,6 +296,8 @@ async function boot() {
     }
 
     render();
+    loadNotifSettingsIntoUI();
+    await setupNotifications();
 
     // Register service worker
     if ("serviceWorker" in navigator) {
@@ -451,6 +600,7 @@ function showTab(tab) {
         document.getElementById("cfg-repo").value = state.cfg.repo ?? "";
         document.getElementById("cfg-branch").value = state.cfg.branch ?? "main";
     }
+    loadNotifSettingsIntoUI();
 }
 
 // ── Task modal ─────────────────────────────────────────────

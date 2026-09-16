@@ -7,9 +7,7 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", (e) => {
-    e.waitUntil(
-        caches.open(CACHE).then((c) => c.addAll(ASSETS))
-    );
+    e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
     self.skipWaiting();
 });
 
@@ -23,13 +21,46 @@ self.addEventListener("activate", (e) => {
 });
 
 self.addEventListener("fetch", (e) => {
-    // GitHub API calls — network only, never cache
     if (e.request.url.includes("api.github.com")) {
         e.respondWith(fetch(e.request));
         return;
     }
-    // App shell — cache first, fall back to network
     e.respondWith(
         caches.match(e.request).then((cached) => cached || fetch(e.request))
     );
+});
+
+// Handle notification click — open the PWA
+self.addEventListener("notificationclick", (e) => {
+    e.notification.close();
+    e.waitUntil(
+        clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+            // If PWA already open, focus it
+            for (const client of list) {
+                if (client.url.includes("/px/") && "focus" in client) {
+                    return client.focus();
+                }
+            }
+            // Otherwise open it
+            return clients.openWindow("/px/");
+        })
+    );
+});
+
+// Handle background sync message from the page
+self.addEventListener("message", (e) => {
+    if (e.data?.type === "SCHEDULE_NOTIF") {
+        const { title, body, delayMs, tag } = e.data;
+        setTimeout(() => {
+            self.registration.showNotification(title, {
+                body,
+                tag,                          // prevents duplicate notifs with same tag
+                renotify: false,
+                icon: "/px/icon-192.png",
+                badge: "/px/icon-192.png",
+                vibrate: [200, 100, 200],
+                data: { url: "/px/" },
+            });
+        }, delayMs);
+    }
 });
