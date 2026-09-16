@@ -25,21 +25,27 @@ function mergeEntities<T extends { id: string; updatedAt: string }>(
 
 export function mergeData(local: AppData, remote: AppData): MergeResult {
     const tasks = mergeEntities(local.tasks, remote.tasks);
-    const today = mergeEntities(local.todayTasks, remote.todayTasks);
     const projects = mergeEntities(local.projects, remote.projects);
     const archT = mergeEntities(local.archivedTasks, remote.archivedTasks);
     const archP = mergeEntities(local.archivedProjects, remote.archivedProjects);
+
+    // todayIds: union of both sides, keep only IDs that exist in merged tasks
+    const mergedTaskIds = new Set(tasks.items.map((t) => t.id));
+    const todayIds = Array.from(
+        new Set([...local.todayIds, ...remote.todayIds])
+    ).filter((id) => mergedTaskIds.has(id));
+
     return {
         merged: {
             ...local,
             tasks: tasks.items,
-            todayTasks: today.items,
+            todayIds,
             projects: projects.items,
             archivedTasks: archT.items,
             archivedProjects: archP.items,
             syncMeta: { ...local.syncMeta, lastSyncAt: new Date().toISOString() },
         },
-        added: tasks.added + today.added + projects.added,
-        updated: tasks.updated + today.updated + projects.updated,
+        added: tasks.added + projects.added,
+        updated: tasks.updated + projects.updated,
     };
-}
+  }
