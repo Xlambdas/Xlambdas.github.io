@@ -2,8 +2,17 @@ const CACHE = "px-v1";
 const ASSETS = [
     "/px/",
     "/px/index.html",
-    "/px/app.js",
-    "/px/manifest.json"
+    "/px/manifest.json",
+    "/px/js/db.js",
+    "/px/js/github.js",
+    "/px/js/merge.js",
+    "/px/js/state.js",
+    "/px/js/notifications.js",
+    "/px/js/render.js",
+    "/px/js/ui.js",
+    "/px/js/sync.js",
+    "/px/js/settings.js",
+    "/px/js/app.js",
 ];
 
 self.addEventListener("install", (e) => {
