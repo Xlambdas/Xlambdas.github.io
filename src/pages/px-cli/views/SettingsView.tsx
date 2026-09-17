@@ -84,23 +84,46 @@ export function SettingsView() {
     }
 
     async function testNotif() {
-        if (notifPermission !== 'granted') {
-            showToast('Enable notifications first');
+        // Step 1: check API exists
+        if (!('Notification' in window)) {
+            showToast('❌ Notification API not available');
             return;
         }
-        showToast('Notification in 3 seconds…');
-        setTimeout(async () => {
-            try {
-                const reg = await navigator.serviceWorker.ready;
-                await reg.showNotification('PX test ✓', {
-                    body: 'Notifications are working',
-                    tag: 'px-test',
-                    icon: '/px/icon.svg',
-                });
-            } catch {
-                try { new Notification('PX test ✓', { body: 'Notifications are working' }); } catch { }
-            }
-        }, 3000);
+
+        showToast(`Permission: ${Notification.permission}`);
+        await new Promise(r => setTimeout(r, 1000));
+
+        if (Notification.permission !== 'granted') {
+            showToast('❌ Not granted — enable in Settings');
+            return;
+        }
+
+        // Step 2: check SW
+        if (!('serviceWorker' in navigator)) {
+            showToast('❌ No service worker support');
+            return;
+        }
+
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (!reg) {
+            showToast('❌ No SW registered at this path');
+            return;
+        }
+
+        showToast(`SW state: ${reg.active?.state ?? 'no active worker'}`);
+        await new Promise(r => setTimeout(r, 1500));
+
+        // Step 3: try firing
+        try {
+            await reg.showNotification('PX test ✓', {
+                body: 'Notifications working',
+                tag: 'px-test',
+                icon: '/px/icon.svg',
+            });
+            showToast('✓ Notification sent');
+        } catch (e: any) {
+            showToast('❌ ' + e.message);
+        }
     }
 
     function exportData() {
@@ -290,6 +313,8 @@ async function scheduleNotif({ title, body, delayMs, tag }: {
         }
     }, delayMs);
 }
+
+
 
 // ── Sub-components ──────────────────────────────────────────
 
