@@ -84,43 +84,35 @@ export function SettingsView() {
     }
 
     async function testNotif() {
-        // Step 1: check API exists
         if (!('Notification' in window)) {
             showToast('❌ Notification API not available');
             return;
         }
 
         showToast(`Permission: ${Notification.permission}`);
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 800));
 
         if (Notification.permission !== 'granted') {
             showToast('❌ Not granted — enable in Settings');
             return;
         }
 
-        // Step 2: check SW
-        if (!('serviceWorker' in navigator)) {
-            showToast('❌ No service worker support');
-            return;
-        }
-
-        const reg = await navigator.serviceWorker.getRegistration();
+        const reg = await navigator.serviceWorker.getRegistration('/sandbox/px/');
         if (!reg) {
-            showToast('❌ No SW registered at this path');
+            showToast('❌ No SW registered — try reopening the app');
             return;
         }
 
-        showToast(`SW state: ${reg.active?.state ?? 'no active worker'}`);
-        await new Promise(r => setTimeout(r, 1500));
+        showToast(`SW: ${reg.active?.state ?? 'no active worker'}`);
+        await new Promise(r => setTimeout(r, 800));
 
-        // Step 3: try firing
         try {
             await reg.showNotification('PX test ✓', {
                 body: 'Notifications working',
                 tag: 'px-test',
                 icon: '/px/icon.svg',
             });
-            showToast('✓ Notification sent');
+            showToast('✓ Sent');
         } catch (e: any) {
             showToast('❌ ' + e.message);
         }
@@ -298,15 +290,12 @@ async function scheduleNotif({ title, body, delayMs, tag }: {
     if (Notification.permission !== 'granted') return;
     setTimeout(async () => {
         try {
-            const reg = await Promise.race([
-                navigator.serviceWorker.ready,
-                new Promise<never>((_, reject) => setTimeout(() => reject(new Error('SW timeout')), 3000)),
-            ]);
-            await (reg as ServiceWorkerRegistration).showNotification(title, {
+            const reg = await navigator.serviceWorker.getRegistration('/sandbox/px/');
+            if (!reg) return;
+            await reg.showNotification(title, {
                 body,
                 tag,
                 icon: '/px/icon.svg',
-                // vibrate: [200, 100, 200],
             });
         } catch {
             try { new Notification(title, { body, tag }); } catch { }

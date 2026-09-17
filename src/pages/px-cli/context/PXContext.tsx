@@ -55,9 +55,19 @@ export function PXProvider({ children }: { children: ReactNode }) {
 
             const stored = await dbGet<AppData>('data');
             if (stored) {
-                const migrated = migrateTodayTasks(stored);
-                setDataState(migrated);
-                updateSyncLabel(migrated.syncMeta?.lastSyncAt ?? '');
+                setDataState(migrateTodayTasks(stored));
+                updateSyncLabel(stored.syncMeta?.lastSyncAt ?? '');
+            }
+
+            // Register PX service worker for notifications
+            if ('serviceWorker' in navigator) {
+                try {
+                    await navigator.serviceWorker.register('/px-sw.js', {
+                        scope: '/sandbox/px/',
+                    });
+                } catch (e) {
+                    console.warn('PX SW registration failed:', e);
+                }
             }
 
             setReady(true);
