@@ -9,12 +9,12 @@ interface Props {
     onToggleDone: () => void;
     onOpenModal: () => void;
     onAddToToday?: () => void;
-    onRemoveFromToday?: () => void;
+    onDelete?: () => void;
 }
 
 export function TaskItem({
     task, isToday, data,
-    onToggleDone, onOpenModal, onAddToToday, onRemoveFromToday,
+    onToggleDone, onOpenModal, onAddToToday, onDelete,
 }: Props) {
     const blocked = isBlocked(data, task);
     const done = task.status === 'done';
@@ -85,21 +85,10 @@ export function TaskItem({
             </div>
 
             {/* Right buttons */}
-            <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
 
-                {/* Remove from today */}
-                {onRemoveFromToday && (
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onRemoveFromToday(); }}
-                        title="Remove from today"
-                        style={btnStyle}
-                    >
-                        <X size={14} />
-                    </button>
-                )}
-
-                {/* Add to today */}
-                {onAddToToday && !isToday && (
+                    {/* Add to today */}
+                    {onAddToToday && !isToday && (
                     <button
                         onClick={(e) => { e.stopPropagation(); onAddToToday(); }}
                         title="Add to today"
@@ -107,17 +96,28 @@ export function TaskItem({
                     >
                         <CalendarPlus size={15} />
                     </button>
-                )}
+                    )}
 
-                {/* Edit */}
-                <button
+                    {/* Delete */}
+                    {onDelete && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                        title="Delete task"
+                        style={btnStyle}
+                    >
+                        <X size={14} />
+                    </button>
+                    )}
+
+                    {/* Edit */}
+                    <button
                     onClick={(e) => { e.stopPropagation(); onOpenModal(); }}
                     title="Edit"
                     style={btnStyle}
-                >
+                    >
                     <MoreHorizontal size={15} />
-                </button>
-            </div>
+                    </button>
+                </div>
         </div>
     );
 }

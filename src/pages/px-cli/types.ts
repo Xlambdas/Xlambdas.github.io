@@ -36,6 +36,7 @@ export interface AppData {
     version: 2;
     tasks: Task[];
     todayIds: string[];
+    deletedIds: string[];
     projects: Project[];
     focus: string[];
     projectProfiles: Record<string, unknown>;

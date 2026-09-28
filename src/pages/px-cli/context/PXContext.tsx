@@ -83,11 +83,13 @@ export function PXProvider({ children }: { children: ReactNode }) {
             for (const t of data.todayTasks as any[]) {
             if (!existingIds.has(t.id)) newTasks.push(t);
             }
-            return { ...data, tasks: newTasks, todayIds, todayTasks: undefined };
+            return { ...data, tasks: newTasks, todayIds, deletedIds: data.deletedIds ?? [], todayTasks: undefined };
         }
-        // Safety: ensure todayIds is always an array
         if (!data.todayIds || !Array.isArray(data.todayIds)) {
-            return { ...data, todayIds: [] };
+            return { ...data, todayIds: [], deletedIds: data.deletedIds ?? [] };
+        }
+        if (!data.deletedIds || !Array.isArray(data.deletedIds)) {
+            return { ...data, deletedIds: [] };
         }
         return data;
     }
