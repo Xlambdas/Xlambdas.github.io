@@ -5,7 +5,7 @@ import {
 import type { AppData, GitHubConfig, TabId } from '../types';
 import { emptyData } from '../utils';
 import { useGitHub } from '../hooks/useGitHub';
-import { mergeData } from '../hooks/useSync';
+// import { mergeData } from '../hooks/useSync';
 import { dbGet, dbSet } from '../hooks/useDB';
 
 interface PXContextValue {
@@ -115,18 +115,18 @@ export function PXProvider({ children }: { children: ReactNode }) {
         try {
           const remote = await ghRead(loadedCfg);
           if (remote) {
-            const migratedRemote = migrateTodayTasks(remote.data);
-            const remoteWithDeletions = {
-              ...migratedRemote,
-              deletedIds: Array.from(new Set([
-                ...(localData.deletedIds ?? []),
-                ...(migratedRemote.deletedIds ?? []),
-              ])),
-            };
-            const { merged } = mergeData(localData, remoteWithDeletions);
-            setDataState(merged);
-            await dbSet('data', merged);
-            updateSyncLabel(merged.syncMeta?.lastSyncAt ?? '');
+            // const migratedRemote = migrateTodayTasks(remote.data);
+            // const remoteWithDeletions = {
+            //   ...migratedRemote,
+            //   deletedIds: Array.from(new Set([
+            //     ...(localData.deletedIds ?? []),
+            //     ...(migratedRemote.deletedIds ?? []),
+            //   ])),
+            // };
+            const pulled = migrateTodayTasks(remote.data);
+            setDataState(pulled);
+            await dbSet('data', pulled);
+            updateSyncLabel(pulled.syncMeta?.lastSyncAt ?? '');
           }
         } catch {
           // Offline — continue with local data silently
@@ -162,61 +162,44 @@ export function PXProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const triggerSync = useCallback(async () => {
-    if (!cfg?.token) { showToast('Configure GitHub in Settings first'); setTab('settings'); return; }
-    setSyncing(true);
-    try {
-      const remote = await ghRead(cfg);
-      if (!remote) {
-        await ghWrite(cfg, data, null, 'px sync: initial push (pwa)');
-        showToast('✓ Initial sync done');
-      } else {
-        const migratedRemote = migrateTodayTasks(remote.data);
-        const remoteWithDeletions = {
-          ...migratedRemote,
-          deletedIds: Array.from(new Set([
-            ...(data.deletedIds ?? []),
-            ...(migratedRemote.deletedIds ?? []),
-          ])),
-        };
-        const { merged, added, updated } = mergeData(data, remoteWithDeletions);
-        setDataState(merged);
-        await dbSet('data', merged);
-        updateSyncLabel(merged.syncMeta?.lastSyncAt ?? '');
-        await ghWrite(cfg, merged, remote.sha, 'px sync (pwa)');
-        showToast(added + updated > 0 ? `✓ ↓${added} received` : '✓ Up to date');
-      }
-    } catch (e: any) {
-      showToast('✗ ' + e.message);
-    } finally {
-      setSyncing(false);
-    }
-  }, [cfg, data, ghRead, ghWrite, showToast]);
+  if (!cfg?.token) { showToast('Configure GitHub in Settings first'); setTab('settings'); return; }
+  setSyncing(true);
+  try {
+    // Get current SHA (needed for GitHub API update)
+    const remote = await ghRead(cfg);
+    const sha = remote?.sha ?? null;
+    // Push local data as-is — no merge
+    await ghWrite(cfg, data, sha, 'px push (pwa)');
+    const pushed = { ...data, syncMeta: { ...data.syncMeta, lastSyncAt: new Date().toISOString() } };
+    setDataState(pushed);
+    await dbSet('data', pushed);
+    updateSyncLabel(pushed.syncMeta.lastSyncAt);
+    showToast('✓ Pushed to remote');
+  } catch (e: any) {
+    showToast('✗ ' + e.message);
+  } finally {
+    setSyncing(false);
+  }
+}, [cfg, data, ghRead, ghWrite, showToast]);
 
-  const triggerPull = useCallback(async () => {
-    if (!cfg?.token) { showToast('Configure GitHub in Settings first'); return; }
-    setSyncing(true);
-    try {
-      const remote = await ghRead(cfg);
-      if (!remote) { showToast('Nothing on remote yet'); return; }
-      const migratedRemote = migrateTodayTasks(remote.data);
-      const remoteWithDeletions = {
-        ...migratedRemote,
-        deletedIds: Array.from(new Set([
-          ...(data.deletedIds ?? []),
-          ...(migratedRemote.deletedIds ?? []),
-        ])),
-      };
-      const { merged, added, updated } = mergeData(data, remoteWithDeletions);
-      setDataState(merged);
-      await dbSet('data', merged);
-      updateSyncLabel(merged.syncMeta?.lastSyncAt ?? '');
-      showToast(added + updated > 0 ? `✓ ↓${added + updated} pulled` : '✓ Already up to date');
-    } catch (e: any) {
-      showToast('✗ ' + e.message);
-    } finally {
-      setSyncing(false);
-    }
-  }, [cfg, data, ghRead, showToast]);
+const triggerPull = useCallback(async () => {
+  if (!cfg?.token) { showToast('Configure GitHub in Settings first'); return; }
+  setSyncing(true);
+  try {
+    const remote = await ghRead(cfg);
+    if (!remote) { showToast('Nothing on remote yet'); return; }
+    // Pull remote data as-is — overwrite local completely
+    const pulled = migrateTodayTasks(remote.data);
+    setDataState(pulled);
+    await dbSet('data', pulled);
+    updateSyncLabel(pulled.syncMeta?.lastSyncAt ?? '');
+    showToast('✓ Pulled from remote');
+  } catch (e: any) {
+    showToast('✗ ' + e.message);
+  } finally {
+    setSyncing(false);
+  }
+}, [cfg, ghRead, showToast]);
 
   return (
     <PXContext.Provider value={{
