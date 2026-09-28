@@ -5,6 +5,7 @@ import { SEED_EXERCISES } from './data/exercises'
 import { SEED_SESSIONS } from './data/sessions'
 import { SEED_ROUTINES } from './data/routines'
 import { usePWAInstall } from './hooks/usePWAInstall'
+import { useEffect } from 'react'
 
 const NAV_ITEMS = [
   { to: '/sandbox/poise/today', label: 'Today', icon: Sun },
@@ -79,6 +80,32 @@ async function exportAllData() {
 export default function BodyLayout() {
   const navigate = useNavigate()
   const { canInstall, triggerInstall } = usePWAInstall()
+  
+  useEffect(() => {
+    let wakeLock: WakeLockSentinel | null = null
+
+    async function requestWakeLock() {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen')
+      } catch (e) {
+        // Device doesn't support it or battery too low — silent fail
+      }
+    }
+
+    // Re-acquire when tab becomes visible again
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible') requestWakeLock()
+    }
+
+    requestWakeLock()
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      wakeLock?.release()
+    }
+  }, [])
+
   return (
     <div className="poise-root">
       {/* Top bar */}
@@ -134,12 +161,12 @@ export default function BodyLayout() {
       <style>{`
         /* ── Tokens ── */
         .poise-root {
-          --p-bg:      #0D0D0D;
-          --p-surface: #1A1A1A;
-          --p-text:    #F0EDE8;
-          --p-accent:  #E8A842;
-          --p-muted:   #4A4540;
-          --p-border:  #2A2520;
+          --p-bg:      #0f0f0f;
+          --p-surface: #1a1a1a;
+          --p-border:  #2a2a2a;
+          --p-text:    #e8e8e8;
+          --p-muted:   #666;
+          --p-accent:  #ffffff;
 
           --p-font-display: var(--font-primary,  sans-serif);
           --p-font-body:    var(--font-secondary, sans-serif);
