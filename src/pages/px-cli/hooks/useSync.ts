@@ -40,17 +40,20 @@ export function mergeData(local: AppData, remote: AppData): MergeResult {
     const archP    = mergeEntities(local.archivedProjects,     remote.archivedProjects);
 
     const mergedTaskIds = new Set(tasks.items.map((t) => t.id));
-    // Use local todayIds as the source of truth — clear is a local decision
-    // Only add remote ids that don't exist locally at all (added on another device)
-    const localTodaySet  = new Set(local.todayIds ?? []);
-    const remoteTodayIds = (remote.todayIds ?? []).filter(
-    (id) => !mergedTaskIds.has(id) || localTodaySet.has(id)
-        ? localTodaySet.has(id)
-        : true
-    );
-    const todayIds = Array.from(
-    new Set([...(local.todayIds ?? []), ...remoteTodayIds])
-    ).filter((id) => mergedTaskIds.has(id) && !deletedSet.has(id));
+    const lastSync    = new Date(local.syncMeta?.lastSyncAt ?? 0).getTime();
+    const localSet    = new Set(local.todayIds ?? []);
+
+    // Accept a remote todayId only if:
+    // 1. It's already in local (keep it), OR
+    // 2. The task was updated after last sync (genuinely added on remote device)
+    const todayIds = Array.from(new Set([
+    ...(local.todayIds ?? []),
+    ...(remote.todayIds ?? []).filter((id) => {
+        if (localSet.has(id)) return true;
+        const task = mergeEntities(local.tasks, remote.tasks).items.find((t) => t.id === id);
+        return task && new Date(task.updatedAt).getTime() > lastSync;
+    }),
+    ])).filter((id) => mergedTaskIds.has(id) && !deletedSet.has(id));
 
     return {
         merged: {
