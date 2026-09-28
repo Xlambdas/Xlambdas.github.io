@@ -76,18 +76,19 @@ export function PXProvider({ children }: { children: ReactNode }) {
     }, []);
 
     function migrateTodayTasks(data: any): AppData {
-        // Old format had todayTasks: Task[] — convert to todayIds
         if (data.todayTasks && !data.todayIds) {
             const todayIds = (data.todayTasks as any[]).map((t: any) => t.id);
-            // Move todayTasks into main tasks array if not already there
             const existingIds = new Set((data.tasks as any[]).map((t: any) => t.id));
             const newTasks = [...(data.tasks as any[])];
             for (const t of data.todayTasks as any[]) {
-                if (!existingIds.has(t.id)) newTasks.push(t);
+            if (!existingIds.has(t.id)) newTasks.push(t);
             }
             return { ...data, tasks: newTasks, todayIds, todayTasks: undefined };
         }
-        if (!data.todayIds) return { ...data, todayIds: [] };
+        // Safety: ensure todayIds is always an array
+        if (!data.todayIds || !Array.isArray(data.todayIds)) {
+            return { ...data, todayIds: [] };
+        }
         return data;
     }
 
@@ -130,22 +131,24 @@ export function PXProvider({ children }: { children: ReactNode }) {
         try {
             const remote = await ghRead(cfg);
             if (!remote) {
-                await ghWrite(cfg, data, null, 'px sync: initial push (pwa)');
-                showToast('✓ Initial sync done');
+            await ghWrite(cfg, data, null, 'px sync: initial push (pwa)');
+            showToast('✓ Initial sync done');
             } else {
-                const { merged, added, updated } = mergeData(data, remote.data);
-                await dbSet('data', merged);
-                setDataState(merged);
-                updateSyncLabel(merged.syncMeta?.lastSyncAt ?? '');
-                await ghWrite(cfg, merged, remote.sha, 'px sync (pwa)');
-                showToast(added + updated > 0 ? `✓ ↓${added} received` : '✓ Up to date');
+            // Migrate remote data before merging — it may still have old todayTasks format
+            const migratedRemote = migrateTodayTasks(remote.data);
+            const { merged, added, updated } = mergeData(data, migratedRemote);
+            await dbSet('data', merged);
+            setDataState(merged);
+            updateSyncLabel(merged.syncMeta?.lastSyncAt ?? '');
+            await ghWrite(cfg, merged, remote.sha, 'px sync (pwa)');
+            showToast(added + updated > 0 ? `✓ ↓${added} received` : '✓ Up to date');
             }
         } catch (e: any) {
             showToast('✗ ' + e.message);
         } finally {
             setSyncing(false);
         }
-    }, [cfg, data, ghRead, ghWrite, saveData, showToast]);
+    }, [cfg, data, ghRead, ghWrite, showToast]);
 
     return (
         <PXContext.Provider value={{
