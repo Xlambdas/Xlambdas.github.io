@@ -1,5 +1,5 @@
 import { type ReactNode, useRef } from 'react';
-import { CheckSquare, Inbox, Star, FolderOpen, RefreshCw, Settings, Plus } from 'lucide-react';
+import { CheckSquare, Inbox, Star, FolderOpen, RefreshCw, Settings, Plus, Upload } from 'lucide-react';
 import { usePX } from '../context/PXContext';
 import type { TabId } from '../types';
 
@@ -10,7 +10,7 @@ const TABS: NavEntry[] = [
     { id: 'inbox', label: 'Inbox', icon: <Inbox size={20} /> },
     { id: 'focus', label: 'Focus', icon: <Star size={20} /> },
     { id: 'projects', label: 'Projects', icon: <FolderOpen size={20} /> },
-    { id: 'sync', label: 'Sync', icon: <RefreshCw size={20} /> },
+    { id: 'sync', label: 'push', icon: <Upload size={20} /> },
 ];
 
 // CSS variables injected once — PX has its own design system

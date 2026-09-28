@@ -18,7 +18,7 @@ function defaultNotifSettings(): NotifSettings {
 }
 
 export function SettingsView() {
-    const { data, cfg, setCfg, theme, toggleTheme, showToast, triggerSync } = usePX();
+    const { data, cfg, setCfg, theme, toggleTheme, showToast, triggerSync, triggerPull } = usePX();
     const { ghRead } = useGitHub();
 
     const [token, setToken] = useState(cfg?.token ?? '');
@@ -163,6 +163,8 @@ export function SettingsView() {
                 <Input placeholder="Branch (default: main)" value={branch} onChange={setBranch} />
                 <Btn primary onClick={saveSettings}>Save & test connection</Btn>
                 <Btn onClick={triggerSync}>Sync now</Btn>
+                <Btn onClick={triggerSync}>Push now</Btn>
+                <Btn onClick={triggerPull}>Pull now</Btn>
                 <p style={{ fontSize: '12px', color: 'var(--px-muted)', lineHeight: 1.6, marginTop: '8px' }}>
                     Create a token at github.com/settings/tokens<br />
                     Required scope: <strong>repo</strong><br />
