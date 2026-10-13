@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /p/
+Disallow: /sandbox/
+
+Sitemap: https://xls-studio.com/sitemap.xml
