@@ -167,6 +167,7 @@ export default function BodyLayout() {
           --p-text:    #e8e8e8;
           --p-muted:   #666;
           --p-accent:  #ffffff;
+          
 
           --p-font-display: var(--font-primary,  sans-serif);
           --p-font-body:    var(--font-secondary, sans-serif);

@@ -7,9 +7,10 @@
     "dev": "vite",
     "docs:structure": "node scripts/update-readme-structure.mjs",
     "docs:sync": "npm run docs:structure",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run build:portfolio",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:portfolio": "vite build --config portfolio/vite.config.ts && vite build --config portfolio/vite.config.ts --ssr && node portfolio/prerender.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
