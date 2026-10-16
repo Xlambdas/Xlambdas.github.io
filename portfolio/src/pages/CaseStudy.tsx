@@ -67,6 +67,19 @@ export function CaseStudy({ t }: { t: Content }) {
                 <div className="initiative card">
                     <h2 id="initiative">{c.initiative.title}</h2>
                     {c.initiative.text.map((p) => <p key={p}>{p}</p>)}
+                    {c.initiative.items && (
+                        <>
+                            <h3 className="init-list-title">{c.initiative.listTitle}</h3>
+                            <ul className="init-list">
+                                {c.initiative.items.map((it) => <li key={it}>{it}</li>)}
+                            </ul>
+                        </>
+                    )}
+                    {c.initiative.shots && (
+                        <div className="init-shots">
+                            {c.initiative.shots.map((s) => <Shot key={s.src} shot={s} />)}
+                        </div>
+                    )}
                 </div>
             </section>
 

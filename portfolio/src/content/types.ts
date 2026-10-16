@@ -67,7 +67,15 @@ export interface Report {
     basedOn?: string
     sections: ReportSection[]
     acknowledgements?: string
-    pdf?: Link
+    doc?: ReportDoc
+}
+
+// The real report, downloadable, with an image of its first page
+export interface ReportDoc {
+    href: string
+    pages: number
+    size: string // e.g. '340 Ko'
+    cover: { src: string; width: number; height: number }
 }
 
 export interface Content {
@@ -114,7 +122,7 @@ export interface Content {
         read: string
         backToList: string
         status: Record<ReportStatus, string>
-        labels: { course: string; date: string; status: string; authors: string; question: string; basedOn: string; acknowledgements: string }
+        labels: { course: string; date: string; status: string; authors: string; question: string; basedOn: string; acknowledgements: string; doc: string; download: string; pages: string; coverAlt: string }
         reports: Report[]
     }
     caseStudy: {
@@ -125,7 +133,7 @@ export interface Content {
         intro: string[]
         method: { title: string; text: string; steps: { title: string; text: string }[] }
         phases: CasePhase[]
-        initiative: { title: string; text: string[] }
+        initiative: { title: string; text: string[]; listTitle?: string; items?: string[]; shots?: Shot[] }
         hard: { title: string; items: { title: string; text: string }[] }
         takeaway: { title: string; text: string[]; skillsTitle: string; skills: string[] }
         cta: { text: string; button: string }

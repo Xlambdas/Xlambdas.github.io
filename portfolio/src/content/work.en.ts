@@ -1,5 +1,6 @@
 // Academic work — EN (same slugs and order as work.fr.ts)
 import type { Content } from './types'
+import { DOCS } from './shared'
 
 export const workEn: Content['work'] = {
     meta: {
@@ -22,6 +23,10 @@ export const workEn: Content['work'] = {
         question: 'Research question',
         basedOn: 'Based on',
         acknowledgements: 'Acknowledgements',
+        doc: 'The full report',
+        download: 'Download the PDF',
+        pages: 'pages',
+        coverAlt: 'First page of the report',
     },
 
     reports: [
@@ -128,48 +133,83 @@ export const workEn: Content['work'] = {
                     ],
                 },
             ],
+            doc: { ...DOCS.rireVirtuel, size: '3.3 MB' },
         },
         {
             slug: 'robots-sociaux-alzheimer',
             type: 'Research project (TER)',
             course: "Bachelor's in MIASHS, University of Bordeaux",
             date: '2025',
-            status: 'rewriting',
-            title: "Social robots and Alzheimer's disease",
-            subtitle: 'Can a robot help people remember what they have to do?',
+            status: 'done',
+            title: 'Social robots and prospective memory in care homes',
+            subtitle: 'Can a robot pass on a memory strategy as well as a human?',
             authors: ['Pierre-Samuel Bashaga-Kachungunu', 'Corentin Gassien', 'Younha Jean-Louis'],
             summary:
-                'A state of the art on social robots and dementia, and a protocol comparing a social robot with a human professional helping care home residents remember an action to do.',
-            question: "To what extent can a companion robot help a person with Alzheimer's disease in their daily life?",
+                'A state of the art on prospective memory and social robots in geriatrics, and a protocol comparing a robot and a professional helping care home residents remember an action to do.',
+            question:
+                'When it is delivered by a social robot rather than a professional, does an implementation intention help care home residents carry out an action planned for the next day, and remember it a few days later, just as well?',
             sections: [
                 {
-                    title: 'State of the art',
+                    title: 'In short',
                     paragraphs: [
-                        "Alzheimer's disease and its cognitive symptoms, prospective memory (remembering to do something later), cognitive stimulation approaches, and the different kinds of social robots: humanoid, companion and telepresence robots.",
-                        "Case studies: NAO and prospective memory training, PARO and emotional support, Tammy and reminiscence therapy, and Kerem Tahan's work on social robots and cognitive stimulation.",
+                        "Prospective memory means remembering to do something later: taking medication, going to an activity. Much of a person's independence depends on it, and it declines early in Alzheimer's disease.",
+                        'A simple strategy helps: implementation intentions, a plan of the form "If [situation], then [action]". At the same time, social robots (PARO, NAO, Pepper…) are increasingly studied in geriatrics. They are well accepted, but their cognitive benefits remain uncertain. Our work sits where these two fields meet.',
+                    ],
+                },
+                {
+                    title: 'State of the art',
+                    items: [
+                        "Alzheimer's disease and the role of non-drug interventions.",
+                        'Prospective memory: definition, types of tasks, theoretical models, effects of ageing.',
+                        'Ways to support it: external aids, training, and above all implementation intentions.',
+                        'Social robots in geriatrics: companion robots (PARO), humanoids (NAO, Pepper), and what systematic reviews say.',
+                        'The studies closest to ours, then acceptability, individual factors and ethical issues.',
                     ],
                 },
                 {
                     title: 'The protocol',
                     paragraphs: [
-                        'A study with 10 care home residents. Each resident receives two instructions such as "If you see it is 11 am, then you will go to the painting workshop": once from a social robot, once from a professional, in alternating order. The resident repeats the sentence out loud and then imagines doing the action: a technique called implementation intention.',
+                        'A study designed for 10 care home residents, each taking part in both conditions. They receive an instruction such as "If you see it is 11 am, then you will go to the painting workshop": once from the NAO robot, once from a professional following exactly the same script. Order and activity are counterbalanced.',
+                        'The robot first planned was Pepper, but the licence needed to program it could not be obtained in time, so the protocol was adapted to NAO.',
                     ],
                 },
                 {
                     title: 'What is measured',
                     items: [
-                        'Whether the resident goes to the activity the next day, without any reminder.',
-                        'Whether they remember it a few days later, first freely, then with a cue.',
-                        'Their profile (MMSE score, level of dependence) and how acceptable they find the robot.',
+                        'Whether the resident does the action the next day, without any reminder.',
+                        'Whether they remember it three days later, first freely, then with a cue.',
+                        'Their profile (MMSE, education, level of dependence) and how acceptable they find the robot.',
+                        'Planned analyses: McNemar and Wilcoxon tests for paired data.',
                     ],
                 },
                 {
-                    title: 'Where I am',
-                    paragraphs: ["I'm reworking this project into a presentable version. The full version will be added here."],
+                    title: 'What ten participants allow',
+                    paragraphs: [
+                        'With ten people, at least six residents would need to succeed in one condition and fail in the other, all in the same direction, to reach significance. Finding no difference would therefore not mean the robot and the human are equivalent. The study should be presented as a pilot feasibility study.',
+                    ],
+                },
+                {
+                    title: 'Limitations and next steps',
+                    paragraphs: [
+                        'For lack of time, the experiment could not be run: the report presents expected results, not real ones. The critical analysis of the protocol identified precise improvements:',
+                    ],
+                    items: [
+                        'add a condition without implementation intentions, to know whether the strategy itself helps;',
+                        'use an event rather than a time as the cue, which works better for older adults;',
+                        "choose an action outside the care home's routine, so staff reminders do not skew the measure;",
+                        'collect more measures, and present the whole as a pilot study.',
+                    ],
+                },
+                {
+                    title: 'What this project taught us',
+                    paragraphs: [
+                        'The reality of field research: the technical and administrative constraints of robots, the ethical requirements of working with vulnerable people, and the gap between a rigorous experimental design and the daily life of a care home.',
+                    ],
                 },
             ],
             acknowledgements:
-                "Thanks to Bernard N'Kaoua, our supervisor, to Kerem Tahan for his support, and to the Colisée group care home for welcoming us.",
+                'Supervisor: Bernard N\'Kaoua. Scientific advisor: Kerem Tahan. Partner: the Colisée group, whom we thank for welcoming us.',
+            doc: { ...DOCS.ter, size: '340 KB' },
         },
     ],
 }

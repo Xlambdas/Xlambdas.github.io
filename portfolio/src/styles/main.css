@@ -323,3 +323,28 @@ p, .facts li, .steps li, .tl-place {
 .report .question,
 .report .note,
 .report .report-body > * { max-width: none; }
+
+/* ---------- report: downloadable document ---------- */
+
+.doc { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 1.5rem; align-items: center; margin-top: 1.5rem; padding: 1.25rem; }
+.doc-cover img { width: 100%; border-radius: 6px; border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform 0.15s ease; }
+.doc-cover:hover img { transform: translateY(-2px) rotate(-1deg); }
+.doc-body .tag { margin-bottom: 0.3rem; }
+.doc-meta { color: var(--muted); text-align: left; }
+@media (max-width: 480px) { .doc { grid-template-columns: 6rem minmax(0, 1fr); gap: 1rem; } }
+
+/* ---------- case study: website redesign ---------- */
+
+.init-list-title { margin-top: 1.5rem; }
+.init-list { padding-left: 1.2rem; margin: 0 0 0.5rem; }
+.init-list li { margin-bottom: 0.45rem; }
+.init-list li::marker { color: var(--accent); }
+.init-shots { display: grid; grid-template-columns: minmax(0, 0.55fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; margin-top: 1.5rem; }
+@media (max-width: 640px) { .init-shots { grid-template-columns: 1fr; } }
+
+/* case study page: one centred column like the report pages, text as wide as the images */
+.case:not(.report) .wrap { max-width: 62rem; }
+.case:not(.report) .prose,
+.case:not(.report) .lead-sm,
+.case:not(.report) .note { max-width: none; }
+.case:not(.report) .case-hero h1 { max-width: 20ch; }

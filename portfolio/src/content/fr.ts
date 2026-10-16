@@ -247,7 +247,31 @@ export const fr: Content = {
             title: 'Une initiative : refaire le site du studio',
             text: [
                 "De moi-même, j'ai proposé de refaire le site web du studio. Au début, le fondateur ne voyait pas l'intérêt : ce n'était pas la priorité.",
-                "J'ai donc préparé des arguments (crédibilité auprès des partenaires, recrutement, presse) et je les ai présentés à l'équipe. J'ai eu le feu vert, puis j'ai conçu seul un prototype haute fidélité sous Figma, avec une nouvelle identité visuelle.",
+                "J'ai donc préparé des arguments (crédibilité auprès des partenaires, recrutement, presse) et je les ai présentés à l'équipe. Une fois le feu vert obtenu, j'ai conçu seul une première identité visuelle, sombre, construite à partir du logo du studio, avec un aperçu du site sous Figma.",
+                "Le fondateur voulait finalement un style plus ludique. J'ai donc repris la recherche de couleurs pour aller vers quelque chose de plus clair, autour d'un orange doux et d'un gris clair.",
+            ],
+            listTitle: 'Ce que le site devait montrer',
+            items: [
+                "L'identité du studio : son style et ses types de jeux (narratifs, puzzle, éducatifs, cozy, expérimentaux).",
+                'Le projet en cours, et les prochains jeux avec un calendrier.',
+                "Les coulisses du développement : concept art, design d'interaction, prototypes abandonnés ou repoussés, histoires de développement. Pour créer de l'authenticité et la confiance des joueurs.",
+                "L'équipe : le noyau (fondateur, artiste principale) et les collaborateurs et stagiaires, avec leurs parcours.",
+                'Le programme de stage : montrer comment on peut contribuer, pour attirer des profils variés.',
+                "Les valeurs du studio : créativité, apprentissage, narration, accessibilité.",
+                'Un kit presse, pour faciliter le travail des journalistes et des éditeurs.',
+                'La communauté : contacts et réseaux.',
+            ],
+            shots: [
+                {
+                    ...IMAGES.bsgBrandBoard,
+                    alt: "Planche d'identité pour Big Small Games : logo, palette orange, sombre et clair, typographies Anton et Rajdhani, exemples de boutons",
+                    caption: "Première version : une identité sombre, construite à partir du logo.",
+                },
+                {
+                    ...IMAGES.bsgColorResearch,
+                    alt: 'Recherche de couleurs : pastilles de couleurs et essais de texte Anton et Rajdhani sur fond orange et sur fond gris',
+                    caption: "Deuxième version, plus ludique : recherche de couleurs autour d'un orange doux et d'un gris clair.",
+                },
             ],
         },
         hard: {

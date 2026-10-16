@@ -247,7 +247,31 @@ export const en: Content = {
             title: "An initiative: redesigning the studio's website",
             text: [
                 "On my own initiative, I proposed redesigning the studio's website. At first the founder didn't see the point: it wasn't a priority.",
-                'So I put together my arguments (credibility with partners, recruiting, press) and presented them to the team. I got the green light, then designed a high-fidelity Figma prototype with a new visual identity on my own.',
+                "So I put together my arguments (credibility with partners, recruiting, press) and presented them to the team. Once I got the green light, I designed a first visual identity on my own: a dark one, built from the studio's logo, with a preview of the site in Figma.",
+                'In the end the founder wanted a more playful style. So I went back to the colour research and moved towards something lighter, built around a soft orange and a light grey.',
+            ],
+            listTitle: 'What the website needed to show',
+            items: [
+                "The studio's identity: its style and the kinds of games it makes (narrative, puzzle, educational, cozy, experimental).",
+                'The current project, and upcoming games with a timeline.',
+                'Behind the scenes: concept art, interaction design, abandoned or postponed prototypes, development stories. To build authenticity and players\' trust.',
+                'The team: the core (founder, lead artist) and the collaborators and interns, with their stories.',
+                'The internship programme: showing how people can contribute, to attract a range of profiles.',
+                "The studio's values: creativity, learning, storytelling, accessibility.",
+                'A press kit, to make journalists\' and publishers\' work easier.',
+                'The community: contacts and social channels.',
+            ],
+            shots: [
+                {
+                    ...IMAGES.bsgBrandBoard,
+                    alt: 'Brand board for Big Small Games: logo, orange, dark and light palette, Anton and Rajdhani typefaces, button examples',
+                    caption: 'First version: a dark identity built from the logo.',
+                },
+                {
+                    ...IMAGES.bsgColorResearch,
+                    alt: 'Colour research: colour swatches and Anton and Rajdhani text tests on an orange and a grey background',
+                    caption: 'Second, more playful version: colour research around a soft orange and a light grey.',
+                },
             ],
         },
         hard: {

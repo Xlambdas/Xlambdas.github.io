@@ -39,6 +39,19 @@ export function ReportPage({ t, report }: { t: Content; report: Report }) {
                 {report.basedOn && (
                     <p className="note"><strong>{l.basedOn} :</strong> {report.basedOn}</p>
                 )}
+
+                {report.doc && (
+                    <div className="doc card">
+                        <a className="doc-cover" href={report.doc.href} tabIndex={-1} aria-hidden="true">
+                            <img src={report.doc.cover.src} width={report.doc.cover.width} height={report.doc.cover.height} alt="" loading="lazy" decoding="async" />
+                        </a>
+                        <div className="doc-body">
+                            <p className="tag">{l.doc}</p>
+                            <p className="doc-meta">{report.doc.pages} {l.pages} · PDF · {report.doc.size}</p>
+                            <a className="btn btn-primary" href={report.doc.href} download>{l.download}</a>
+                        </div>
+                    </div>
+                )}
             </header>
 
             <div className="wrap report-body">
@@ -61,9 +74,6 @@ export function ReportPage({ t, report }: { t: Content; report: Report }) {
                     </section>
                 )}
 
-                {report.pdf && (
-                    <p><a className="btn" href={report.pdf.href} download>{report.pdf.label}</a></p>
-                )}
             </div>
         </article>
     )

@@ -1,6 +1,7 @@
 // Travaux universitaires — FR
 // To add a report: copy one object in `reports`, give it a new slug, and do the same in work.en.ts.
 import type { Content } from './types'
+import { DOCS } from './shared'
 
 export const workFr: Content['work'] = {
     meta: {
@@ -23,6 +24,10 @@ export const workFr: Content['work'] = {
         question: 'Question de recherche',
         basedOn: "D'après",
         acknowledgements: 'Remerciements',
+        doc: 'Le rapport complet',
+        download: 'Télécharger le PDF',
+        pages: 'pages',
+        coverAlt: 'Première page du rapport',
     },
 
     reports: [
@@ -129,49 +134,83 @@ export const workFr: Content['work'] = {
                     ],
                 },
             ],
+            doc: { ...DOCS.rireVirtuel, size: '3,3 Mo' },
         },
         {
             slug: 'robots-sociaux-alzheimer',
             type: "Travail d'étude et de recherche (TER)",
             course: 'Licence MIASHS, Université de Bordeaux',
             date: '2025',
-            status: 'rewriting',
-            title: "Robots sociaux et maladie d'Alzheimer",
-            subtitle: "Un robot peut-il aider à se souvenir de ce qu'on doit faire ?",
+            status: 'done',
+            title: 'Robots sociaux et mémoire prospective en EHPAD',
+            subtitle: "Un robot peut-il transmettre une stratégie de mémoire aussi bien qu'un humain ?",
             authors: ['Pierre-Samuel Bashaga-Kachungunu', 'Corentin Gassien', 'Younha Jean-Louis'],
             summary:
-                "Un état de l'art sur les robots sociaux face à la démence, et un protocole pour comparer un robot social et un professionnel humain qui aident des résidents d'EHPAD à se souvenir d'une action à faire.",
+                "Un état de l'art sur la mémoire prospective et les robots sociaux en gériatrie, et un protocole qui compare un robot et un professionnel pour aider des résidents d'EHPAD à se souvenir d'une action à faire.",
             question:
-                "Dans quelle mesure un robot de compagnie peut-il apporter son aide dans le quotidien d'une personne atteinte de la maladie d'Alzheimer ?",
+                "Lorsqu'elle est transmise par un robot social plutôt que par un professionnel, une implémentation d'intentions permet-elle à des résidents d'EHPAD de réaliser une action prévue le lendemain, et de s'en souvenir quelques jours plus tard, aussi bien ?",
             sections: [
                 {
-                    title: "État de l'art",
+                    title: 'En bref',
                     paragraphs: [
-                        "La maladie d'Alzheimer et ses troubles cognitifs, la mémoire prospective (se souvenir de faire quelque chose plus tard), les approches de stimulation cognitive, et les différents types de robots sociaux : humanoïdes, compagnons, de téléprésence.",
-                        "Études de cas : NAO et l'entraînement de la mémoire prospective, PARO et le soutien émotionnel, Tammy et la thérapie de réminiscence, et les travaux de Kerem Tahan sur les robots sociaux et la stimulation cognitive.",
+                        "La mémoire prospective, c'est se souvenir de faire quelque chose plus tard : prendre un traitement, aller à une activité. Elle conditionne une grande partie de l'autonomie, et elle décline tôt dans la maladie d'Alzheimer.",
+                        "Une stratégie simple l'aide : l'implémentation d'intentions, un plan du type « Si [situation], alors [action] ». En parallèle, les robots sociaux (PARO, NAO, Pepper…) sont de plus en plus étudiés en gériatrie. Ils sont bien acceptés, mais leurs bénéfices cognitifs restent incertains. Notre travail se place à l'intersection des deux.",
+                    ],
+                },
+                {
+                    title: "État de l'art",
+                    items: [
+                        "La maladie d'Alzheimer et la place des interventions non médicamenteuses.",
+                        'La mémoire prospective : définition, types de tâches, modèles théoriques, effets du vieillissement.',
+                        "Les façons de la soutenir : aides externes, entraînement, et surtout les implémentations d'intentions.",
+                        'Les robots sociaux en gériatrie : robots compagnons (PARO), humanoïdes (NAO, Pepper), ce que disent les revues systématiques.',
+                        "Les travaux les plus proches du nôtre, puis l'acceptabilité, les facteurs individuels et les enjeux éthiques.",
                     ],
                 },
                 {
                     title: 'Le protocole',
                     paragraphs: [
-                        "Une étude auprès de 10 résidents d'EHPAD. Chaque résident reçoit deux consignes du type « Si vous voyez qu'il est 11 h, alors vous irez à l'atelier peinture » : une fois de la part d'un robot social, une fois de la part d'un professionnel, dans un ordre alterné. Le résident répète la phrase à voix haute puis s'imagine faire l'action : c'est la technique de l'implémentation d'intention.",
+                        "Une étude conçue pour 10 résidents d'EHPAD, où chacun passe les deux conditions. Il reçoit une consigne du type « Si vous voyez qu'il est 11 h, alors vous irez à l'atelier peinture » : une fois par le robot NAO, une fois par un professionnel qui suit exactement le même script. L'ordre et l'activité changent d'une personne à l'autre.",
+                        "Le robot prévu au départ était Pepper, mais la licence nécessaire pour le programmer n'a pas pu être obtenue à temps : le protocole a été adapté à NAO.",
                     ],
                 },
                 {
                     title: 'Ce qui est mesuré',
                     items: [
-                        "Si le résident se rend à l'activité le lendemain, sans aucun rappel.",
-                        "S'il s'en souvient quelques jours plus tard, d'abord librement, puis avec un indice.",
-                        "Son profil (score MMSE, niveau de dépendance) et l'acceptabilité du robot.",
+                        "Si le résident fait l'action le lendemain, sans aucun rappel.",
+                        "S'il s'en souvient trois jours plus tard, d'abord librement, puis avec un indice.",
+                        "Son profil (MMSE, niveau d'études, dépendance) et l'acceptabilité du robot.",
+                        'Analyses prévues : tests de McNemar et de Wilcoxon pour données appariées.',
                     ],
                 },
                 {
-                    title: "Où j'en suis",
-                    paragraphs: ["Je retravaille ce TER pour en faire une version présentable. La version complète sera ajoutée ici."],
+                    title: 'Ce que dix participants permettent',
+                    paragraphs: [
+                        "Avec dix personnes, il faudrait au moins six résidents qui réussissent dans une condition et échouent dans l'autre, tous dans le même sens, pour obtenir un résultat significatif. Ne pas trouver de différence ne voudrait donc pas dire que le robot et l'humain se valent. L'étude doit être présentée comme une étude pilote de faisabilité.",
+                    ],
+                },
+                {
+                    title: 'Limites et pistes',
+                    paragraphs: [
+                        "Faute de temps, l'expérimentation n'a pas pu être menée : le rapport présente des résultats attendus, pas des résultats réels. L'analyse critique du protocole a permis d'identifier des améliorations précises :",
+                    ],
+                    items: [
+                        "ajouter une condition sans implémentation d'intentions, pour savoir si c'est bien la stratégie qui aide ;",
+                        "utiliser un événement plutôt qu'une heure comme signal, plus efficace chez les personnes âgées ;",
+                        "choisir une action hors de la routine de l'établissement, pour que les rappels du personnel ne faussent pas la mesure ;",
+                        'multiplier les mesures, et présenter le tout comme une étude pilote.',
+                    ],
+                },
+                {
+                    title: "Ce que ce projet nous a appris",
+                    paragraphs: [
+                        "La réalité de la recherche sur le terrain : les contraintes techniques et administratives des robots, les exigences éthiques avec des personnes vulnérables, et l'écart entre un plan expérimental rigoureux et le quotidien d'un établissement.",
+                    ],
                 },
             ],
             acknowledgements:
-                "Merci à Bernard N'Kaoua, notre professeur référent, à Kerem Tahan pour son soutien, et à l'EHPAD du groupe Colisée pour son accueil.",
+                "Enseignant référent : Bernard N'Kaoua. Encadrement scientifique : Kerem Tahan. Structure partenaire : groupe Colisée, que nous remercions pour son accueil.",
+            doc: { ...DOCS.ter, size: '340 Ko' },
         },
     ],
 }

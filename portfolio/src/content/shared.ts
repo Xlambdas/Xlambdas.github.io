@@ -12,6 +12,20 @@ export const LINKS = {
 
 const img = (name: string) => `${BASE}img/${name}.webp`
 
+// Report PDFs and their first-page images
+export const DOCS = {
+    ter: {
+        href: `${BASE}docs/TER_Robots-sociaux-memoire-prospective.pdf`,
+        pages: 45,
+        cover: { src: `${BASE}img/docs/ter-cover.webp`, width: 640, height: 905 },
+    },
+    rireVirtuel: {
+        href: `${BASE}docs/Synthese_Rire-virtuel_Corentin-Gassien.pdf`,
+        pages: 6,
+        cover: { src: `${BASE}img/docs/rire-virtuel-cover.webp`, width: 640, height: 905 },
+    },
+}
+
 // width/height = real file size (prevents layout shift while loading)
 export const IMAGES = {
     mathSlider: { src: img('math-slider'), width: 1600, height: 896 },
@@ -21,4 +35,6 @@ export const IMAGES = {
     roadLight: { src: img('road-light'), width: 1600, height: 884 },
     emailClient: { src: img('email-client'), width: 1600, height: 893 },
     lightCats: { src: img('light-cats'), width: 1446, height: 1073 },
+    bsgBrandBoard: { src: img('bsg-brand-board'), width: 696, height: 1202 },
+    bsgColorResearch: { src: img('bsg-color-research'), width: 1334, height: 1174 },
 }
