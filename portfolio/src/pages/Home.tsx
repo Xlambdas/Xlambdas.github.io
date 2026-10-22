@@ -80,7 +80,7 @@ export function Home({ t }: { t: Content }) {
                             <p className="tag">{p.tag}</p>
                             <h3>{p.title}</h3>
                             <p>{p.text}</p>
-                            {p.link && <a href={p.link.href}>{p.link.label} <span aria-hidden="true">↗</span></a>}
+                            {p.link && <a href={p.link.href}>{p.link.label} <span aria-hidden="true">{p.link.href.startsWith('http') ? '↗' : '→'}</span></a>}
                         </li>
                     ))}
                 </ul>

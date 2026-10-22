@@ -32,6 +32,68 @@ export const workFr: Content['work'] = {
 
     reports: [
         {
+            slug: 'learning-app',
+            type: 'Note de recherche',
+            course: 'Projet personnel · MedStudy Flow (nom provisoire)',
+            date: '2026',
+            status: 'ongoing',
+            title: 'Apprendre mieux, pas plus',
+            subtitle: 'Méthodes d’apprentissage fondées sur les preuves : comment apprendre et retenir durablement ?',
+            authors: ['Corentin Gassien'],
+            summary:
+                "Ce que dit la recherche sur les meilleures façons d'apprendre et de retenir, pour poser les bases scientifiques de MedStudy Flow, une application pour les étudiants en première année de santé.",
+            question:
+                'Quelles méthodes d’apprentissage, et dans quelles conditions, permettent le mieux de retenir durablement et de comprendre, en particulier en anatomie et en physiologie ?',
+            sections: [
+                {
+                    title: 'Le projet',
+                    paragraphs: [
+                        "En première année de santé (PASS et L.AS), les étudiants doivent retenir une très grande quantité d'anatomie et de physiologie, souvent loin de leur famille pour la première fois. MedStudy Flow (nom provisoire) est un projet d'application construit autour de deux piliers : apprendre l'anatomie et la physiologie comme un système, en comprenant les liens entre les structures et leurs fonctions, et réussir son entrée à l'université.",
+                        "Cette note en est la première étape. Les étudiants utilisent surtout des méthodes qui donnent l'impression d'être efficaces (relire, surligner, résumer) alors que les mieux validées restent peu utilisées. L'objectif : que chaque fonctionnalité importante de l'application puisse être justifiée par des preuves.",
+                    ],
+                },
+                {
+                    title: 'Cadre PICO',
+                    items: [
+                        "Population : étudiants du supérieur, en priorité en première année de santé et en formation médicale ou paramédicale.",
+                        "Intervention : méthodes d'apprentissage (se tester, espacer, mélanger, s'auto-expliquer, cartes de notions, supports multimédia et 3D, gamification, sentiment d'appartenance).",
+                        'Comparaison : méthodes habituelles (relecture, surlignage, résumé, cours magistral).',
+                        "Résultats : rétention à long terme, compréhension et transfert ; puis motivation, engagement et adaptation à l'université.",
+                    ],
+                },
+                {
+                    title: 'Méthode',
+                    paragraphs: [
+                        "Onze requêtes thématiques sur PubMed, une par méthode ou facteur étudié, complétées par une recherche ciblée sur Google Scholar et Babord+ pour retrouver des méta-analyses clés en psychologie et en sciences de l'éducation. Chaque article retenu est classé selon la solidité de ses preuves (rang A, B ou C).",
+                    ],
+                },
+                {
+                    title: 'Sélection des articles (méthode PRISMA)',
+                    items: [
+                        '182 articles identifiés (172 sur PubMed, 10 par recherche complémentaire)',
+                        '176 après suppression des doublons',
+                        '30 exclus après lecture du titre et du résumé',
+                        '146 retenus et classés : 40 de rang A, 42 de rang B, 64 de rang C',
+                        '38 des 40 articles de rang A lus en texte intégral, plus 3 sources ajoutées',
+                    ],
+                },
+                {
+                    title: 'Ce qui ressort',
+                    items: [
+                        'Se tester et espacer ses révisions sont les deux méthodes les mieux établies, et elles se renforcent.',
+                        'Elles marchent avec des questions à sa portée, une correction après chaque réponse et une pratique répétée sur des semaines.',
+                        "Pour comprendre, et pas seulement retenir : s'expliquer les liens de cause à effet et reconstruire de mémoire la carte des notions.",
+                        "Relire, surligner et résumer, les méthodes les plus utilisées, sont les moins efficaces. Les bonnes méthodes paraissent plus difficiles, et c'est normal.",
+                    ],
+                },
+                {
+                    title: 'Prochaine étape',
+                    paragraphs: ["Traduire ces résultats en choix de conception pour MedStudy Flow. La note est une version de travail et sera mise à jour."],
+                },
+            ],
+            doc: { ...DOCS.learningApp, size: '430 Ko' },
+        },
+        {
             slug: 'membre-fantome',
             type: 'Synthèse de littérature',
             course: 'Projet scientifique, Master TECH',

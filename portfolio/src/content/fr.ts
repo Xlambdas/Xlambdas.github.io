@@ -58,6 +58,12 @@ export const fr: Content = {
             others: [
                 {
                     tag: 'Projet perso · en cours',
+                    title: 'MedStudy Flow (nom provisoire)',
+                    text: "Une application pour aider les étudiants en première année de santé à apprendre l'anatomie et la physiologie comme un système, et à réussir leur entrée à l'université. Première étape : une note de recherche sur les méthodes d'apprentissage.",
+                    link: { label: 'Lire la note de recherche', href: `${BASE}travaux/learning-app/` },
+                },
+                {
+                    tag: 'Projet perso · en cours',
                     title: 'Game Of Life, plugin Obsidian',
                     text: "Transformer sa vie en RPG dans l'application de notes Obsidian : quêtes, niveaux, récompenses et suivi de progression.",
                 },

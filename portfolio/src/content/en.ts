@@ -58,6 +58,12 @@ export const en: Content = {
             others: [
                 {
                     tag: 'Side project · ongoing',
+                    title: 'MedStudy Flow (working title)',
+                    text: 'An app to help first-year health students learn anatomy and physiology as a system, and settle into university. First step: a research note on learning methods.',
+                    link: { label: 'Read the research note', href: `${BASE}en/academic-work/learning-app/` },
+                },
+                {
+                    tag: 'Side project · ongoing',
                     title: 'Game Of Life, an Obsidian plugin',
                     text: 'Turning your life into an RPG inside the Obsidian note-taking app: quests, levels, rewards and progress tracking.',
                 },

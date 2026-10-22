@@ -31,6 +31,68 @@ export const workEn: Content['work'] = {
 
     reports: [
         {
+            slug: 'learning-app',
+            type: 'Research note',
+            course: 'Personal project · MedStudy Flow (working title)',
+            date: '2026',
+            status: 'ongoing',
+            title: 'Learn better, not more',
+            subtitle: 'Evidence-based learning methods: how do we learn and remember for the long term?',
+            authors: ['Corentin Gassien'],
+            summary:
+                'What research says about the best ways to learn and remember, as the scientific basis for MedStudy Flow, an app for first-year health students.',
+            question:
+                'Which learning methods, and under which conditions, best support long-term retention and understanding, especially in anatomy and physiology?',
+            sections: [
+                {
+                    title: 'The project',
+                    paragraphs: [
+                        "In the first year of health studies in France (PASS and L.AS), students must retain a huge amount of anatomy and physiology, often while living away from home for the first time. MedStudy Flow (working title) is an app project built on two pillars: learning anatomy and physiology as a system, by understanding how structures connect to their functions, and succeeding in the move to university.",
+                        'This note is its first step. Students mostly use methods that feel effective (rereading, highlighting, summarising), while the best-validated ones remain underused. The goal: every major feature of the app should be backed by evidence.',
+                    ],
+                },
+                {
+                    title: 'PICO framework',
+                    items: [
+                        'Population: higher-education students, especially first-year health students and medical or allied-health trainees.',
+                        'Intervention: learning methods (self-testing, spacing, interleaving, self-explanation, concept maps, multimedia and 3D materials, gamification, sense of belonging).',
+                        'Comparison: usual methods (rereading, highlighting, summarising, lectures).',
+                        'Outcomes: long-term retention, understanding and transfer; then motivation, engagement and adjustment to university.',
+                    ],
+                },
+                {
+                    title: 'Method',
+                    paragraphs: [
+                        'Eleven thematic PubMed queries, one per method or factor, plus a targeted search on Google Scholar and Babord+ to find key meta-analyses in psychology and education. Each article kept is ranked by strength of evidence (A, B or C).',
+                    ],
+                },
+                {
+                    title: 'Article selection (PRISMA method)',
+                    items: [
+                        '182 articles identified (172 on PubMed, 10 from complementary searches)',
+                        '176 after removing duplicates',
+                        '30 excluded after reading the title and abstract',
+                        '146 kept and ranked: 40 rank A, 42 rank B, 64 rank C',
+                        '38 of the 40 rank A articles read in full, plus 3 added sources',
+                    ],
+                },
+                {
+                    title: 'Key findings',
+                    items: [
+                        'Self-testing and spacing out revision are the two best-established methods, and they reinforce each other.',
+                        'They work with questions within reach, feedback after each answer, and practice repeated over weeks.',
+                        'To understand, not just remember: explain cause-and-effect links to yourself and rebuild the concept map from memory.',
+                        'Rereading, highlighting and summarising, the most used methods, are the least effective. The good methods feel harder, and that is normal.',
+                    ],
+                },
+                {
+                    title: 'Next step',
+                    paragraphs: ['Turning these findings into design choices for MedStudy Flow. The note is a working version and will be updated.'],
+                },
+            ],
+            doc: { ...DOCS.learningApp, size: '430 KB' },
+        },
+        {
             slug: 'membre-fantome',
             type: 'Literature review',
             course: 'Scientific project, Master TECH',

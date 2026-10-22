@@ -19,6 +19,11 @@ export const DOCS = {
         pages: 45,
         cover: { src: `${BASE}img/docs/ter-cover.webp`, width: 640, height: 905 },
     },
+    learningApp: {
+        href: `${BASE}docs/Note_Apprendre-mieux_Corentin-Gassien.pdf`,
+        pages: 58,
+        cover: { src: `${BASE}img/docs/learning-app-cover.webp`, width: 640, height: 905 },
+    },
     rireVirtuel: {
         href: `${BASE}docs/Synthese_Rire-virtuel_Corentin-Gassien.pdf`,
         pages: 6,
